@@ -1,2 +1,2 @@
 rootProject.name = "kest"
-include("core")
+include("core", "json")
