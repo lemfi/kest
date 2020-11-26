@@ -1,2 +1,2 @@
 rootProject.name = "kest"
-include("core", "json", "step-http")
+include("core", "json", "step-http", "junit5")
