@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group  = "com.github.lemfi.kest"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 val kotlinVersion : String by extra { "1.4.10" }
 val coroutineVersion : String by extra { "1.4.1" }
