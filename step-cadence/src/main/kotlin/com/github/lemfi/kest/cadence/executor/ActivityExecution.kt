@@ -1,0 +1,126 @@
+package com.github.lemfi.kest.cadence.executor
+
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.lemfi.kest.core.model.Execution
+import com.uber.cadence.activity.ActivityOptions
+import com.uber.cadence.client.WorkflowClient
+import com.uber.cadence.client.WorkflowOptions
+import com.uber.cadence.common.RetryOptions
+import com.uber.cadence.context.ContextPropagator
+import com.uber.cadence.worker.Worker
+import com.uber.cadence.worker.WorkerOptions
+import com.uber.cadence.workflow.Workflow
+import com.uber.cadence.workflow.WorkflowMethod
+import org.opentest4j.AssertionFailedError
+import java.time.Duration
+import kotlin.reflect.KFunction
+import kotlin.reflect.javaType
+
+class ActivityExecution<RESULT>(
+        private val cadenceHost: String,
+        private val cadencePort: Int,
+        private val cadenceDomain: String,
+        private val tasklist: String,
+
+        private val activity: KFunction<RESULT>,
+        private val params: Array<out Any?>?,
+        private val contextPropagators: List<ContextPropagator>?,
+
+        override val withResult: RESULT.()->Unit = {},
+
+        ): Execution<RESULT>() {
+
+    @ExperimentalStdlibApi
+    @Suppress("unchecked_cast")
+    override fun execute(): RESULT {
+
+        Worker.Factory(cadenceHost, cadencePort, cadenceDomain).apply {
+            val worker = newWorker("KEST_TL", WorkerOptions
+                    .Builder()
+                    .setReportActivityFailureRetryOptions(RetryOptions.Builder()
+                            .setInitialInterval(Duration.ofSeconds(5))
+                            .setExpiration(Duration.ofMinutes(30))
+                            .setMaximumInterval(Duration.ofMinutes(1))
+                            .setMaximumAttempts(10)
+                            .build())
+                    .build())
+
+            worker.registerWorkflowImplementationTypes(com.github.lemfi.kest.cadence.executor.Workflow::class.java)
+
+        }.start()
+
+        val parameterTypes = activity.parameters.subList(1, activity.parameters.size).also {
+            if ((params?.size ?: 0) != it.size) throw AssertionFailedError("Wrong number of parameter for activity, expected [${it.map { it.type }.joinToString(", ")}] got ${params?.toList()}")
+        }
+
+        return WorkflowClient.newInstance(cadenceHost, cadencePort, cadenceDomain)
+                .newWorkflowStub(IWorkflow::class.java, WorkflowOptions.Builder()
+                        .setExecutionStartToCloseTimeout(Duration.ofSeconds(30))
+                        .setTaskList("KEST_TL")
+                        .apply {
+                            contextPropagators?.let {
+                                setContextPropagators(it)
+                            }
+                        }
+                        .build())
+
+                .run(WorkflowParameter(activity.parameters[0].type::javaType.get().typeName, tasklist, activity.name, params?.mapIndexed { index, it ->
+                    Parameter(jacksonObjectMapper().writeValueAsString(it), parameterTypes[index].type.javaType.typeName)
+                })) as RESULT
+
+
+    }
+}
+
+class WorkflowParameter(
+        val className: String,
+        val tasklist: String,
+        val function: String,
+        val parameters: List<Parameter>?
+)
+
+interface IWorkflow {
+
+    @WorkflowMethod
+    fun run(parameters: WorkflowParameter): Any?
+}
+
+class Workflow: IWorkflow {
+
+    override fun run(parameters: WorkflowParameter): Any? {
+
+        val cls = Class.forName(parameters.className)
+
+        val params = parameters.parameters?.map { jacksonObjectMapper().readValue(it.value, Class.forName(it.cls)) }
+        val types = parameters.parameters?.map { Class.forName(it.cls) }
+
+        val method = types?.let { cls.getMethod(parameters.function, *types.toTypedArray()) } ?: cls.getMethod(parameters.function)
+
+        return if (params != null) {
+            method.invoke(getActivity(cls, parameters.tasklist), *params.toTypedArray())
+        } else {
+            method.invoke(getActivity(cls, parameters.tasklist))
+        }
+    }
+
+    fun <T> getActivity(cls: Class<T>, tasklist: String): T {
+        return Workflow.newActivityStub(cls,
+                ActivityOptions.Builder()
+                        .setTaskList(tasklist)
+                        .setScheduleToCloseTimeout(Duration.ofSeconds(600))
+                        .setRetryOptions(
+                                RetryOptions.Builder()
+                                        .setInitialInterval(Duration.ofSeconds(1))
+                                        .setExpiration(Duration.ofMinutes(1))
+                                        .setMaximumAttempts(5)
+                                        .build()
+                        )
+                        .build()
+        )
+    }
+}
+
+data class Parameter(
+        val value: String?,
+        val cls: String
+)
