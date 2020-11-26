@@ -1,0 +1,13 @@
+@startuml
+
+Scenario "1" o-- "1..*" Step
+
+Step  "1" *-- Execution
+
+Scenario : name: String
+Step : assertions: ()->Unit
+
+Execution : execute: ()->T
+Execution : withResult: T.()->Unit // function played on execution result
+
+@enduml

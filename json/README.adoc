@@ -1,0 +1,147 @@
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+
+= JSON support
+
+JSON is a common format to interact between machines, as matter of fact, Kest comes with advanced support to that format with a bunch of assertions. +
+It also comes with two Objects: `JsonMap` and `JsonArray`
+
+* `JsonMap` is a `Map<String, Any?>`
+* `JsonArray` is an array of `JsonMap`
+
+== Matchers
+
+Kest provides several function to check whether a json content matches a Json pattern.
+To do so, Kest provides by default 3 matchers:
+
+- {{string}}
+- {{number}}
+- {{boolean}}
+
+For example
+[source, json]
+----
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}
+----
+is matched by
+[source, json]
+----
+{
+  "string": "{{string}}",
+  "number": "{{number}}",
+  "boolean": "{{boolean}}"
+}
+----
+or by
+[source, json]
+----
+{
+  "string": "{{string}}",
+  "number": 1,
+  "boolean": "{{boolean}}"
+}
+----
+
+And the function to check that with Kest would be:
+[source, kotlin]
+----
+jsonMatchesObject(
+"""
+{
+  "string": "{{string}}",
+  "number": "{{number}}",
+  "boolean": "{{boolean}}"
+}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+=== Defining your own matchers
+
+If you want to define your own matchers, two possibilities:
+==== Define a class
+[source, kotlin]
+----
+data class Sample(
+        val string: String,
+        val number: Int,
+        val boolean: Boolean
+)
+----
+
+Then call JsonMatcher.addMatcher function with the class and the pattern that will represent it:
+[source,kotlin]
+----
+JsonMatcher.addMatcher("{{sample}}", Sample::class)
+----
+
+To check match you can now call this:
+[source, kotlin]
+----
+jsonMatchesObject(
+"""
+{{sample}}}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+== Polymorphism
+
+To go through polyphormism, Kest allows you to define a list of matchers for a given JSON.
+
+Let's take this example:
+[source,json]
+----
+{
+  "common":  "{{string}}",
+  "poly1": "{{string}}"
+}
+----
+[source,json]
+----
+{
+  "common":  "{{string}}",
+  "poly2": "{{string}}"
+}
+
+----
+You can check wether your json matches one or the other of those matchers by passing a list to `jsonMatchesObject` function:
+[source,kotlin]
+----
+jsonMatchesObject(
+                listOf(
+                """{
+                      "common":  "{{string}}",
+                      "poly1": "{{string}}"
+                    }
+                """,
+                """{
+                      "common":  "{{string}}",
+                      "poly2": "{{string}}"
+                    }
+                """
+                ),
+                 """{
+                      "common":  "a string",
+                      "poly2": "another string"
+                    }
+                """
+        )
+----
+
+== Lists
+
+As you can check objects patterns, you can check lists patterns: if you are expecting a list of objects instead of an object, then `jsonMatchesArray` is there for you.

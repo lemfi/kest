@@ -1,0 +1,317 @@
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+
+= Kest
+
+Kest is a framework written in Kotlin for testing your backends. +
+It uses JUnit5 to run scenarios.
+
+Easy to use, easy to extend.
+
+== Scenarios
+
+Kest allows you to write scenarios. +
+One scenario is a sequence of steps. +
+One step defines an execution and a list of assertions to validate completed execution.
+
+Let's take following example:
+[source,kotlin]
+----
+scenario {
+
+    name = "api says hello and remembers it!"
+
+    `given http call`<String> {
+
+        url = "http://myapi/hello"
+        method = "POST"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = """
+            {
+                "who": "Darth Vader"
+            }
+        """
+    } `assert that` { stepResult ->
+
+        eq(201, stepResult.status)
+        eq("Hello Darth Vader!", stepResult.body)
+    }
+
+    `given http call`<String> {
+
+        url = "http://myapi/hello"
+        method = "POST"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = """
+            {
+                "who": "Han Solo"
+            }
+        """
+    } `assert that` { stepResult ->
+
+        eq(201, stepResult.status)
+        eq("Hello Han Solo!", stepResult.body)
+    }
+
+    `given http call`<List<String>> {
+
+        url = "http://myapi/hello"
+        method = "GET"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+    } `assert that` { stepResult ->
+
+        eq(200, stepResult.status)
+        eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+    }
+}
+----
+
+This example defines a scenario with three steps:
+
+. Say hello to Darth Vader
+. Say hello to Han Solo
+. Get list of people that were greeted
+
+For each step 2 assertions are done:
+
+. check status code
+. check body
+
+== Run a scenario
+
+To run a scenario Kest uses Junit5 engine:
+
+. Create a class to hold your test
+. Create a function annotated with Junit5 `@TestFactory`
+. Make it call Kest function `run scenarios
+
+[source,kotlin]
+----
+
+class TestHttpServer {
+
+    @TestFactory
+    fun `http server says hello`() = `run scenarios`(
+            scenario { ... },
+            scenario { ... },
+            scenario { ... }
+    )
+
+
+    @TestFactory
+    fun `http server says goodbye`() = `run scenarios`(
+            scenario { ... },
+            scenario { ... },
+            scenario { ... }
+    )
+----
+
+== It's Kotlin make it easy to read!
+A scenario may become a long list of steps, not easily readable. +
+Why do not extract steps to external functions, it will also make them reusable: double gain!
+
+[source,kotlin]
+----
+
+fun ScenarioBuilder.`say hello`(who: String) {
+    `given http call`<String> {
+
+        url = "http://localhost:8080/hello"
+        method = "POST"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = """
+            {
+                "who": "$who"
+            }
+            """
+    } `assert that` { stepResult ->
+
+        eq(201, stepResult.status)
+        eq("Hello $who!", stepResult.body)
+    }
+}
+
+fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
+    `given http call`<List<String>> {
+
+        url = "http://localhost:8080/hello"
+        method = "GET"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+    } `assert that` { stepResult ->
+
+        eq(200, stepResult.status)
+        eq(expectedGreeted.toList(), stepResult.body)
+    }
+}
+
+
+class TestHttpServer {
+
+    @TestFactory
+    fun `http server hello`() = `run scenarios`(
+            scenario {
+
+                name = "api says hello and remembers it!"
+
+                `say hello`("Darth Vader")
+                `say hello`("Han Solo")
+
+                `get greeted`("Darth Vader", "Han Solo")
+            },
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
+
+    @TestFactory
+    fun `http server goodbye`() = `run scenarios`(
+            scenario {
+
+                name = "api says goodbye and forgets people!"
+
+                `say hello`("Darth Vader")
+                `say hello`("Han Solo")
+
+                `given http call`<String> {
+
+                    url = "http://localhost:8080/hello?who=Darth Vader"
+                    method = "DELETE"
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+                } `assert that` { stepResult ->
+
+                    eq(201, stepResult.status)
+                    eq("Goodbye Darth Vader!", stepResult.body)
+                }
+
+                `get greeted`("Han Solo")
+
+            },
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
+}
+
+----
+
+And again, we can also extract scenarios
+
+[source,kotlin]
+----
+
+val `api says hello and remembers it!` = scenario {
+
+    name = "api says hello and remembers it!"
+
+    `say hello`("Darth Vader")
+    `say hello`("Han Solo")
+
+    `get greeted`("Darth Vader", "Han Solo")
+}
+
+val `api says goodbye and forgets people!` = scenario {
+
+            name = "api says goodbye and forgets people!"
+
+            `say hello`("Darth Vader")
+            `say hello`("Han Solo")
+
+            `given http call`<String> {
+
+                url = "http://localhost:8080/hello?who=Darth Vader"
+                method = "DELETE"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+            } `assert that` { stepResult ->
+
+                eq(201, stepResult.status)
+                eq("Goodbye Darth Vader!", stepResult.body)
+            }
+
+            `get greeted`("Han Solo")
+
+        }
+
+
+class TestHttpServer {
+
+    @TestFactory
+    fun `http server hello`() = `run scenarios`(
+            `api says hello and remembers it!`,
+
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
+
+    @TestFactory
+    fun `http server goodbye`() = `run scenarios`(
+           `api says goodbye and forgets people!`,
+
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
+
+    @TestFactory
+    fun `http server hello and goodbye`() = `run scenarios`(
+            `api says goodbye and forgets people!`,
+            `api says goodbye and forgets people!`,
+
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
+}
+
+----
+
+== Focus on how it works
+
+image::{gitplant}/doc/diag/model.puml[]
+
+When a scenario is launched, all its steps are launched sequentially, if one step fails the scenario fails without running remaining steps. +
+When a step is launched its execution is played, then assertions are played against execution result. +
+If step contains a withResult() function, this function is executed after step assertions have passed.
+
+== Available Steps
+
+* link:step-http/README.adoc[HTTP]
+* link:step-rabbitmq/README.adoc[RabbitMQ]
+* Mongo
+* Cadence
+
+== Configuration
+
+You might want to access data from a configuration file.
+Kest offers you to add your entries in a file named kest.yaml
+All data from this file has to be mapped to a kotlin data class.
+
+Then you can access your configuration by calling function `property`:
+[source,yml, title=kest.yml]
+----
+mykey: myvalue
+myotherkey: myothervalue
+
+domain:
+  akey: a value
+  anotherkey: anothervalue
+----
+[source, kotlin, title="Configuration data class"]
+----
+
+data class Properties(
+    val mykey: String,
+    val myotherkey: String,
+    val domain: Domain
+)
+
+data class Domain(
+    val akey: String,
+    val anotherkey: String
+)
+----
+[source, kotlin, title="Access configuration"]
+----
+property<Properties> { myKey }
+property<Properties> { myValue }
+property<Properties> { domain.akey }
+property<Properties> { domain.anotherkey }
+----

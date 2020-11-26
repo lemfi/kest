@@ -1,0 +1,8 @@
+@startuml
+
+class response as "HttpResponse<RESULT>"
+response : body: RESULT
+response : status: Int
+response : headers: Map<String, List<String>>
+
+@enduml

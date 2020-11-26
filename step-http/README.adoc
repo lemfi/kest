@@ -1,0 +1,39 @@
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+
+= HTTP Steps
+
+one step is defined here : ````given http call````
+
+This step comes as a parameterized function, the parameterized type is the expected return type for the HTTP Call. +
+Return type of step is HTTPResponse<EXPECTED_RESULT>
+
+image::{gitplant}/step-http/doc/diag/model.puml[]
+
+
+== Parameters to provide on step
+
+* url: String // mandatory
+* method: String // optional, default is GET
+* body: Any? // optional, default is null
+* headers: Map<String, String> // optional, default is empty
+* withResult: HttpResponse<RESULT>.()->Unit // optional, default is noop function +
+this function can be used to pass result of step on another step
+
+== Sample
+[source,kotlin]
+----
+lateinit var stepResult: String
+
+`given http call`<String> {
+
+    url = "http://myapi/hello"
+    method = "POST"
+    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+    body = """
+        {
+            "who": "Darth Vader"
+        }
+    """
+    withResult { stepResult = this.body }
+}
+----
