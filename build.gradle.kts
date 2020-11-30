@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.dokka.gradle.DokkaTask
 
 group  = "com.github.lemfi.kest"
 version = "0.0.1"
@@ -17,17 +18,38 @@ val rabbitmqVersion : String by extra { "5.7.3" }
 
 buildscript {
     val kotlinVersion : String by extra { "1.4.10" }
+    val dokkaVersion : String by extra { "1.4.10.2" }
 
     repositories {
+        jcenter()
         mavenCentral()
+        maven(url="https://dl.bintray.com/kotlin/dokka")
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:${dokkaVersion}")
     }
 }
 
 plugins {
     signing
+    id("org.jetbrains.dokka") version "1.4.10.2"
+}
+
+allprojects {
+
+    apply(plugin = "org.jetbrains.dokka")
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven(url="https://dl.bintray.com/kotlin/dokka")
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
+        mavenCentral()
+    }
+    dependencies {
+        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.4.10.2")
+    }
 }
 
 subprojects {
@@ -35,10 +57,7 @@ subprojects {
     group = parent!!.group
     version = parent!!.version
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
+
 
     apply(plugin = "kotlin")
     apply(plugin = "java")
@@ -53,17 +72,49 @@ subprojects {
     compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
     compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 
+    tasks.withType<DokkaTask>().configureEach {
+        dokkaSourceSets {
+            named("main") {
+                sourceLink {
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(java.net.URL("https://github.com/lemfi/kest"))
+                    remoteLineSuffix.set("#L")
+                }
+            }
+        }
+    }
     dependencies {
         "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
         "implementation"("org.opentest4j:opentest4j:$opentest4jVersion")
+
+    }
+
+    tasks.register<Jar>("sourcesJar") {
+        archiveClassifier.set("sources")
+        from(project.the<SourceSetContainer>()["main"].allSource)
+    }
+
+    tasks.withType<Javadoc> {
+        source = project.the<SourceSetContainer>()["main"].allSource
+
+        options.encoding("UTF-8")
+    }
+
+    tasks.register<Jar>("javadocJar") {
+        dependsOn("dokkaJavadoc")
+        archiveClassifier.set("javadoc")
+        from(buildDir.path + "/dokka/javadoc")
     }
 
     configure<PublishingExtension> {
         publications {
             create<MavenPublication>("mavenJava") {
                 from(components["java"])
+
+                artifact(tasks["sourcesJar"])
+                artifact(tasks["javadocJar"])
 
                 pom {
                     name.set("Kest")
