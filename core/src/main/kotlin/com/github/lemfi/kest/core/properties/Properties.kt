@@ -2,10 +2,8 @@ package com.github.lemfi.kest.core.properties
 
 import com.sksamuel.hoplite.ConfigLoader
 import org.slf4j.LoggerFactory
-import kotlin.reflect.KCallable
-import kotlin.reflect.KFunction
 
-var config: MutableMap<Class<*>, Any> = mutableMapOf()
+val config: MutableMap<Class<*>, Any> = mutableMapOf()
 
 inline fun <reified E: Any, R> property(l: E.()->R): R {
     val conf =
