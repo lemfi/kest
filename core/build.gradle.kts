@@ -6,7 +6,6 @@ dependencies {
 
     api("org.opentest4j:opentest4j:$opentest4jVersion")
     api("org.slf4j:slf4j-api:$slf4jVersion")
-    api("org.slf4j:slf4j-simple:$slf4jVersion")
 
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion") {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
