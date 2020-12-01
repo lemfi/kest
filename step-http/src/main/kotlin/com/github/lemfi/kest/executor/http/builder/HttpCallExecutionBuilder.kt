@@ -10,12 +10,13 @@ class HttpCallExecutionBuilder<T>(val cls: Class<T>): ExecutionBuilder<HttpRespo
     lateinit var url: String
     var method: String = "GET"
     var body: Any? = null
+    var contentType: String? = null
     val headers = mutableMapOf<String, String>()
     private var withResult: HttpResponse<T>.()->Unit = {}
 
     fun withResult(l: HttpResponse<T>.()->Unit) { withResult = l }
 
     override fun build(): Execution<HttpResponse<T>> {
-        return HttpExecution(url, method, cls, body, headers, withResult)
+        return HttpExecution(url, method, cls, body, headers, withResult, contentType)
     }
 }
