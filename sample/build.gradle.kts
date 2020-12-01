@@ -7,6 +7,8 @@ dependencies {
     implementation(project(":step-http"))
     implementation(project(":junit5"))
 
+    implementation("org.slf4j:slf4j-simple:1.7.28")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
