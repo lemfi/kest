@@ -95,7 +95,7 @@ private fun OutputStream.handleSayHello(who: String) {
     PrintWriter(this, true).apply {
         println("""
                     HTTP/1.1 201 OK
-                    Content-Type: plain/text
+                    Content-Type: text/plain
 
                     Hello $who!"""
                 .trimIndent())
@@ -109,7 +109,7 @@ private fun OutputStream.handleSayGoodbye(who: String) {
     PrintWriter(this, true).apply {
         println("""
                     HTTP/1.1 201 OK
-                    Content-Type: plain/text
+                    Content-Type: text/plain
 
                     Goodbye $who!"""
                 .trimIndent())
