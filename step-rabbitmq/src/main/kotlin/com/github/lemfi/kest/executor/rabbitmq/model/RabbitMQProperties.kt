@@ -30,7 +30,7 @@ inline fun <R> rabbitMQProperty(crossinline l: RabbitMQProp.()->R): R {
     return try {
         property(shortcut)
     } catch (e: Throwable) {
-        LoggerFactory.getLogger("RABBITMQ-Kest").error("No configuration found for rabbitmq", e)
-        throw e
+        LoggerFactory.getLogger("RABBITMQ-Kest").warn("No configuration found for rabbitmq, use default values")
+        RabbitMQProp().l()
     }
 }
