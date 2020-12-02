@@ -7,6 +7,7 @@ import java.net.URLEncoder
 
 class RabbitMQQueueReaderExecution<T>(
         val queueName: String,
+        val deleteQueue: Boolean,
         val protocol: String,
         val host: String,
         val port: Int,
@@ -27,9 +28,15 @@ class RabbitMQQueueReaderExecution<T>(
             it.setUri("$protocol://$user:$password@$host:$port/$encodedVhost")
         }
                 .newConnection("kest connection")
-                .createChannel()
-                .basicGet(queueName, true)
-                ?.body?.l() ?: throw AssertionFailedError("No message to read")
+                .createChannel().run {
+                    basicGet(queueName, true).let {
+                        try {
+                            it?.body?.l() ?: throw AssertionFailedError("No message to read")
+                        } finally {
+                            if (deleteQueue) queueDelete(queueName)
+                        }
+                    }
+                }
 
     }
 }

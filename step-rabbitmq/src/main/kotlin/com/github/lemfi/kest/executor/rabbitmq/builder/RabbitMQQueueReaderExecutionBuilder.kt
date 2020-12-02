@@ -9,6 +9,7 @@ class RabbitMQQueueReaderExecutionBuilder<T>: ExecutionBuilder<T>() {
 
     lateinit var queueName: String
     lateinit var messageTransformer: ByteArray.()->T
+    var deleteQueue = false
 
     var protocol = rabbitMQProperty { protocol }
     var host = rabbitMQProperty { host }
@@ -19,7 +20,7 @@ class RabbitMQQueueReaderExecutionBuilder<T>: ExecutionBuilder<T>() {
 
     override fun build(): Execution<T> {
         return RabbitMQQueueReaderExecution(
-                queueName, protocol, host, port, vhost, user, password, messageTransformer
+                queueName, deleteQueue, protocol, host, port, vhost, user, password, messageTransformer
         )
     }
 }
