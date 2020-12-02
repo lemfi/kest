@@ -10,7 +10,7 @@ fun scenario(s: ScenarioBuilder.()->Unit): Scenario {
 }
 
 infix fun <T> Step<T>.`assert that`(l: AssertionsBuilder.(stepResult: T)->Unit): Step<T> {
-    assertions = l
+    assertions.add(l)
     return this
 }
 
@@ -26,7 +26,9 @@ private fun Step<Any>.run() {
 
         val res = execute()
 
-        AssertionsBuilder().assertions(res)
+        assertions.forEach {
+            AssertionsBuilder().it(res)
+        }
 
         withResult(res)
     }
