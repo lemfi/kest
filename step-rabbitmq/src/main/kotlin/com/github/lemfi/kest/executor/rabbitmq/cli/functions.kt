@@ -6,17 +6,17 @@ import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQMessageExecutionB
 import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQQueueReaderExecutionBuilder
 
 inline fun ScenarioBuilder.`publish rabbitmq message`(crossinline h: RabbitMQMessageExecutionBuilder.()->Unit): Step<Unit> {
-    return Step(RabbitMQMessageExecutionBuilder().apply(h).build()).apply {
+    return Step({RabbitMQMessageExecutionBuilder().apply(h).build()}).apply {
         steps.add(this)
     }
 }
 
 inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(crossinline h: RabbitMQQueueReaderExecutionBuilder<T>.()->Unit): Step<T> {
-    return Step(RabbitMQQueueReaderExecutionBuilder<T>().apply {
+    return Step({RabbitMQQueueReaderExecutionBuilder<T>().apply {
         if (T::class.java == ByteArray::class.java) {
             messageTransformer = { this as T }
         }
-    }.apply(h).build()).apply {
+    }.apply(h).build()}).apply {
         steps.add(this)
     }
 }

@@ -22,9 +22,12 @@ fun Scenario.run() {
 
 private fun Step<Any>.run() {
 
-    val res = execution.execute()
+    with(execution()) {
 
-    AssertionsBuilder().assertions(res)
+        val res = execute()
 
-    execution.withResult(res)
+        AssertionsBuilder().assertions(res)
+
+        withResult(res)
+    }
 }

@@ -8,7 +8,7 @@ import com.github.kest.executor.mongodb.model.mongoDBProperty
 import org.bson.Document
 
 inline fun ScenarioBuilder.`insert mongo document`(crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): Step<Unit> {
-    return Step(MongoDBInsertDocumentExecutionBuilder().apply(h).build()).apply {
+    return Step({MongoDBInsertDocumentExecutionBuilder().apply(h).build()}).apply {
         steps.add(this)
     }
 }
