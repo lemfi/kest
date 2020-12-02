@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
 
 group  = "com.github.lemfi.kest"
-version = "0.0.2"
+version = "0.0.3"
 
 val kotlinVersion : String by extra { "1.4.10" }
 val coroutineVersion : String by extra { "1.4.1" }
