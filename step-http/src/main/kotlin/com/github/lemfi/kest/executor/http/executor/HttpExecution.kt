@@ -12,8 +12,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
 import org.slf4j.LoggerFactory
+import java.io.InputStream
 
 data class HttpExecution<T>(
         val url: String,
@@ -22,28 +22,26 @@ data class HttpExecution<T>(
         val body: Any? = null,
         val headers: MutableMap<String, String>,
         override val withResult: HttpResponse<T>.()->Unit = {},
-        val contentType: String?
+        val contentType: String?,
+        val expectedContentType: String?
 ): Execution<HttpResponse<T>>() {
 
     companion object {
-        private val mappers = mutableMapOf<String, ResponseBody?.(cls: Class<*>) -> Any?>()
+        private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Any?>()
                 .apply {
-                    put("application/json; charset=utf-8") {
-                        jacksonObjectMapper().readValue(this?.string(), it)
-                    }
                     put("application/json") {
-                        jacksonObjectMapper().readValue(this?.string(), it)
+                        this?.let { stream -> jacksonObjectMapper().readValue(stream, it) }
                     }
                     put("text/plain") {
-                        this?.string()?.trim()
+                        this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()
                     }
                 }
 
-        fun addMapper(contentType: String, mapper: ResponseBody?.(cls: Class<*>) -> Any) {
+        fun addMapper(contentType: String, mapper: InputStream?.(cls: Class<*>) -> Any) {
             mappers.put(contentType, mapper)
         }
 
-        fun getMapper(contentType: String) = (mappers.get(contentType) ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
+        fun getMapper(contentType: String) = (mappers.get(contentType.substringBefore(";").trim()) ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
     }
 
     @Suppress("unchecked_cast")
@@ -78,8 +76,8 @@ data class HttpExecution<T>(
                             .build()
             ).execute().let {
                 HttpResponse(
-                        (it.header("Content-Type") ?: "application/json").let { contentType ->
-                            (getMapper(contentType).invoke(it.body, returnType) as T
+                        (it.header("Content-Type") ?: expectedContentType ?: "text/plain").let { contentType ->
+                            (getMapper(contentType).invoke(it.body?.byteStream(), returnType) as T
                                     ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
                         },
                         it.code,
@@ -101,8 +99,8 @@ data class HttpExecution<T>(
                             .build()
             ).execute().let {
                 HttpResponse(
-                        (it.header("Content-Type") ?: "application/json").let { contentType ->
-                            (getMapper(contentType).invoke(it.body, returnType) as T
+                        (it.header("Content-Type") ?: expectedContentType ?: "text/plain").let { contentType ->
+                            (getMapper(contentType).invoke(it.body?.byteStream(), returnType) as T
                                     ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
                         },
                         it.code,
