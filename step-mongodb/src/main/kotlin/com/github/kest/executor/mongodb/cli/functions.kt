@@ -13,6 +13,15 @@ inline fun ScenarioBuilder.`insert mongo document`(crossinline h: MongoDBInsertD
     }
 }
 
+fun `insert mongo document`(collection: String, data: String) {
+    val auth = mongoDBProperty { user }?.let { "${mongoDBProperty { user }}:${mongoDBProperty { password }}@" } ?: ""
+    val authSource = mongoDBProperty { user }?.let { "authSource=${mongoDBProperty { authSource }}" } ?: ""
+
+    MongoClients.create("mongodb://$auth${mongoDBProperty { host }}/?$authSource").getDatabase(mongoDBProperty { database })
+            .getCollection(collection)
+            .insertOne(Document.parse(data))
+}
+
 fun `clean mongo database`() {
     val auth = mongoDBProperty { user }?.let { "${mongoDBProperty { user }}:${mongoDBProperty { password }}@" } ?: ""
     val authSource = mongoDBProperty { user }?.let { "authSource=${mongoDBProperty { authSource }}" } ?: ""
@@ -21,10 +30,7 @@ fun `clean mongo database`() {
             .let {
                 database ->
                 database.listCollectionNames().forEach {
-
                     database.getCollection(it).deleteMany(Document.parse("{}"))
-
                 }
-
             }
 }
