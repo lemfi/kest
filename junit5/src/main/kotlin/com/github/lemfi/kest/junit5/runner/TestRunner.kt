@@ -8,8 +8,11 @@ import org.junit.jupiter.api.DynamicTest
 fun Scenario.toDynamicTest(beforeEach: ()->Unit = {}, afterEach: ()->Unit = {}): DynamicTest {
     return DynamicTest.dynamicTest(name) {
         beforeEach()
-        run()
-        afterEach()
+        try {
+            run()
+        } finally {
+            afterEach()
+        }
     }
 }
 
