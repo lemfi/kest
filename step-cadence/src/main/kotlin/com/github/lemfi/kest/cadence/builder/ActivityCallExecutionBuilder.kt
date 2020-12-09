@@ -5,7 +5,6 @@ import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.uber.cadence.context.ContextPropagator
 import kotlin.properties.Delegates
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 class ActivityCallExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {

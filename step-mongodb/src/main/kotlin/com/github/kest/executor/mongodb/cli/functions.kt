@@ -1,10 +1,10 @@
 package com.github.kest.executor.mongodb.cli
 
-import com.mongodb.client.MongoClients
-import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.model.Step
 import com.github.kest.executor.mongodb.builder.MongoDBInsertDocumentExecutionBuilder
 import com.github.kest.executor.mongodb.model.mongoDBProperty
+import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.model.Step
+import com.mongodb.client.MongoClients
 import org.bson.Document
 
 inline fun ScenarioBuilder.`insert mongo document`(crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): Step<Unit> {

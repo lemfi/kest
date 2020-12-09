@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.executor.http.builder
 
-import com.github.lemfi.kest.executor.http.model.ParameterPart
 import com.github.lemfi.kest.executor.http.model.FilePart
+import com.github.lemfi.kest.executor.http.model.ParameterPart
 import java.io.File
 
 class FilePartBuilder {

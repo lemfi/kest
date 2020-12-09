@@ -8,7 +8,9 @@ import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.impl.AMQCommand
 import com.rabbitmq.client.impl.AMQImpl
 import com.rabbitmq.client.impl.Frame
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.InputStream

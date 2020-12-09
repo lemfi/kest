@@ -1,7 +1,7 @@
 package com.github.kest.executor.mongodb.executor
 
-import com.mongodb.client.MongoClients
 import com.github.lemfi.kest.core.model.Execution
+import com.mongodb.client.MongoClients
 import org.bson.Document
 
 data class MongoDBInsertDocumentExecution(
