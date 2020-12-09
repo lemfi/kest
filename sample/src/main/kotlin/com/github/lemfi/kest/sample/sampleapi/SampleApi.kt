@@ -8,14 +8,15 @@ import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.SocketException
 import java.net.URLDecoder
+import java.util.*
 
 private var server: ServerSocket? = null
 
 private val helloPeople = mutableListOf<String>()
+private val otps = mutableListOf<String>()
 
 @Suppress("BlockingMethodInNonBlockingContext")
 fun startSampleApi() {
-
     if (server == null) {
 
         server = ServerSocket(8080)
@@ -24,7 +25,6 @@ fun startSampleApi() {
 
             while (server != null) {
                 try {
-
                     val sampleApi = server!!.accept()
 
                     var contentLength = -1
@@ -75,6 +75,8 @@ private fun OutputStream.handleRequest(request: String, body: String?) {
 
     if (method == "POST" && path == "/hello") handleSayHello(jacksonObjectMapper().readValue(body!!, Map::class.java)["who"] as String)
     else if (method == "GET" && path == "/hello") handleListHello()
+    else if (method == "GET" && path == "/otp") handleOtp()
+    else if (method == "POST" && path == "/otp") handleValidateOtp(body!!)
 
     else if (method == "DELETE" && path.startsWith("/hello")) handleSayGoodbye(URLDecoder.decode(path.substringAfter("who="), Charsets.UTF_8))
 
@@ -99,6 +101,46 @@ private fun OutputStream.handleSayHello(who: String) {
 
                     Hello $who!"""
                 .trimIndent())
+    }
+}
+
+private fun OutputStream.handleOtp() {
+
+    val otp = UUID.randomUUID().toString()
+    otps.add(otp)
+
+    PrintWriter(this, true).apply {
+        println("""
+                    HTTP/1.1 201 OK
+                    Content-Type: application/json
+
+                    {"otp": "$otp"}"""
+                .trimIndent())
+    }
+}
+
+private fun OutputStream.handleValidateOtp(otp: String) {
+
+    val ok = otps.contains(otp)
+    if (ok) {
+        PrintWriter(this, true).apply {
+            println(
+                    """
+                            HTTP/1.1 204 OK
+                                
+                            
+                            """.trimIndent())
+        }
+    } else {
+        PrintWriter(this, true).apply {
+            println(
+                    """
+                            HTTP/1.1 400 OK
+                            Content-Type: application/json
+                            
+                            {"message": "method not allowed", "code": 1, "description": "otp $otp is invalid"}
+                            """.trimIndent())
+        }
     }
 }
 

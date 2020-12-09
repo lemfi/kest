@@ -159,4 +159,84 @@ class TestHttpServer {
             beforeEach = { startSampleApi() },
             afterEach = { stopSampleApi() }
     )
+
+    @TestFactory
+    fun `otp flows`() = `run scenarios`(
+            scenario {
+
+                name = "get and validate correct otp"
+
+                lateinit var otp: String
+
+                `given http call`<JsonMap> {
+
+                    url = "http://localhost:8080/otp"
+                    method = "GET"
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+                    withResult {
+                        otp = body["otp"] as String
+                    }
+                } `assert that` { stepResult ->
+
+                    eq(201, stepResult.status)
+                    jsonMatchesObject("""
+                        {
+                            "otp": "{{string}}" 
+                        }
+                    """.trimIndent(), stepResult.body)
+                }
+
+                `given http call`<JsonMap> {
+
+                    url = "http://localhost:8080/otp"
+                    method = "POST"
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                    body = otp
+                    contentType = "text/plain"
+
+                } `assert that` { stepResult ->
+
+                    eq(204, stepResult.status)
+                }
+
+            },
+            scenario {
+
+                name = "get and validate wrong otp"
+
+                `given http call`<JsonMap> {
+
+                    url = "http://localhost:8080/otp"
+                    method = "GET"
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+                } `assert that` { stepResult ->
+
+                    eq(201, stepResult.status)
+                    jsonMatchesObject("""
+                        {
+                            "otp": "{{string}}" 
+                        }
+                    """.trimIndent(), stepResult.body)
+                }
+
+                `given http call`<JsonMap> {
+
+                    url = "http://localhost:8080/otp"
+                    method = "POST"
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                    body = "whatever"
+                    contentType = "text/plain"
+
+                } `assert that` { stepResult ->
+
+                    eq(400, stepResult.status)
+                    jsonMatchesObject("{{error}}", stepResult.body)
+                }
+
+            },
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
 }

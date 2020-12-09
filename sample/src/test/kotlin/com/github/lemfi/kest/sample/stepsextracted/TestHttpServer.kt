@@ -3,7 +3,10 @@ package com.github.lemfi.kest.sample.stepsextracted
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
+import com.github.lemfi.kest.core.cli.steps
 import com.github.lemfi.kest.executor.http.cli.`given http call`
+import com.github.lemfi.kest.json.cli.jsonMatchesObject
+import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`run scenarios`
 import com.github.lemfi.kest.sample.sampleapi.startSampleApi
 import com.github.lemfi.kest.sample.sampleapi.stopSampleApi
@@ -53,4 +56,55 @@ class TestHttpServer {
             beforeEach = { startSampleApi() },
             afterEach = { stopSampleApi() }
     )
+
+
+    @TestFactory
+    fun `otp flows`() = `run scenarios`(
+            scenario {
+
+                name = "get and validate correct otp"
+
+                lateinit var otps: List<String>
+                steps {
+                    steps {
+                        `generate otps` {
+                            otps = this
+                        }
+                    }
+                }
+
+                steps {
+                    steps {
+                        (otps.indices).forEach {
+                            `validate otp`(otps[it])
+                        }
+                    }
+                }
+
+            },
+            scenario {
+
+                name = "get and validate wrong otp"
+
+                `get otp`()
+
+                `given http call`<JsonMap> {
+
+                    url = "http://localhost:8080/otp"
+                    method = "POST"
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                    body = "whatever"
+                    contentType = "text/plain"
+
+                } `assert that` { stepResult ->
+
+                    eq(400, stepResult.status)
+                    jsonMatchesObject("{{error}}", stepResult.body)
+                }
+
+            },
+            beforeEach = { startSampleApi() },
+            afterEach = { stopSampleApi() }
+    )
 }
+
