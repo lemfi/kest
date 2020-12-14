@@ -1,6 +1,7 @@
 package com.github.kest.executor.mongodb.cli
 
 import com.github.kest.executor.mongodb.builder.MongoDBInsertDocumentExecutionBuilder
+import com.github.kest.executor.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
 import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.model.Step
@@ -9,6 +10,12 @@ import org.bson.Document
 
 inline fun ScenarioBuilder.`insert mongo document`(crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): Step<Unit> {
     return Step({MongoDBInsertDocumentExecutionBuilder().apply(h).build()}).apply {
+        steps.add(this)
+    }
+}
+
+inline fun ScenarioBuilder.`update mongo document`(crossinline h: MongoDBUpdateDocumentExecutionBuilder.()->Unit): Step<Unit> {
+    return Step({MongoDBUpdateDocumentExecutionBuilder().apply(h).build()}).apply {
         steps.add(this)
     }
 }

@@ -8,8 +8,8 @@ data class MongoDBProperties(
 )
 
 data class MongoDBProp(
-        val host: String,
-        val port: Int,
+        val host: String = "localhost",
+        val port: Int = 27017,
         val user: String? = null,
         val password: String? = null,
         val database: String = "test",
@@ -21,7 +21,7 @@ inline fun <R> mongoDBProperty(crossinline l: MongoDBProp.()->R): R {
     return try {
         property(shortcut)
     } catch (e: Throwable) {
-        LoggerFactory.getLogger("MONGODB-Kest").error("No configuration found for mongodb", e)
-        throw e
+        LoggerFactory.getLogger("MONGODB-Kest").warn("No configuration found for mongodb")
+        MongoDBProp().l()
     }
 }
