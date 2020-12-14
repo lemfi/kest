@@ -5,8 +5,8 @@ import com.github.lemfi.kest.cadence.builder.WorkflowExecutionBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.model.Step
 
-inline fun <R> ScenarioBuilder.`given activity call`(crossinline h: ActivityCallExecutionBuilder<R>.()->Unit): Step<R> {
-    return Step({ ActivityCallExecutionBuilder<R>().apply(h).build() }).apply {
+inline fun <reified R> ScenarioBuilder.`given activity call`(crossinline h: ActivityCallExecutionBuilder<R>.()->Unit): Step<R> {
+    return Step({ ActivityCallExecutionBuilder<R>(R::class.java).apply(h).build() }).apply {
         steps.add(this)
     }
 }

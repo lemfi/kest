@@ -2,16 +2,20 @@ package com.github.lemfi.kest.cadence.executor
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
+import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import com.uber.cadence.activity.ActivityOptions
 import com.uber.cadence.client.WorkflowClient
 import com.uber.cadence.client.WorkflowOptions
 import com.uber.cadence.common.RetryOptions
 import com.uber.cadence.context.ContextPropagator
+import com.uber.cadence.converter.DataConverter
 import com.uber.cadence.worker.Worker
 import com.uber.cadence.worker.WorkerOptions
 import com.uber.cadence.workflow.Workflow
 import com.uber.cadence.workflow.WorkflowMethod
 import org.opentest4j.AssertionFailedError
+import java.lang.reflect.Type
 import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.javaType
@@ -21,6 +25,8 @@ class ActivityExecution<RESULT>(
         private val cadencePort: Int,
         private val cadenceDomain: String,
         private val tasklist: String,
+
+        private val cls: Class<RESULT>,
 
         private val activity: KFunction<RESULT>,
         private val params: Array<out Any?>?,
@@ -66,7 +72,16 @@ class ActivityExecution<RESULT>(
 
                 .run(WorkflowParameter(activity.parameters[0].type::javaType.get().typeName, tasklist, activity.name, params?.mapIndexed { index, it ->
                     Parameter(jacksonObjectMapper().writeValueAsString(it), parameterTypes[index].type.javaType.typeName)
-                })) as RESULT
+                })).let {
+                    when {
+                        it == null -> null as RESULT
+                        cls.isAssignableFrom(it::class.java) -> it as RESULT
+                        it is LinkedTreeMap<*, *> -> it.toString().let {
+                            Gson().fromJson(it, cls)
+                        }
+                        else -> throw IllegalArgumentException("blah")
+                    }
+                }
 
 
     }

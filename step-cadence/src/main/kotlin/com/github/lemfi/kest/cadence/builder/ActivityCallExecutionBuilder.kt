@@ -1,26 +1,29 @@
 package com.github.lemfi.kest.cadence.builder
 
 import com.github.lemfi.kest.cadence.executor.ActivityExecution
+import com.github.lemfi.kest.cadence.model.cadenceProperty
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.uber.cadence.context.ContextPropagator
 import kotlin.properties.Delegates
 import kotlin.reflect.KFunction
 
-class ActivityCallExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
+class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>): ExecutionBuilder<RESULT>() {
 
-    lateinit var cadenceHost: String
-    var cadencePort by Delegates.notNull<Int>()
-    lateinit var cadenceDomain: String
+    lateinit var domain: String
     lateinit var tasklist: String
 
-    lateinit var activity: KFunction<RESULT>
+    lateinit private var activity: KFunction<RESULT>
     private var params: Array<out Any?>? = null
     private var contextPropagators: List<ContextPropagator>? = null
 
+    var host = cadenceProperty { host }
+    var port = cadenceProperty { port }
+
     private var withResult: RESULT.()->Unit = {}
 
-    fun parameters(vararg parameters: Any?) {
+    fun activity(activity: KFunction<RESULT>, vararg parameters: Any?) {
+        this.activity = activity
         this.params = parameters
     }
 
@@ -32,7 +35,7 @@ class ActivityCallExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
 
     override fun build(): Execution<RESULT> {
         return ActivityExecution(
-                cadenceHost, cadencePort, cadenceDomain, tasklist, activity, params, contextPropagators, withResult
+                host, port, domain, tasklist, cls, activity, params, contextPropagators, withResult
         )
     }
 }
