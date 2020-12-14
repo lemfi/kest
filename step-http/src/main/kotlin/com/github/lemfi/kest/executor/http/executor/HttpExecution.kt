@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 
@@ -27,17 +28,21 @@ data class HttpExecution<T>(
 ): Execution<HttpResponse<T>>() {
 
     companion object {
-        private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Any?>()
+        private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Pair<Any?, String?>>()
                 .apply {
                     put("application/json") {
-                        this?.let { stream -> jacksonObjectMapper().readValue(stream, it) }
+                        this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
+                            jacksonObjectMapper().readValue(data, it) to data
+                        } ?: null to null
                     }
                     put("text/plain") {
-                        this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()
+                        this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
+                            data to data
+                        } ?: null to null
                     }
                 }
 
-        fun addMapper(contentType: String, mapper: InputStream?.(cls: Class<*>) -> Any) {
+        fun addMapper(contentType: String, mapper: InputStream?.(cls: Class<*>) -> Pair<Any?, String?>) {
             mappers.put(contentType, mapper)
         }
 
@@ -48,10 +53,12 @@ data class HttpExecution<T>(
     override fun execute(): HttpResponse<T> {
 
         LoggerFactory.getLogger("HTTP-kest").info(
-                """ |
+                """ | Request
+                    | 
                     | $method $url
                     | $headers
                     | $body
+                    | 
                 """.trimMargin()
         )
 
@@ -74,19 +81,8 @@ data class HttpExecution<T>(
                                     .setType("multipart/form-data".toMediaType())
                                     .build())
                             .build()
-            ).execute().let {
-                HttpResponse(
-                        (it.header("Content-Type") ?: expectedContentType ?: "text/plain").let { contentType ->
-                            (getMapper(contentType).invoke(it.body?.byteStream(), returnType) as T
-                                    ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
-                        },
-                        it.code,
-                        it.headers
-                                .let { headers -> headers.map { it.first } }.toSet()
-                                .map { key -> key to it.headers(key) }
-                                .toMap()
-                )
-            }
+            ).execute().toHttpResponse()
+
         } else {
             OkHttpClient.Builder().build().newCall(
                     Request.Builder()
@@ -97,19 +93,32 @@ data class HttpExecution<T>(
                             }
                             .method(method, body?.toString()?.toRequestBody(contentType?.toMediaTypeOrNull()))
                             .build()
-            ).execute().let {
-                HttpResponse(
-                        (it.header("Content-Type") ?: expectedContentType ?: "text/plain").let { contentType ->
-                            (getMapper(contentType).invoke(it.body?.byteStream(), returnType) as T
-                                    ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
-                        },
-                        it.code,
-                        it.headers
-                                .let { headers -> headers.map { it.first } }.toSet()
-                                .map { key -> key to it.headers(key) }
-                                .toMap()
-                )
-            }
+            ).execute().toHttpResponse()
         }
     }
+
+    private fun Response.toHttpResponse(): HttpResponse<T> =
+            (header("Content-Type") ?: expectedContentType ?: "text/plain")
+                    .let { contentType ->
+                        (getMapper(contentType).invoke(body?.byteStream(), returnType))
+                    }.let { body ->
+                        HttpResponse(
+                                body = body.first as T,
+                                status = code,
+                                headers = headers
+                                        .let { headers -> headers.map { it.first } }.toSet()
+                                        .map { key -> key to headers(key) }
+                                        .toMap()
+                        ).also {
+                            LoggerFactory.getLogger("HTTP-kest").info(
+                                    """ | Response
+                                        | ${it.status}
+                                        | ${it.headers.map { "${it.key}: ${it.value}" }.joinToString("\n")}
+                                        | 
+                                        | ${body.second}
+                                        | 
+                                    """.trimMargin()
+                            )
+                        }
+                    }
 }

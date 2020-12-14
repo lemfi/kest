@@ -127,7 +127,6 @@ private fun OutputStream.handleValidateOtp(otp: String) {
             println(
                     """
                             HTTP/1.1 204 OK
-                                
                             
                             """.trimIndent())
         }
