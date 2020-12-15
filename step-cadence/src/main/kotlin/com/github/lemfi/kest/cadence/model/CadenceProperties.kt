@@ -13,7 +13,7 @@ data class CadenceProp(
 )
 
 inline fun <R> cadenceProperty(crossinline l: CadenceProp.()->R): R {
-    val shortcut: CadenceProperties.()->R = { CadenceProp().l() }
+    val shortcut: CadenceProperties.()->R = { cadence.l() }
     return try {
         property(shortcut)
     } catch (e: Throwable) {
