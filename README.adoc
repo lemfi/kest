@@ -7,6 +7,45 @@ It uses JUnit5 to run scenarios.
 
 Easy to use, easy to extend.
 
+== Use it
+=== Gradle
+[source, kotlin]
+----
+    implementation("com.github.lemfi.kest:core:0.0.9")
+    implementation("com.github.lemfi.kest:junit5:0.0.9")
+
+    // include the steps you need among available ones
+    implementation("com.github.lemfi.kest:step-http:0.0.9")
+----
+=== Maven
+[source, xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>core</artifactId>
+        <version>0.0.9</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>junit5</artifactId>
+        <version>0.0.9</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- include the steps you need among available ones -->
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-http</artifactId>
+        <version>0.0.9</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+----
+
+
+
 == Scenarios
 
 Kest allows you to write scenarios. +
