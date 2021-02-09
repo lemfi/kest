@@ -292,7 +292,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello and goodbye`() = `run scenarios`(
-            `api says goodbye and forgets people!`,
+            `api says hello and remembers it!`,
             `api says goodbye and forgets people!`,
 
             beforeEach = { startSampleApi() },
