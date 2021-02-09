@@ -11,9 +11,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-
 }
 
 signing {
