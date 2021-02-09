@@ -12,6 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.slf4j.LoggerFactory
 import java.io.InputStream
+import java.util.concurrent.TimeUnit
 
 data class HttpExecution<T>(
     val url: String,
@@ -60,7 +61,9 @@ data class HttpExecution<T>(
         )
 
         return if (body is MultipartBody) {
-            OkHttpClient.Builder().build().newCall(
+            OkHttpClient.Builder()
+                .readTimeout(httpProperty { timeout }, TimeUnit.MILLISECONDS)
+                .build().newCall(
                     Request.Builder()
                         .url(url)
                         .apply {
@@ -81,7 +84,9 @@ data class HttpExecution<T>(
                 ).execute().toHttpResponse()
 
         } else {
-            OkHttpClient.Builder().build().newCall(
+            OkHttpClient.Builder()
+                .readTimeout(httpProperty { timeout }, TimeUnit.MILLISECONDS)
+                .build().newCall(
                     Request.Builder()
                         .url(url)
                         .apply {
