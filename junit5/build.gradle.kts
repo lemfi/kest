@@ -2,9 +2,9 @@ val junitVersion: String by project.rootProject.extra
 
 dependencies {
 
-    implementation(project(":core"))
+    api(project(":core"))
 
-    implementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    api("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     runtimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
