@@ -76,6 +76,7 @@ private fun OutputStream.handleRequest(request: String, body: String?) {
     if (method == "POST" && path == "/hello") handleSayHello(jacksonObjectMapper().readValue(body!!, Map::class.java)["who"] as String)
     else if (method == "GET" && path == "/hello") handleListHello()
     else if (method == "GET" && path == "/hello-redirect") handleRedirectHello()
+    else if (method == "GET" && path == "/oh-if-you-retry-it-shall-pass") handleRetry()
     else if (method == "GET" && path == "/otp") handleOtp()
     else if (method == "POST" && path == "/otp") handleValidateOtp(body!!)
 
@@ -127,6 +128,22 @@ private fun OutputStream.handleRedirectHello() {
                 HTTP/1.1 302 OK
                 Location: http://localhost:8080/hello
 
+                """.trimIndent())
+    }
+}
+
+var nbRetryCalls = 0
+private fun OutputStream.handleRetry() {
+
+    nbRetryCalls ++
+
+    PrintWriter(this, true).apply {
+        println(
+            """
+                HTTP/1.1 200 OK
+                Content-Type: text/plain
+
+                You called me $nbRetryCalls times!
                 """.trimIndent())
     }
 }

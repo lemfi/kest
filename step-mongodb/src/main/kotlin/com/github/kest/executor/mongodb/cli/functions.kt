@@ -4,18 +4,19 @@ import com.github.kest.executor.mongodb.builder.MongoDBInsertDocumentExecutionBu
 import com.github.kest.executor.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
 import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.Step
 import com.mongodb.client.MongoClients
 import org.bson.Document
 
-inline fun ScenarioBuilder.`insert mongo document`(crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): Step<Unit> {
-    return Step({MongoDBInsertDocumentExecutionBuilder().apply(h).build()}).apply {
+inline fun ScenarioBuilder.`insert mongo document`(retryStep: RetryStep? = null, crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): Step<Unit> {
+    return Step({MongoDBInsertDocumentExecutionBuilder().apply(h).build()}, retry = retryStep).apply {
         steps.add(this)
     }
 }
 
-inline fun ScenarioBuilder.`update mongo document`(crossinline h: MongoDBUpdateDocumentExecutionBuilder.()->Unit): Step<Unit> {
-    return Step({MongoDBUpdateDocumentExecutionBuilder().apply(h).build()}).apply {
+inline fun ScenarioBuilder.`update mongo document`(retryStep: RetryStep? = null, crossinline h: MongoDBUpdateDocumentExecutionBuilder.()->Unit): Step<Unit> {
+    return Step({MongoDBUpdateDocumentExecutionBuilder().apply(h).build()}, retry = retryStep).apply {
         steps.add(this)
     }
 }

@@ -3,6 +3,7 @@ package com.github.lemfi.kest.sample.allinone
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
+import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
@@ -264,5 +265,21 @@ class TestHttpServer {
             },
             beforeEach = { startSampleApi() },
             afterEach = { stopSampleApi() }
+    )
+
+    @TestFactory
+    fun `retryable steps`() = `run scenarios`(
+        scenario {
+            name = "a step should be retried as specified when not passing"
+
+            `given http call`<String>(RetryStep(100, 10L)) {
+                url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
+                method = "GET"
+            } `assert that` {
+                eq("You called me 98 times!", it.body)
+            }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 }
