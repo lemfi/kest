@@ -62,6 +62,32 @@ class TestHttpServer {
                     eq(200, stepResult.status)
                     eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
                 }
+
+                `given http call`<List<String>> {
+
+                    url = "http://localhost:8080/hello-redirect"
+                    method = "GET"
+                    followRedirect = false
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+                } `assert that` { stepResult ->
+
+                    eq(302, stepResult.status)
+                    eq(listOf("http://localhost:8080/hello"), stepResult.headers["Location"])
+                }
+
+                `given http call`<List<String>> {
+
+                    url = "http://localhost:8080/hello-redirect"
+                    method = "GET"
+                    followRedirect = true
+                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+                } `assert that` { stepResult ->
+
+                    eq(200, stepResult.status)
+                    eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+                }
             },
             beforeEach = { startSampleApi() },
             afterEach = { stopSampleApi() }
