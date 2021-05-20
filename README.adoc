@@ -11,11 +11,11 @@ Easy to use, easy to extend.
 === Gradle
 [source, kotlin]
 ----
-    implementation("com.github.lemfi.kest:core:0.0.10")
-    implementation("com.github.lemfi.kest:junit5:0.0.10")
+    implementation("com.github.lemfi.kest:core:0.0.11")
+    implementation("com.github.lemfi.kest:junit5:0.0.11")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.0.10")
+    implementation("com.github.lemfi.kest:step-http:0.0.11")
 ----
 === Maven
 [source, xml]
@@ -24,13 +24,13 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>core</artifactId>
-        <version>0.0.10</version>
+        <version>0.0.11</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>junit5</artifactId>
-        <version>0.0.10</version>
+        <version>0.0.11</version>
         <scope>test</scope>
     </dependency>
 
@@ -38,7 +38,7 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
-        <version>0.0.10</version>
+        <version>0.0.11</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
