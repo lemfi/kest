@@ -1,8 +1,10 @@
 package com.github.lemfi.kest.sample.stepsextracted
 
+import com.github.lemfi.kest.core.builder.IScenarioBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
+import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.executor.http.model.HttpResponse
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
@@ -40,16 +42,14 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
     }
 }
 
-fun ScenarioBuilder.`get otp`(withResult: HttpResponse<JsonMap>.()->Unit = {}) {
-    `given http call`<JsonMap> {
+fun ScenarioBuilder.`get otp`(): StepPostExecution<HttpResponse<JsonMap>> {
+    return `given http call`<JsonMap> {
 
         url = "http://localhost:8080/otp"
         method = "GET"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-        this.withResult(withResult)
-
-    } `assert that` { stepResult ->
+    }.`assert that` { stepResult ->
 
         eq(201, stepResult.status)
         jsonMatchesObject("""
@@ -60,36 +60,26 @@ fun ScenarioBuilder.`get otp`(withResult: HttpResponse<JsonMap>.()->Unit = {}) {
     }
 }
 
-fun ScenarioBuilder.`validate otp`(otp: String, l: HttpResponse<JsonMap>.()->Unit = {}) =
+fun ScenarioBuilder.`validate otp`(otp: String) =
 
-        `given http call`<JsonMap> {
+    `given http call`<JsonMap> {
 
-            url = "http://localhost:8080/otp"
-            method = "POST"
-            headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-            body = otp
-            contentType = "text/plain"
+        url = "http://localhost:8080/otp"
+        method = "POST"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = otp
+        contentType = "text/plain"
 
-            withResult(l)
+    } `assert that` { stepResult ->
 
-        } `assert that` { stepResult ->
-
-            eq(204, stepResult.status)
-        }
-
-fun ScenarioBuilder.`generate otps`(l: List<String>.()->Unit) {
-    lateinit var otp1: String
-    `get otp` {
-        otp1 = body["otp"] as String
+        eq(204, stepResult.status)
     }
-    lateinit var otp2: String
-    `get otp` {
-        otp2 = body["otp"] as String
-    }
-    lateinit var otp3: String
-    `get otp` {
-        otp3 = body["otp"] as String
 
-        listOf(otp1, otp2, otp3).l()
-    }
+fun IScenarioBuilder<List<String>>.`generate otps`() {
+
+    val otp1 = `get otp`().`map result to` { it.body["otp"] as String }.result
+    val otp2 = `get otp`().`map result to` { it.body["otp"] as String }.result
+    val otp3 = `get otp`().`map result to` { it.body["otp"] as String }.result
+
+    result = { listOf(otp1(), otp2(), otp3()) }
 }

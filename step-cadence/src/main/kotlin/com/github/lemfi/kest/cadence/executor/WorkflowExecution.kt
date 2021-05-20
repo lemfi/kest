@@ -24,8 +24,6 @@ class WorkflowExecution<RESULT>(
         private val activities: List<Pair<Any, String>>?,
         private val contextPropagators: List<ContextPropagator>?,
 
-        override val withResult: RESULT.()->Unit = {},
-
         ): Execution<RESULT>() {
 
     @ExperimentalStdlibApi

@@ -1,8 +1,10 @@
 package com.github.lemfi.kest.sample.scenariosextracted
 
+import com.github.lemfi.kest.core.builder.IScenarioBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
+import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.executor.http.model.HttpResponse
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
@@ -41,14 +43,12 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
     }
 }
 
-fun ScenarioBuilder.`get otp`(withResult: HttpResponse<JsonMap>.()->Unit = {}) {
+fun ScenarioBuilder.`get otp`() {
     `given http call`<JsonMap> {
 
         url = "http://localhost:8080/otp"
         method = "GET"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-
-        this.withResult(withResult)
 
     } `assert that` { stepResult ->
 
@@ -71,26 +71,18 @@ fun ScenarioBuilder.`validate otp`(otp: String, l: HttpResponse<JsonMap>.()->Uni
             body = otp
             contentType = "text/plain"
 
-            withResult(l)
-
         } `assert that` { stepResult ->
 
             eq(204, stepResult.status)
         }
 
-fun ScenarioBuilder.generateOtps(l: List<String>.()->Unit) {
-    lateinit var otp1: String
-    `get otp` {
-        otp1 = body["otp"] as String
-    }
-    lateinit var otp2: String
-    `get otp` {
-        otp2 = body["otp"] as String
-    }
-    lateinit var otp3: String
-    `get otp` {
-        otp3 = body["otp"] as String
+fun IScenarioBuilder<List<String>>.generateOtps(l: List<String>.()->Unit) {
 
-        listOf(otp1, otp2, otp3).l()
-    }
+    val extractResult: StepPostExecution<HttpResponse<JsonMap>>.() -> String = { result().body["otp"] as String }
+
+    val otp1 = `get otp`()
+    val otp2 = `get otp`()
+    val otp3 = `get otp`()
+
+    result = { listOf(otp1.extractResult(), otp2.extractResult(), otp3.extractResult()) }
 }

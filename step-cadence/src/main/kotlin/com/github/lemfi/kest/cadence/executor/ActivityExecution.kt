@@ -32,8 +32,6 @@ class ActivityExecution<RESULT>(
         private val params: Array<out Any?>?,
         private val contextPropagators: List<ContextPropagator>?,
 
-        override val withResult: RESULT.()->Unit = {},
-
         ): Execution<RESULT>() {
 
     @ExperimentalStdlibApi

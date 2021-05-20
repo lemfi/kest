@@ -23,8 +23,6 @@ data class RabbitMQMessageExecution(
         val rabbitMQSnifferProp: RabbitMQSnifferProp,
 ): Execution<Unit>() {
 
-    override val withResult: Unit.() -> Unit = {}
-
     private var messageConsumed = false
 
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)

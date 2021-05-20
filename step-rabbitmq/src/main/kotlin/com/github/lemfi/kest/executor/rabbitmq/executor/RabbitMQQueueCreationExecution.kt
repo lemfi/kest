@@ -15,8 +15,6 @@ class RabbitMQQueueCreationExecution(
         val password: String,
 ): Execution<Unit>() {
 
-    override val withResult: Unit.() -> Unit = {}
-
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
 
     override fun execute() {

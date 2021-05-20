@@ -4,12 +4,11 @@ import com.github.lemfi.kest.core.cli.run
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.Scenario
 
-class NestedScenarioStepExecution(
-        val scenario: ()->Scenario,
-        override val withResult: Unit.()->Unit = {},
-): Execution<Unit>() {
+class NestedScenarioStepExecution<T>(
+        val scenario: ()->Scenario<T>,
+): Execution<T>() {
 
-    override fun execute() {
-        scenario().run()
+    override fun execute(): T {
+        return scenario().run()
     }
 }

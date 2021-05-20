@@ -20,7 +20,6 @@ data class HttpExecution<T>(
     val returnType: Class<T>,
     val body: Any? = null,
     val headers: MutableMap<String, String>,
-    override val withResult: HttpResponse<T>.()->Unit = {},
     val contentType: String?,
     val accept: String?,
     val followRedirect: Boolean

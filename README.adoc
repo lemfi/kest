@@ -308,7 +308,6 @@ image::{gitplant}/doc/diag/model.puml[]
 
 When a scenario is launched, all its steps are launched sequentially, if one step fails the scenario fails without running remaining steps. +
 When a step is launched its execution is played, then assertions are played against execution result. +
-If step contains a withResult() function, this function is executed after step assertions have passed.
 
 == Available Steps
 

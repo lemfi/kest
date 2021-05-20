@@ -16,15 +16,12 @@ image::{gitplant}/step-http/doc/diag/model.puml[]
 * method: String // optional, default is GET
 * body: Any? // optional, default is null
 * headers: Map<String, String> // optional, default is empty
-* withResult: HttpResponse<RESULT>.()->Unit // optional, default is noop function +
 this function can be used to pass result of step on another step
 
 == Sample
 [source,kotlin]
 ----
-lateinit var stepResult: String
-
-`given http call`<String> {
+val stepResult = `given http call`<String> {
 
     url = "http://myapi/hello"
     method = "POST"
@@ -34,6 +31,5 @@ lateinit var stepResult: String
             "who": "Darth Vader"
         }
     """
-    withResult { stepResult = this.body }
-}
+}.result
 ----

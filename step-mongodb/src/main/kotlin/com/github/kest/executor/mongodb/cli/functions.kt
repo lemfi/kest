@@ -6,19 +6,20 @@ import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.Step
+import com.github.lemfi.kest.core.model.StepPostExecution
 import com.mongodb.client.MongoClients
 import org.bson.Document
 
-inline fun ScenarioBuilder.`insert mongo document`(retryStep: RetryStep? = null, crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): Step<Unit> {
+inline fun ScenarioBuilder.`insert mongo document`(retryStep: RetryStep? = null, crossinline h: MongoDBInsertDocumentExecutionBuilder.()->Unit): StepPostExecution<Unit> {
     return Step({MongoDBInsertDocumentExecutionBuilder().apply(h).build()}, retry = retryStep).apply {
         steps.add(this)
-    }
+    }.postExecution
 }
 
-inline fun ScenarioBuilder.`update mongo document`(retryStep: RetryStep? = null, crossinline h: MongoDBUpdateDocumentExecutionBuilder.()->Unit): Step<Unit> {
+inline fun ScenarioBuilder.`update mongo document`(retryStep: RetryStep? = null, crossinline h: MongoDBUpdateDocumentExecutionBuilder.()->Unit): StepPostExecution<Unit> {
     return Step({MongoDBUpdateDocumentExecutionBuilder().apply(h).build()}, retry = retryStep).apply {
         steps.add(this)
-    }
+    }.postExecution
 }
 
 fun `insert mongo document`(collection: String, data: String) {

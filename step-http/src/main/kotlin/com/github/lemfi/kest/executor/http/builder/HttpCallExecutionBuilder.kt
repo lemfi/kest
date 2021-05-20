@@ -14,11 +14,8 @@ class HttpCallExecutionBuilder<T>(val cls: Class<T>): ExecutionBuilder<HttpRespo
     var expectedContentType: String? = null
     val headers = mutableMapOf<String, String>()
     var followRedirect = false
-    private var withResult: HttpResponse<T>.()->Unit = {}
-
-    fun withResult(l: HttpResponse<T>.()->Unit) { withResult = l }
 
     override fun build(): Execution<HttpResponse<T>> {
-        return HttpExecution(url, method, cls, body, headers, withResult, contentType, expectedContentType, followRedirect)
+        return HttpExecution(url, method, cls, body, headers, contentType, expectedContentType, followRedirect)
     }
 }

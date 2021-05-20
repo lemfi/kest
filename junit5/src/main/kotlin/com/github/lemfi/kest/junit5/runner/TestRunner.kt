@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.properties.autoconfigure
 import org.junit.jupiter.api.DynamicTest
 
-fun Scenario.toDynamicTest(beforeEach: ()->Unit = {}, afterEach: ()->Unit = {}): DynamicTest {
+fun <T> Scenario<T>.toDynamicTest(beforeEach: ()->Unit = {}, afterEach: ()->Unit = {}): DynamicTest {
     return DynamicTest.dynamicTest(name) {
         beforeEach()
         try {
@@ -16,7 +16,7 @@ fun Scenario.toDynamicTest(beforeEach: ()->Unit = {}, afterEach: ()->Unit = {}):
     }
 }
 
-fun `run scenarios`(vararg scenario: Scenario, beforeEach: ()->Unit = {}, afterEach: ()->Unit = {}): List<DynamicTest> {
+fun `run scenarios`(vararg scenario: Scenario<*>, beforeEach: ()->Unit = {}, afterEach: ()->Unit = {}): List<DynamicTest> {
 
     autoconfigure()
 

@@ -21,8 +21,6 @@ class WorkflowExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
     var host = cadenceProperty { host }
     var port = cadenceProperty { port }
 
-    private var withResult: RESULT.()->Unit = {}
-
     fun workflow(workflow: KFunction<RESULT>, vararg parameters: Any?) {
         this.workflow = workflow
         this.params = parameters
@@ -36,11 +34,9 @@ class WorkflowExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
         activities = activity.toList()
     }
 
-    fun withResult(l: RESULT.()->Unit) { withResult = l }
-
     override fun build(): Execution<RESULT> {
         return WorkflowExecution(
-                host, port, domain, tasklist, workflow, params, activities, contextPropagators, withResult
+                host, port, domain, tasklist, workflow, params, activities, contextPropagators
         )
     }
 }

@@ -14,7 +14,6 @@ data class MongoDBUpdateDocumentExecution(
         val user: String?,
         val password: String?,
         val authSource: String?,
-        override val withResult: Unit.() -> Unit = {},
 ): Execution<Unit>() {
 
     override fun execute() {

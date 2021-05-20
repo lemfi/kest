@@ -16,255 +16,250 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "api says hello and remembers it!"
+            name = "api says hello and remembers it!"
 
-                `given http call`<String> {
+            `given http call`<String> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = """
+                url = "http://localhost:8080/hello"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = """
                         {
                             "who": "Darth Vader"
                         }
                         """
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    eq("Hello Darth Vader!", stepResult.body)
-                }
+                eq(201, stepResult.status)
+                eq("Hello Darth Vader!", stepResult.body)
+            }
 
-                `given http call`<String> {
+            `given http call`<String> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = """
+                url = "http://localhost:8080/hello"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = """
                         {
                             "who": "Han Solo"
                         }
                     """
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    eq("Hello Han Solo!", stepResult.body)
-                }
+                eq(201, stepResult.status)
+                eq("Hello Han Solo!", stepResult.body)
+            }
 
-                `given http call`<List<String>> {
+            `given http call`<List<String>> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "GET"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/hello"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(200, stepResult.status)
-                    eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
-                }
+                eq(200, stepResult.status)
+                eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+            }
 
-                `given http call`<List<String>> {
+            `given http call`<List<String>> {
 
-                    url = "http://localhost:8080/hello-redirect"
-                    method = "GET"
-                    followRedirect = false
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/hello-redirect"
+                method = "GET"
+                followRedirect = false
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(302, stepResult.status)
-                    eq(listOf("http://localhost:8080/hello"), stepResult.headers["Location"])
-                }
+                eq(302, stepResult.status)
+                eq(listOf("http://localhost:8080/hello"), stepResult.headers["Location"])
+            }
 
-                `given http call`<List<String>> {
+            `given http call`<List<String>> {
 
-                    url = "http://localhost:8080/hello-redirect"
-                    method = "GET"
-                    followRedirect = true
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/hello-redirect"
+                method = "GET"
+                followRedirect = true
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(200, stepResult.status)
-                    eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
-                }
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+                eq(200, stepResult.status)
+                eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+            }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory
     fun `http server goodbye`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "api says goodbye and forgets people!"
+            name = "api says goodbye and forgets people!"
 
-                `given http call`<String> {
+            `given http call`<String> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = """
+                url = "http://localhost:8080/hello"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = """
                         {
                             "who": "Darth Vader"
                         }
                         """
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    eq("Hello Darth Vader!", stepResult.body)
-                }
+                eq(201, stepResult.status)
+                eq("Hello Darth Vader!", stepResult.body)
+            }
 
-                `given http call`<String> {
+            `given http call`<String> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = """
+                url = "http://localhost:8080/hello"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = """
                         {
                             "who": "Han Solo"
                         }
                     """
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    eq("Hello Han Solo!", stepResult.body)
-                }
+                eq(201, stepResult.status)
+                eq("Hello Han Solo!", stepResult.body)
+            }
 
-                `given http call`<String> {
+            `given http call`<String> {
 
-                    url = "http://localhost:8080/hello?who=Darth Vader"
-                    method = "DELETE"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/hello?who=Darth Vader"
+                method = "DELETE"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    eq("Goodbye Darth Vader!", stepResult.body)
-                }
+                eq(201, stepResult.status)
+                eq("Goodbye Darth Vader!", stepResult.body)
+            }
 
-                `given http call`<List<String>> {
+            `given http call`<List<String>> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "GET"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/hello"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(200, stepResult.status)
-                    eq(listOf("Han Solo"), stepResult.body)
-                }
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+                eq(200, stepResult.status)
+                eq(listOf("Han Solo"), stepResult.body)
+            }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory
     fun `http server error`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "when wrong api is called an error is raised"
+            name = "when wrong api is called an error is raised"
 
-                `given http call`<JsonMap> {
+            `given http call`<JsonMap> {
 
-                    url = "http://localhost:8080/hello"
-                    method = "PATCH"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = """
+                url = "http://localhost:8080/hello"
+                method = "PATCH"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = """
                         {
                             "who": "Darth Vader"
                         }
                         """
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(405, stepResult.status)
-                    jsonMatchesObject("{{error}}", stepResult.body)
-                }
+                eq(405, stepResult.status)
+                jsonMatchesObject("{{error}}", stepResult.body)
+            }
 
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory
     fun `otp flows`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "get and validate correct otp"
+            name = "get and validate correct otp"
 
-                lateinit var otp: String
+            val otp = `given http call`<JsonMap> {
 
-                `given http call`<JsonMap> {
+                url = "http://localhost:8080/otp"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                    url = "http://localhost:8080/otp"
-                    method = "GET"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+            } `assert that` { stepResult ->
 
-                    withResult {
-                        otp = body["otp"] as String
-                    }
-                } `assert that` { stepResult ->
-
-                    eq(201, stepResult.status)
-                    jsonMatchesObject("""
+                eq(201, stepResult.status)
+                jsonMatchesObject("""
                         {
                             "otp": "{{string}}" 
                         }
                     """.trimIndent(), stepResult.body)
-                }
+            } `map result to` { it.body["otp"] as String }
 
-                `given http call`<JsonMap> {
+            `given http call`<JsonMap> {
 
-                    url = "http://localhost:8080/otp"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = otp
-                    contentType = "text/plain"
+                url = "http://localhost:8080/otp"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = otp.result()
+                contentType = "text/plain"
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(204, stepResult.status)
-                }
+                eq(204, stepResult.status)
+            }
 
-            },
-            scenario {
+        },
+        scenario {
 
-                name = "get and validate wrong otp"
+            name = "get and validate wrong otp"
 
-                `given http call`<JsonMap> {
+            `given http call`<JsonMap> {
 
-                    url = "http://localhost:8080/otp"
-                    method = "GET"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/otp"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    jsonMatchesObject("""
+                eq(201, stepResult.status)
+                jsonMatchesObject("""
                         {
                             "otp": "{{string}}" 
                         }
                     """.trimIndent(), stepResult.body)
-                }
+            }
 
-                `given http call`<JsonMap> {
+            `given http call`<JsonMap> {
 
-                    url = "http://localhost:8080/otp"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = "whatever"
-                    contentType = "text/plain"
+                url = "http://localhost:8080/otp"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = "whatever"
+                contentType = "text/plain"
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(400, stepResult.status)
-                    jsonMatchesObject("{{error}}", stepResult.body)
-                }
+                eq(400, stepResult.status)
+                jsonMatchesObject("{{error}}", stepResult.body)
+            }
 
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory

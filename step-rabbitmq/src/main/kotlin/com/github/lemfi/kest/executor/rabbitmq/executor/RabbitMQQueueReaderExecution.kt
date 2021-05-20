@@ -17,8 +17,6 @@ class RabbitMQQueueReaderExecution<T>(
         val l: ByteArray.()->T,
 ): Execution<T>() {
 
-    override val withResult: T.() -> Unit = {}
-
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
 
     override fun execute(): T {

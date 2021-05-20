@@ -48,20 +48,19 @@ val `get and validate correct otp` =
 
             name = "get and validate correct otp"
 
-            lateinit var otps: List<String>
-            steps {
-                steps {
-                    `generate otps` {
-                        otps = this
-                    }
+            val generateOtps = steps<List<String>> {
+                steps<List<String>> {
+                    `generate otps`()
                 }
             }
 
             steps {
-                steps {
+                steps<List<String>> {
+                    val otps = generateOtps.result() as List<String>
                     (otps.indices).forEach {
                         `validate otp`(otps[it])
                     }
+
                 }
             }
 

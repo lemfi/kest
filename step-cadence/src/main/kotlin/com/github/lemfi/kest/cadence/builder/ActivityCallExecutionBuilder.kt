@@ -20,8 +20,6 @@ class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>): Exec
     var host = cadenceProperty { host }
     var port = cadenceProperty { port }
 
-    private var withResult: RESULT.()->Unit = {}
-
     fun activity(activity: KFunction<RESULT>, vararg parameters: Any?) {
         this.activity = activity
         this.params = parameters
@@ -31,11 +29,9 @@ class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>): Exec
         this.params = contextPropagators
     }
 
-    fun withResult(l: RESULT.()->Unit) { withResult = l }
-
     override fun build(): Execution<RESULT> {
         return ActivityExecution(
-                host, port, domain, tasklist, cls, activity, params, contextPropagators, withResult
+                host, port, domain, tasklist, cls, activity, params, contextPropagators
         )
     }
 }

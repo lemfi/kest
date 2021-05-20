@@ -16,95 +16,93 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "api says hello and remembers it!"
+            name = "api says hello and remembers it!"
 
-                `say hello`("Darth Vader")
-                `say hello`("Han Solo")
+            `say hello`("Darth Vader")
+            `say hello`("Han Solo")
 
-                `get greeted`("Darth Vader", "Han Solo")
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+            `get greeted`("Darth Vader", "Han Solo")
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory
     fun `http server goodbye`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "api says goodbye and forgets people!"
+            name = "api says goodbye and forgets people!"
 
-                `say hello`("Darth Vader")
-                `say hello`("Han Solo")
+            `say hello`("Darth Vader")
+            `say hello`("Han Solo")
 
-                `given http call`<String> {
+            `given http call`<String> {
 
-                    url = "http://localhost:8080/hello?who=Darth Vader"
-                    method = "DELETE"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                url = "http://localhost:8080/hello?who=Darth Vader"
+                method = "DELETE"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-                } `assert that` { stepResult ->
+            } `assert that` { stepResult ->
 
-                    eq(201, stepResult.status)
-                    eq("Goodbye Darth Vader!", stepResult.body)
-                }
+                eq(201, stepResult.status)
+                eq("Goodbye Darth Vader!", stepResult.body)
+            }
 
-                `get greeted`("Han Solo")
+            `get greeted`("Han Solo")
 
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
 
     @TestFactory
     fun `otp flows`() = `run scenarios`(
-            scenario {
+        scenario {
 
-                name = "get and validate correct otp"
+            name = "get and validate correct otp"
 
-                lateinit var otps: List<String>
-                steps {
-                    steps {
-                        `generate otps` {
-                            otps = this
-                        }
+            val generateOtps = steps<List<String>> {
+                steps<List<String>> {
+                    `generate otps`()
+                }
+            }.result
+
+            steps<List<String>> {
+                steps<List<String>> {
+                    val otps = generateOtps() as List<String>
+                    (otps.indices).forEach {
+                        `validate otp`(otps[it])
                     }
                 }
+            }
 
-                steps {
-                    steps {
-                        (otps.indices).forEach {
-                            `validate otp`(otps[it])
-                        }
-                    }
-                }
+        },
+        scenario {
 
-            },
-            scenario {
+            name = "get and validate wrong otp"
 
-                name = "get and validate wrong otp"
+            `get otp`()
 
-                `get otp`()
+            `given http call`<JsonMap> {
 
-                `given http call`<JsonMap> {
+                url = "http://localhost:8080/otp"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = "whatever"
+                contentType = "text/plain"
 
-                    url = "http://localhost:8080/otp"
-                    method = "POST"
-                    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                    body = "whatever"
-                    contentType = "text/plain"
+            } `assert that` { stepResult ->
 
-                } `assert that` { stepResult ->
+                eq(400, stepResult.status)
+                jsonMatchesObject("{{error}}", stepResult.body)
+            }
 
-                    eq(400, stepResult.status)
-                    jsonMatchesObject("{{error}}", stepResult.body)
-                }
-
-            },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        },
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 }
 
