@@ -3,16 +3,14 @@ package com.github.lemfi.kest.sample.scenariosextracted
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.core.cli.steps
+import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
-import com.github.lemfi.kest.sample.stepsextracted.`validate otp`
-import com.github.lemfi.kest.sample.stepsextracted.`generate otps`
 
 val `api says hello and remembers it!` = scenario {
 
-    name = "api says hello and remembers it!"
+    name { "api says hello and remembers it!" }
 
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
@@ -22,7 +20,7 @@ val `api says hello and remembers it!` = scenario {
 
 val `api says goodbye and forgets people!` = scenario {
 
-    name = "api says goodbye and forgets people!"
+    name { "api says goodbye and forgets people!" }
 
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
@@ -44,31 +42,24 @@ val `api says goodbye and forgets people!` = scenario {
 }
 
 val `get and validate correct otp` =
-        scenario {
+    scenario {
 
-            name = "get and validate correct otp"
+        name { "get and validate correct otp" }
 
-            val generateOtps = steps<List<String>> {
-                steps<List<String>> {
-                    `generate otps`()
-                }
+        val generatedOtps = generateOtps()
+
+        step {
+            val otps = generatedOtps()
+            (otps.indices).forEach {
+                `validate otp` { otps[it] }
             }
-
-            steps {
-                steps<List<String>> {
-                    val otps = generateOtps.result() as List<String>
-                    (otps.indices).forEach {
-                        `validate otp`(otps[it])
-                    }
-
-                }
-            }
-
         }
+
+    }
 
 val `get and validate wrong otp` = scenario {
 
-    name = "get and validate wrong otp"
+    name { "get and validate wrong otp" }
 
     `given http call`<JsonMap> {
 
@@ -79,11 +70,13 @@ val `get and validate wrong otp` = scenario {
     } `assert that` { stepResult ->
 
         eq(201, stepResult.status)
-        jsonMatchesObject("""
+        jsonMatchesObject(
+            """
                         {
                             "otp": "{{string}}" 
                         }
-                    """.trimIndent(), stepResult.body)
+                    """.trimIndent(), stepResult.body
+        )
     }
 
     `given http call`<JsonMap> {

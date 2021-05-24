@@ -1,3 +1,6 @@
 package com.github.lemfi.kest.core.builder
 
-class AssertionsBuilder
+import com.github.lemfi.kest.core.model.ScenarioName
+import com.github.lemfi.kest.core.model.StepName
+
+class AssertionsBuilder(val scenarioName: ScenarioName, val stepName: StepName?)

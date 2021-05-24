@@ -4,9 +4,14 @@ import com.github.kest.executor.mongodb.executor.MongoDBInsertDocumentExecution
 import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.StepName
 
-class MongoDBInsertDocumentExecutionBuilder: ExecutionBuilder<Unit>() {
+class MongoDBInsertDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
 
+    private var name: StepName? = null
+    fun name(l: ()->String) {
+        name = StepName(l())
+    }
     lateinit var document: String
     lateinit var collection: String
 
@@ -19,6 +24,6 @@ class MongoDBInsertDocumentExecutionBuilder: ExecutionBuilder<Unit>() {
 
 
     override fun build(): Execution<Unit> {
-        return MongoDBInsertDocumentExecution(document, collection, host, port, database, user, password, authSource)
+        return MongoDBInsertDocumentExecution(name, document, collection, host, port, database, user, password, authSource)
     }
 }

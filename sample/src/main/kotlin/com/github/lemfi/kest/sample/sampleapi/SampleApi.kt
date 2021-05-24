@@ -33,7 +33,7 @@ fun startSampleApi() {
                     var line: String?
                     var requestLine: String? = null
                     var body: String? = null
-                    while (reader.readLine().also { line = it }.let { it != null && it != "" } ) {
+                    while (reader.readLine().also { line = it }.let { it != null && it != "" }) {
                         val currentLine = line!!
                         if (requestLine == null) {
                             requestLine = currentLine
@@ -56,7 +56,8 @@ fun startSampleApi() {
                     }
                     output.flush()
                     output.close()
-                } catch (e: SocketException) {}
+                } catch (e: SocketException) {
+                }
             }
         }
     }
@@ -73,22 +74,32 @@ private fun OutputStream.handleRequest(request: String, body: String?) {
 
     val (method, path) = request.split(" ").let { it[0] to it[1] }
 
-    if (method == "POST" && path == "/hello") handleSayHello(jacksonObjectMapper().readValue(body!!, Map::class.java)["who"] as String)
+    if (method == "POST" && path == "/hello") handleSayHello(
+        jacksonObjectMapper().readValue(
+            body!!,
+            Map::class.java
+        )["who"] as String
+    )
     else if (method == "GET" && path == "/hello") handleListHello()
     else if (method == "GET" && path == "/hello-redirect") handleRedirectHello()
     else if (method == "GET" && path == "/oh-if-you-retry-it-shall-pass") handleRetry()
     else if (method == "GET" && path == "/otp") handleOtp()
     else if (method == "POST" && path == "/otp") handleValidateOtp(body!!)
-
-    else if (method == "DELETE" && path.startsWith("/hello")) handleSayGoodbye(URLDecoder.decode(path.substringAfter("who="), Charsets.UTF_8))
-
+    else if (method == "DELETE" && path.startsWith("/hello")) handleSayGoodbye(
+        URLDecoder.decode(
+            path.substringAfter("who="),
+            Charsets.UTF_8
+        )
+    )
     else PrintWriter(this, true).apply {
-        println("""
+        println(
+            """
                     HTTP/1.1 405 OK
                     Content-Type: application/json
 
                     {"message": "method not allowed", "code": 1, "description": "method $method is not allowed for path $path"}"""
-                .trimIndent())
+                .trimIndent()
+        )
     }
 }
 
@@ -97,12 +108,14 @@ private fun OutputStream.handleSayHello(who: String) {
     helloPeople.add(who)
 
     PrintWriter(this, true).apply {
-        println("""
+        println(
+            """
                     HTTP/1.1 201 OK
                     Content-Type: text/plain
 
                     Hello $who!"""
-                .trimIndent())
+                .trimIndent()
+        )
     }
 }
 
@@ -112,12 +125,14 @@ private fun OutputStream.handleOtp() {
     otps.add(otp)
 
     PrintWriter(this, true).apply {
-        println("""
+        println(
+            """
                     HTTP/1.1 201 OK
                     Content-Type: application/json
 
                     {"otp": "$otp"}"""
-                .trimIndent())
+                .trimIndent()
+        )
     }
 }
 
@@ -128,14 +143,15 @@ private fun OutputStream.handleRedirectHello() {
                 HTTP/1.1 302 OK
                 Location: http://localhost:8080/hello
 
-                """.trimIndent())
+                """.trimIndent()
+        )
     }
 }
 
 var nbRetryCalls = 0
 private fun OutputStream.handleRetry() {
 
-    nbRetryCalls ++
+    nbRetryCalls++
 
     PrintWriter(this, true).apply {
         println(
@@ -144,7 +160,8 @@ private fun OutputStream.handleRetry() {
                 Content-Type: text/plain
 
                 You called me $nbRetryCalls times!
-                """.trimIndent())
+                """.trimIndent()
+        )
     }
 }
 
@@ -154,20 +171,22 @@ private fun OutputStream.handleValidateOtp(otp: String) {
     if (ok) {
         PrintWriter(this, true).apply {
             println(
-                    """
+                """
                             HTTP/1.1 204 OK
                             
-                            """.trimIndent())
+                            """.trimIndent()
+            )
         }
     } else {
         PrintWriter(this, true).apply {
             println(
-                    """
+                """
                             HTTP/1.1 400 OK
                             Content-Type: application/json
                             
                             {"message": "method not allowed", "code": 1, "description": "otp $otp is invalid"}
-                            """.trimIndent())
+                            """.trimIndent()
+            )
         }
     }
 }
@@ -177,23 +196,27 @@ private fun OutputStream.handleSayGoodbye(who: String) {
     helloPeople.remove(who)
 
     PrintWriter(this, true).apply {
-        println("""
+        println(
+            """
                     HTTP/1.1 201 OK
                     Content-Type: text/plain
 
                     Goodbye $who!"""
-                .trimIndent())
+                .trimIndent()
+        )
     }
 }
 
 private fun OutputStream.handleListHello() {
 
     PrintWriter(this, true).apply {
-        println("""
+        println(
+            """
                     HTTP/1.1 200 OK
                     Content-Type: application/json
 
                     [${helloPeople.map { """"$it"""" }.joinToString(", ")}]
-                """.trimIndent())
+                """.trimIndent()
+        )
     }
 }

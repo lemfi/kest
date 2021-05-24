@@ -4,11 +4,16 @@ import com.github.lemfi.kest.cadence.executor.ActivityExecution
 import com.github.lemfi.kest.cadence.model.cadenceProperty
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.StepName
 import com.uber.cadence.context.ContextPropagator
-import kotlin.properties.Delegates
 import kotlin.reflect.KFunction
 
-class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>): ExecutionBuilder<RESULT>() {
+class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>) : ExecutionBuilder<RESULT>() {
+
+    private var name: StepName? = null
+    fun name(l: ()->String) {
+        name = StepName(l())
+    }
 
     lateinit var domain: String
     lateinit var tasklist: String
@@ -16,6 +21,7 @@ class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>): Exec
     lateinit private var activity: KFunction<RESULT>
     private var params: Array<out Any?>? = null
     private var contextPropagators: List<ContextPropagator>? = null
+
 
     var host = cadenceProperty { host }
     var port = cadenceProperty { port }
@@ -31,7 +37,7 @@ class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>): Exec
 
     override fun build(): Execution<RESULT> {
         return ActivityExecution(
-                host, port, domain, tasklist, cls, activity, params, contextPropagators
+            name, host, port, domain, tasklist, cls, activity, params, contextPropagators
         )
     }
 }

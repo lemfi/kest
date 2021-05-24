@@ -8,29 +8,43 @@ import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQMessageExecutionB
 import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQQueueCreationExecutionBuilder
 import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQQueueReaderExecutionBuilder
 
-inline fun ScenarioBuilder.`publish rabbitmq message`(retryStep: RetryStep? = null, crossinline h: RabbitMQMessageExecutionBuilder.()->Unit): StepPostExecution<Unit> {
-    return Step({RabbitMQMessageExecutionBuilder().apply(h).build()}, retry = retryStep).apply {
+inline fun ScenarioBuilder.`publish rabbitmq message`(
+    retryStep: RetryStep? = null,
+    crossinline h: RabbitMQMessageExecutionBuilder.() -> Unit
+): StepPostExecution<Unit> {
+    return Step(name!!, { RabbitMQMessageExecutionBuilder().apply(h).build() }, retry = retryStep).apply {
         steps.add(this)
     }.postExecution
 }
 
-inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(retryStep: RetryStep?, crossinline h: RabbitMQQueueReaderExecutionBuilder<T>.()->Unit): StepPostExecution<T> {
-    return Step({RabbitMQQueueReaderExecutionBuilder<T>().apply {
-        if (T::class.java == ByteArray::class.java) {
-            messageTransformer = { this as T }
-        }
-    }.apply(h).build()}, retry = retryStep).apply {
+inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
+    retryStep: RetryStep? = null,
+    crossinline h: RabbitMQQueueReaderExecutionBuilder<T>.() -> Unit
+): StepPostExecution<T> {
+    return Step(name!!, {
+        RabbitMQQueueReaderExecutionBuilder<T>().apply {
+            if (T::class.java == ByteArray::class.java) {
+                messageTransformer = { this as T }
+            }
+        }.apply(h).build()
+    }, retry = retryStep).apply {
         steps.add(this)
     }.postExecution
 }
 
 @JvmName("readRabbitMQMessageAsByteArray")
-inline fun ScenarioBuilder.`given message from rabbitmq queue`(retryStep: RetryStep? = null, crossinline h: RabbitMQQueueReaderExecutionBuilder<ByteArray>.()->Unit): StepPostExecution<ByteArray> {
+inline fun ScenarioBuilder.`given message from rabbitmq queue`(
+    retryStep: RetryStep? = null,
+    crossinline h: RabbitMQQueueReaderExecutionBuilder<ByteArray>.() -> Unit
+): StepPostExecution<ByteArray> {
     return `given message from rabbitmq queue`<ByteArray>(retryStep, h)
 }
 
-inline fun ScenarioBuilder.`create rabbitmq queue`(retryStep: RetryStep? = null, crossinline h: RabbitMQQueueCreationExecutionBuilder.()->Unit): StepPostExecution<Unit> {
-    return Step({RabbitMQQueueCreationExecutionBuilder().apply(h).build()}, retry = retryStep).apply {
+inline fun ScenarioBuilder.`create rabbitmq queue`(
+    retryStep: RetryStep? = null,
+    crossinline h: RabbitMQQueueCreationExecutionBuilder.() -> Unit
+): StepPostExecution<Unit> {
+    return Step(name!!, { RabbitMQQueueCreationExecutionBuilder().apply(h).build() }, retry = retryStep).apply {
         steps.add(this)
     }.postExecution
 }

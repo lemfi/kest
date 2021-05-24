@@ -4,16 +4,16 @@ import com.github.lemfi.kest.core.properties.property
 import org.slf4j.LoggerFactory
 
 data class HTTPProperties(
-        val http: HttpProp
+    val http: HttpProp
 )
 
 data class HttpProp(
-        val timeout: Long = 0L,
+    val timeout: Long = 0L,
 
-)
+    )
 
-inline fun <R> httpProperty(crossinline l: HttpProp.()->R): R {
-    val shortcut: HTTPProperties.()->R = { http.l() }
+inline fun <R> httpProperty(crossinline l: HttpProp.() -> R): R {
+    val shortcut: HTTPProperties.() -> R = { http.l() }
     return try {
         property(shortcut)
     } catch (e: Throwable) {

@@ -15,7 +15,7 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }
- }
+}
 
 tasks.withType<Test> {
     description = "Runs the unit and integration tests"

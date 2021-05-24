@@ -18,7 +18,7 @@ class TestHttpServer {
     fun `http server hello`() = `run scenarios`(
         scenario {
 
-            name = "api says hello and remembers it!"
+            name { "api says hello and remembers it!" }
 
             `given http call`<String> {
 
@@ -32,7 +32,7 @@ class TestHttpServer {
                         """
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
+                eq(201, stepResult.status) { "Saying Hello should return a 202, was ${stepResult.status}!" }
                 eq("Hello Darth Vader!", stepResult.body)
             }
 
@@ -98,7 +98,7 @@ class TestHttpServer {
     fun `http server goodbye`() = `run scenarios`(
         scenario {
 
-            name = "api says goodbye and forgets people!"
+            name { "api says goodbye and forgets people!" }
 
             `given http call`<String> {
 
@@ -164,7 +164,7 @@ class TestHttpServer {
     fun `http server error`() = `run scenarios`(
         scenario {
 
-            name = "when wrong api is called an error is raised"
+            name { "when wrong api is called an error is raised" }
 
             `given http call`<JsonMap> {
 
@@ -191,7 +191,7 @@ class TestHttpServer {
     fun `otp flows`() = `run scenarios`(
         scenario {
 
-            name = "get and validate correct otp"
+            name { "get and validate correct otp" }
 
             val otp = `given http call`<JsonMap> {
 
@@ -202,11 +202,13 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 eq(201, stepResult.status)
-                jsonMatchesObject("""
+                jsonMatchesObject(
+                    """
                         {
                             "otp": "{{string}}" 
                         }
-                    """.trimIndent(), stepResult.body)
+                    """.trimIndent(), stepResult.body
+                )
             } `map result to` { it.body["otp"] as String }
 
             `given http call`<JsonMap> {
@@ -214,7 +216,7 @@ class TestHttpServer {
                 url = "http://localhost:8080/otp"
                 method = "POST"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-                body = otp.result()
+                body = otp()
                 contentType = "text/plain"
 
             } `assert that` { stepResult ->
@@ -225,7 +227,7 @@ class TestHttpServer {
         },
         scenario {
 
-            name = "get and validate wrong otp"
+            name { "get and validate wrong otp" }
 
             `given http call`<JsonMap> {
 
@@ -236,11 +238,13 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 eq(201, stepResult.status)
-                jsonMatchesObject("""
+                jsonMatchesObject(
+                    """
                         {
                             "otp": "{{string}}" 
                         }
-                    """.trimIndent(), stepResult.body)
+                    """.trimIndent(), stepResult.body
+                )
             }
 
             `given http call`<JsonMap> {
@@ -265,7 +269,7 @@ class TestHttpServer {
     @TestFactory
     fun `retryable steps`() = `run scenarios`(
         scenario {
-            name = "a step should be retried as specified when not passing"
+            name { "a step should be retried as specified when not passing" }
 
             `given http call`<String>(RetryStep(100, 10L)) {
                 url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
@@ -273,6 +277,7 @@ class TestHttpServer {
             } `assert that` {
                 eq("You called me 98 times!", it.body)
             }
+
         },
         beforeEach = { startSampleApi() },
         afterEach = { stopSampleApi() }

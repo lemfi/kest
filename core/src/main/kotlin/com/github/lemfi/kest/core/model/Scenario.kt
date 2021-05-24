@@ -1,7 +1,22 @@
 package com.github.lemfi.kest.core.model
 
-class Scenario<T>(
-        val name: String,
-        val steps: MutableList<Step<*>>,
-        val result: (()->T)?
-)
+typealias Scenario = StandaloneScenario
+
+@JvmInline
+value class ScenarioName(val name: String)
+
+sealed class IScenario {
+    abstract val name: ScenarioName
+    abstract val steps: MutableList<Step<*>>
+}
+
+class StandaloneScenario(
+    override val name: ScenarioName,
+    override val steps: MutableList<Step<*>>,
+): IScenario()
+
+class NestedScenario<T>(
+    override val name: ScenarioName,
+    override val steps: MutableList<Step<*>>,
+    val result: () -> T
+): IScenario()

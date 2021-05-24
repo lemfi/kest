@@ -4,8 +4,14 @@ import com.github.kest.executor.mongodb.executor.MongoDBUpdateDocumentExecution
 import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.StepName
 
-class MongoDBUpdateDocumentExecutionBuilder: ExecutionBuilder<Unit>() {
+class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
+
+    private var name: StepName? = null
+    fun name(l: ()->String) {
+        name = StepName(l())
+    }
 
     lateinit var collection: String
     lateinit var filter: List<Pair<String, Any?>>
@@ -20,6 +26,17 @@ class MongoDBUpdateDocumentExecutionBuilder: ExecutionBuilder<Unit>() {
 
 
     override fun build(): Execution<Unit> {
-        return MongoDBUpdateDocumentExecution(collection, filter, update, host, port, database, user, password, authSource)
+        return MongoDBUpdateDocumentExecution(
+            name,
+            collection,
+            filter,
+            update,
+            host,
+            port,
+            database,
+            user,
+            password,
+            authSource
+        )
     }
 }

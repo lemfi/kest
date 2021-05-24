@@ -18,7 +18,8 @@ To do so, Kest provides by default 3 matchers:
 - {{boolean}}
 
 For example
-[source, json]
+
+[source,json]
 ----
 {
   "string": "a string",
@@ -26,8 +27,10 @@ For example
   "boolean": true
 }
 ----
+
 is matched by
-[source, json]
+
+[source,json]
 ----
 {
   "string": "{{string}}",
@@ -35,8 +38,10 @@ is matched by
   "boolean": "{{boolean}}"
 }
 ----
+
 or by
-[source, json]
+
+[source,json]
 ----
 {
   "string": "{{string}}",
@@ -46,7 +51,8 @@ or by
 ----
 
 And the function to check that with Kest would be:
-[source, kotlin]
+
+[source,kotlin]
 ----
 jsonMatchesObject(
 """
@@ -68,7 +74,8 @@ jsonMatchesObject(
 
 If you want to define your own matchers, two possibilities:
 ==== Define a class
-[source, kotlin]
+
+[source,kotlin]
 ----
 data class Sample(
         val string: String,
@@ -78,13 +85,15 @@ data class Sample(
 ----
 
 Then call JsonMatcher.addMatcher function with the class and the pattern that will represent it:
+
 [source,kotlin]
 ----
 JsonMatcher.addMatcher("{{sample}}", Sample::class)
 ----
 
 To check match you can now call this:
-[source, kotlin]
+
+[source,kotlin]
 ----
 jsonMatchesObject(
 """
@@ -103,6 +112,7 @@ jsonMatchesObject(
 To go through polyphormism, Kest allows you to define a list of matchers for a given JSON.
 
 Let's take this example:
+
 [source,json]
 ----
 {
@@ -110,6 +120,7 @@ Let's take this example:
   "poly1": "{{string}}"
 }
 ----
+
 [source,json]
 ----
 {
@@ -118,7 +129,9 @@ Let's take this example:
 }
 
 ----
+
 You can check wether your json matches one or the other of those matchers by passing a list to `jsonMatchesObject` function:
+
 [source,kotlin]
 ----
 jsonMatchesObject(

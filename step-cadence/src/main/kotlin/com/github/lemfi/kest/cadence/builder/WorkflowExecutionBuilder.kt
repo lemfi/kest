@@ -4,10 +4,16 @@ import com.github.lemfi.kest.cadence.executor.WorkflowExecution
 import com.github.lemfi.kest.cadence.model.cadenceProperty
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.StepName
 import com.uber.cadence.context.ContextPropagator
 import kotlin.reflect.KFunction
 
-class WorkflowExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
+class WorkflowExecutionBuilder<RESULT> : ExecutionBuilder<RESULT>() {
+
+    private var name: StepName? = null
+    fun name(l: ()->String) {
+        name = StepName(l())
+    }
 
     lateinit var domain: String
     lateinit var tasklist: String
@@ -20,6 +26,7 @@ class WorkflowExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
 
     var host = cadenceProperty { host }
     var port = cadenceProperty { port }
+
 
     fun workflow(workflow: KFunction<RESULT>, vararg parameters: Any?) {
         this.workflow = workflow
@@ -36,7 +43,7 @@ class WorkflowExecutionBuilder<RESULT>: ExecutionBuilder<RESULT>() {
 
     override fun build(): Execution<RESULT> {
         return WorkflowExecution(
-                host, port, domain, tasklist, workflow, params, activities, contextPropagators
+            name, host, port, domain, tasklist, workflow, params, activities, contextPropagators
         )
     }
 }

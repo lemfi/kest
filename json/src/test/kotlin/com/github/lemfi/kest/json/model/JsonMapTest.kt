@@ -9,8 +9,8 @@ class JsonMapTest {
     fun `navigation in json is operational`() {
 
         val json = JsonMap().apply {
-            put("key","value")
-            put("key2","value2")
+            put("key", "value")
+            put("key2", "value2")
             put("key3", JsonMap().apply {
                 put("key31", "value31")
                 put("key32", "value32")
@@ -24,7 +24,7 @@ class JsonMapTest {
             }, JsonMap().apply {
                 put("elem21", "val21")
                 put("elem22", "val22")
-                put("elem23",listOf(5, 6, 7, 8))
+                put("elem23", listOf(5, 6, 7, 8))
             }))
 
         }

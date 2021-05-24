@@ -1,13 +1,12 @@
 package com.github.lemfi.kest.sample.scenariosextracted
 
-import com.github.lemfi.kest.core.builder.IScenarioBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
+import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.executor.http.model.HttpResponse
-import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.sample.stepsextracted.`get otp`
 
@@ -43,46 +42,38 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
     }
 }
 
-fun ScenarioBuilder.`get otp`() {
+fun ScenarioBuilder.`validate otp`(otp: () -> String) =
+
     `given http call`<JsonMap> {
 
+        name { "validate otp ${otp()}" }
+
         url = "http://localhost:8080/otp"
-        method = "GET"
+        method = "POST"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = otp()
+        contentType = "text/plain"
 
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
-        jsonMatchesObject("""
-                        {
-                            "otp": "{{string}}"
-                        }
-                    """.trimIndent(), stepResult.body)
+        eq(204, stepResult.status)
     }
-}
 
-fun ScenarioBuilder.`validate otp`(otp: String, l: HttpResponse<JsonMap>.()->Unit = {}) =
+fun ScenarioBuilder.generateOtps() = step<List<String>> {
 
-        `given http call`<JsonMap> {
+    name { "generate 3 OTPs" }
 
-            url = "http://localhost:8080/otp"
-            method = "POST"
-            headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-            body = otp
-            contentType = "text/plain"
-
-        } `assert that` { stepResult ->
-
-            eq(204, stepResult.status)
-        }
-
-fun IScenarioBuilder<List<String>>.generateOtps(l: List<String>.()->Unit) {
-
-    val extractResult: StepPostExecution<HttpResponse<JsonMap>>.() -> String = { result().body["otp"] as String }
+    val extractResult: StepPostExecution<HttpResponse<JsonMap>>.() -> String = { this().body["otp"] as String }
 
     val otp1 = `get otp`()
     val otp2 = `get otp`()
     val otp3 = `get otp`()
 
-    result = { listOf(otp1.extractResult(), otp2.extractResult(), otp3.extractResult()) }
+    returns {
+        listOf(
+            otp1.extractResult(),
+            otp2.extractResult(),
+            otp3.extractResult()
+        )
+    }
 }

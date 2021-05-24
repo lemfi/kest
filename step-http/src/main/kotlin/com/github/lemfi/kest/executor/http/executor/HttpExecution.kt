@@ -2,6 +2,7 @@ package com.github.lemfi.kest.executor.http.executor
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.executor.http.model.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -15,6 +16,7 @@ import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 data class HttpExecution<T>(
+    override val name: StepName?,
     val url: String,
     val method: String,
     val returnType: Class<T>,
@@ -23,14 +25,18 @@ data class HttpExecution<T>(
     val contentType: String?,
     val accept: String?,
     val followRedirect: Boolean
-): Execution<HttpResponse<T>>() {
+) : Execution<HttpResponse<T>>() {
 
     companion object {
         private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Pair<Any?, String?>>()
             .apply {
                 put("application/json") {
                     this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
-                        try {jacksonObjectMapper().readValue(data, it)} catch (e: Throwable) { throw DeserializeException(it, data) } to data
+                        try {
+                            jacksonObjectMapper().readValue(data, it)
+                        } catch (e: Throwable) {
+                            throw DeserializeException(it, data)
+                        } to data
                     } ?: null to null
                 }
                 put("text/plain") {
@@ -44,7 +50,8 @@ data class HttpExecution<T>(
             mappers.put(contentType, mapper)
         }
 
-        fun getMapper(contentType: String) = (mappers.get(contentType.substringBefore(";").trim()) ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
+        fun getMapper(contentType: String) = (mappers.get(contentType.substringBefore(";").trim())
+            ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
     }
 
     @Suppress("unchecked_cast")
@@ -52,12 +59,12 @@ data class HttpExecution<T>(
 
         LoggerFactory.getLogger("HTTP-kest").info(
             """ | Request
-                    | 
-                    | $method $url
-                    | $headers
-                    | $body
-                    | 
-                """.trimMargin()
+            | 
+            | $method $url
+            | $headers
+            | $body
+            | 
+            | """.trimMargin()
         )
 
         return if (body is MultipartBody) {
@@ -74,7 +81,11 @@ data class HttpExecution<T>(
                             .apply {
                                 body.parts.forEach {
                                     when (it) {
-                                        is FilePart -> addFormDataPart(it.name, it.filename, it.file.asRequestBody(it.contentType?.toMediaTypeOrNull()))
+                                        is FilePart -> addFormDataPart(
+                                            it.name,
+                                            it.filename,
+                                            it.file.asRequestBody(it.contentType?.toMediaTypeOrNull())
+                                        )
                                         is ParameterPart -> addFormDataPart(it.name, it.value)
                                     }
                                 }
@@ -101,6 +112,7 @@ data class HttpExecution<T>(
         }
     }
 
+    @Suppress("unchecked_cast")
     private fun Response.toHttpResponse(): HttpResponse<T> {
         var content: String? = null
         return try {
@@ -123,12 +135,12 @@ data class HttpExecution<T>(
         } finally {
             LoggerFactory.getLogger("HTTP-kest").info(
                 """ | Response
-                                        | ${code}
-                                        | ${headers.map { "${it.first}: ${it.second}" }.joinToString("\n")}
-                                        | 
-                                        | $content
-                                        | 
-                                    """.trimMargin()
+                | ${code}
+                | ${headers.map { "${it.first}: ${it.second}" }.joinToString("\n")}
+                | 
+                | $content
+                |
+                |""".trimMargin()
             )
         }
     }

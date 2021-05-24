@@ -1,12 +1,10 @@
 package com.github.lemfi.kest.sample.stepsextracted
 
-import com.github.lemfi.kest.core.builder.IScenarioBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
-import com.github.lemfi.kest.core.model.StepPostExecution
+import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.executor.http.cli.`given http call`
-import com.github.lemfi.kest.executor.http.model.HttpResponse
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
 
@@ -42,23 +40,24 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
     }
 }
 
-fun ScenarioBuilder.`get otp`(): StepPostExecution<HttpResponse<JsonMap>> {
-    return `given http call`<JsonMap> {
+fun ScenarioBuilder.`get otp`() =
+    `given http call`<JsonMap> {
 
         url = "http://localhost:8080/otp"
         method = "GET"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-    }.`assert that` { stepResult ->
+    } `assert that` { stepResult ->
 
         eq(201, stepResult.status)
-        jsonMatchesObject("""
+        jsonMatchesObject(
+            """
                         {
                             "otp": "{{string}}"
                         }
-                    """.trimIndent(), stepResult.body)
+                    """.trimIndent(), stepResult.body
+        )
     }
-}
 
 fun ScenarioBuilder.`validate otp`(otp: String) =
 
@@ -75,11 +74,11 @@ fun ScenarioBuilder.`validate otp`(otp: String) =
         eq(204, stepResult.status)
     }
 
-fun IScenarioBuilder<List<String>>.`generate otps`() {
+fun ScenarioBuilder.`generate otps`() = step<List<String>> {
 
-    val otp1 = `get otp`().`map result to` { it.body["otp"] as String }.result
-    val otp2 = `get otp`().`map result to` { it.body["otp"] as String }.result
-    val otp3 = `get otp`().`map result to` { it.body["otp"] as String }.result
+    val otp1 = `get otp`().`map result to` { it.body["otp"] as String }
+    val otp2 = `get otp`().`map result to` { it.body["otp"] as String }
+    val otp3 = `get otp`().`map result to` { it.body["otp"] as String }
 
-    result = { listOf(otp1(), otp2(), otp3()) }
+    returns { listOf(otp1(), otp2(), otp3()) }
 }

@@ -25,7 +25,8 @@ Default return type is `ByteArray`
 * password: String // optional, defaults to guest
 
 protocol / host / port / vhost / user / password can be set globally on kest configuration file:
-[source, yml, title=kest.yml]
+
+[source,yml,title=kest.yml]
 ----
 rabbitmq:
   host: localhost
@@ -36,10 +37,11 @@ rabbitmq:
 ----
 
 === Sample
+
 [source,kotlin]
 ----
 `given message from rabbitmq queue`<String> {
-        queueName = "kest"
+        queue = "kest"
         messageTransformer = { toString(Charsets.UTF_8) }
     }
 ----
@@ -64,7 +66,8 @@ See link:../json/README.adoc[Kest JSON] documentation for more details.
 * timeout: String // time in milliseconds to wait before message is assumed consumed, defaults to 2000
 
 protocol / host / port / vhost / user / password / timeout / exchange can be set globally on kest configuration file:
-[source, yml, title=kest.yml]
+
+[source,yml,title=kest.yml]
 ----
 rabbitmq:
   host: localhost
@@ -77,6 +80,7 @@ rabbitmq:
 ----
 
 === Sample
+
 [source,kotlin]
 ----
 `publish rabbitmq message` {

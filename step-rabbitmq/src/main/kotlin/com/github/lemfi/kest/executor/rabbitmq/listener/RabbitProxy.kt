@@ -26,13 +26,22 @@ private var rabbitmqSocket: Socket? = null
 private lateinit var channel: Channel
 
 fun main(args: List<String>) {
-    startRabbitMQProxy(args[0], args[1], args[2], args[3].toInt(), args[4], RabbitMQSnifferProp(
+    startRabbitMQProxy(
+        args[0], args[1], args[2], args[3].toInt(), args[4], RabbitMQSnifferProp(
             true, false, args[5].toInt()
-    ))
+        )
+    )
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")
-fun startRabbitMQProxy(rabbitUser: String, rabbitPassword: String, rabbitHost: String, rabbitPort: Int, rabbitVhost: String, properties: RabbitMQSnifferProp) {
+fun startRabbitMQProxy(
+    rabbitUser: String,
+    rabbitPassword: String,
+    rabbitHost: String,
+    rabbitPort: Int,
+    rabbitVhost: String,
+    properties: RabbitMQSnifferProp
+) {
 
     if (server == null) {
 
@@ -42,8 +51,8 @@ fun startRabbitMQProxy(rabbitUser: String, rabbitPassword: String, rabbitHost: S
             channel = ConnectionFactory().apply {
                 setUri("amqp://$rabbitUser:$rabbitPassword@$rabbitHost:$rabbitPort/$rabbitVhost")
             }
-                    .newConnection("sniffer connection")
-                    .createChannel()
+                .newConnection("sniffer connection")
+                .createChannel()
 
             rabbitmqSocket = Socket(rabbitHost, rabbitPort)
 
@@ -62,8 +71,8 @@ private fun CoroutineScope.proxify(proxyServer: Socket, rabbitmqServer: Socket) 
 
         // read AMQP Protocol version on connection establishment
         ByteArray(8)
-                .also { proxyServer.getInputStream().read(it) }
-                .also { rabbitmqServer.getOutputStream().write(it) }
+            .also { proxyServer.getInputStream().read(it) }
+            .also { rabbitmqServer.getOutputStream().write(it) }
 
         // handle deliveries
         launch {
@@ -100,7 +109,11 @@ private fun CoroutineScope.proxify(proxyServer: Socket, rabbitmqServer: Socket) 
     }
 }
 
-private fun frameReader(inputStream: InputStream, outputStream: OutputStream, l: AMQCommand.(channelNumber: Int)->Unit) {
+private fun frameReader(
+    inputStream: InputStream,
+    outputStream: OutputStream,
+    l: AMQCommand.(channelNumber: Int) -> Unit
+) {
 
     val commands: MutableMap<Int, AMQCommand> = mutableMapOf()
 
@@ -120,7 +133,7 @@ private fun frameReader(inputStream: InputStream, outputStream: OutputStream, l:
 
 }
 
-private abstract class RabbitCommandVisitor: AMQImpl.MethodVisitor {
+private abstract class RabbitCommandVisitor : AMQImpl.MethodVisitor {
     override fun visit(x: AMQImpl.Connection.Start?): Any {
         return Unit
     }

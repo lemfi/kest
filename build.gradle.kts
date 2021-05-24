@@ -1,29 +1,29 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group  = "com.github.lemfi.kest"
+group = "com.github.lemfi.kest"
 version = "0.0.11"
 
-val kotlinVersion : String by extra { "1.4.10" }
-val coroutineVersion : String by extra { "1.4.1" }
-val opentest4jVersion : String by extra { "1.2.0" }
-val hopliteVersion : String by extra { "1.3.8" }
-val slf4jVersion : String by extra { "1.7.28" }
-val junitVersion : String by extra { "5.5.0" }
-val jacksonVersion : String by extra { "2.11.3" }
-val okhttpVersion : String by extra { "4.9.0" }
-val cadenceVersion : String by extra { "2.7.8" }
-val mongoVersion : String by extra { "4.1.1" }
-val rabbitmqVersion : String by extra { "5.7.3" }
+val kotlinVersion: String by extra { "1.5.0" }
+val coroutineVersion: String by extra { "1.4.1" }
+val opentest4jVersion: String by extra { "1.2.0" }
+val hopliteVersion: String by extra { "1.3.8" }
+val slf4jVersion: String by extra { "1.7.28" }
+val junitVersion: String by extra { "5.5.0" }
+val jacksonVersion: String by extra { "2.11.3" }
+val okhttpVersion: String by extra { "4.9.0" }
+val cadenceVersion: String by extra { "2.7.8" }
+val mongoVersion: String by extra { "4.1.1" }
+val rabbitmqVersion: String by extra { "5.7.3" }
 
 buildscript {
-    val kotlinVersion : String by extra { "1.4.10" }
-    val dokkaVersion : String by extra { "1.4.10.2" }
+    val kotlinVersion: String by extra { "1.5.0" }
+    val dokkaVersion: String by extra { "1.4.10.2" }
 
     repositories {
         jcenter()
         mavenCentral()
-        maven(url="https://dl.bintray.com/kotlin/dokka")
+        maven(url = "https://dl.bintray.com/kotlin/dokka")
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
@@ -43,7 +43,7 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven(url="https://dl.bintray.com/kotlin/dokka")
+        maven(url = "https://dl.bintray.com/kotlin/dokka")
         maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
         mavenCentral()
     }
@@ -142,8 +142,8 @@ subprojects {
         }
         repositories {
             maven {
-                val releaseUrl =  uri(project.properties["PUBLISH_RELEASE"] as String)
-                val snapshotsUrl =  uri(project.properties["PUBLISH_SNAPSHOT"] as String)
+                val releaseUrl = uri(project.properties["PUBLISH_RELEASE"] as String)
+                val snapshotsUrl = uri(project.properties["PUBLISH_SNAPSHOT"] as String)
                 url = if ((project.version as String).endsWith("SNAPSHOT")) snapshotsUrl else releaseUrl
                 credentials {
                     username = project.properties["PUBLISH_USERNAME"] as String

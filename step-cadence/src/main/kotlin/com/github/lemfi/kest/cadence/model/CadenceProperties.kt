@@ -4,16 +4,16 @@ import com.github.lemfi.kest.core.properties.property
 import org.slf4j.LoggerFactory
 
 data class CadenceProperties(
-        val cadence: CadenceProp
+    val cadence: CadenceProp
 )
 
 data class CadenceProp(
-        val host: String = "localhost",
-        val port: Int = 7933
+    val host: String = "localhost",
+    val port: Int = 7933
 )
 
-inline fun <R> cadenceProperty(crossinline l: CadenceProp.()->R): R {
-    val shortcut: CadenceProperties.()->R = { cadence.l() }
+inline fun <R> cadenceProperty(crossinline l: CadenceProp.() -> R): R {
+    val shortcut: CadenceProperties.() -> R = { cadence.l() }
     return try {
         property(shortcut)
     } catch (e: Throwable) {

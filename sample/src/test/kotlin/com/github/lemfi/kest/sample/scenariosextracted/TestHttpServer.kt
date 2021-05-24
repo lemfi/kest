@@ -9,35 +9,35 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello`() = `run scenarios`(
-            `api says hello and remembers it!`,
+        `api says hello and remembers it!`,
 
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory
     fun `http server goodbye`() = `run scenarios`(
-            `api says goodbye and forgets people!`,
+        `api says goodbye and forgets people!`,
 
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
     @TestFactory
     fun `http server hello and goodbye`() = `run scenarios`(
-            `api says hello and remembers it!`,
-            `api says goodbye and forgets people!`,
+        `api says hello and remembers it!`,
+        `api says goodbye and forgets people!`,
 
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 
 
     @TestFactory
     fun `otp flows`() = `run scenarios`(
-            `get and validate correct otp`,
-            `get and validate wrong otp`,
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+        `get and validate correct otp`,
+        `get and validate wrong otp`,
+        beforeEach = { startSampleApi() },
+        afterEach = { stopSampleApi() }
     )
 }

@@ -8,8 +8,10 @@ It uses JUnit5 to run scenarios.
 Easy to use, easy to extend.
 
 == Use it
+
 === Gradle
-[source, kotlin]
+
+[source,kotlin]
 ----
     implementation("com.github.lemfi.kest:core:0.0.11")
     implementation("com.github.lemfi.kest:junit5:0.0.11")
@@ -17,8 +19,10 @@ Easy to use, easy to extend.
     // include the steps you need among available ones
     implementation("com.github.lemfi.kest:step-http:0.0.11")
 ----
+
 === Maven
-[source, xml]
+
+[source,xml]
 ----
 <dependencies>
     <dependency>
@@ -44,8 +48,6 @@ Easy to use, easy to extend.
 </dependencies>
 ----
 
-
-
 == Scenarios
 
 Kest allows you to write scenarios. +
@@ -53,13 +55,16 @@ One scenario is a sequence of steps. +
 One step defines an execution and a list of assertions to validate completed execution.
 
 Let's take following example:
+
 [source,kotlin]
 ----
 scenario {
 
-    name = "api says hello and remembers it!"
+    name { "api says hello and remembers it!" }
 
     `given http call`<String> {
+
+        name { "say hello to server!" }
 
         url = "http://myapi/hello"
         method = "POST"
@@ -146,6 +151,7 @@ class TestHttpServer {
 ----
 
 == It's Kotlin make it easy to read!
+
 A scenario may become a long list of steps, not easily readable. +
 Why do not extract steps to external functions, it will also make them reusable: double gain!
 
@@ -154,6 +160,8 @@ Why do not extract steps to external functions, it will also make them reusable:
 
 fun ScenarioBuilder.`say hello`(who: String) {
     `given http call`<String> {
+
+        name { "$who says hello to server" }
 
         url = "http://localhost:8080/hello"
         method = "POST"
@@ -191,7 +199,7 @@ class TestHttpServer {
     fun `http server hello`() = `run scenarios`(
             scenario {
 
-                name = "api says hello and remembers it!"
+                name { "api says hello and remembers it!" }
 
                 `say hello`("Darth Vader")
                 `say hello`("Han Solo")
@@ -206,7 +214,7 @@ class TestHttpServer {
     fun `http server goodbye`() = `run scenarios`(
             scenario {
 
-                name = "api says goodbye and forgets people!"
+                name { "api says goodbye and forgets people!" }
 
                 `say hello`("Darth Vader")
                 `say hello`("Han Solo")
@@ -240,7 +248,7 @@ And again, we can also extract scenarios
 
 val `api says hello and remembers it!` = scenario {
 
-    name = "api says hello and remembers it!"
+    name { "api says hello and remembers it!" }
 
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
@@ -250,7 +258,7 @@ val `api says hello and remembers it!` = scenario {
 
 val `api says goodbye and forgets people!` = scenario {
 
-            name = "api says goodbye and forgets people!"
+            name { "api says goodbye and forgets people!" }
 
             `say hello`("Darth Vader")
             `say hello`("Han Solo")
@@ -319,11 +327,11 @@ When a step is launched its execution is played, then assertions are played agai
 == Configuration
 
 You might want to access data from a configuration file.
-Kest offers you to add your entries in a file named kest.yaml
-All data from this file has to be mapped to a kotlin data class.
+Kest offers you to add your entries in a file named kest.yaml All data from this file has to be mapped to a kotlin data class.
 
 Then you can access your configuration by calling function `property`:
-[source,yml, title=kest.yml]
+
+[source,yml,title=kest.yml]
 ----
 mykey: myvalue
 myotherkey: myothervalue
@@ -332,7 +340,8 @@ domain:
   akey: a value
   anotherkey: anothervalue
 ----
-[source, kotlin, title="Configuration data class"]
+
+[source,kotlin,title="Configuration data class"]
 ----
 
 data class Properties(
@@ -346,7 +355,8 @@ data class Domain(
     val anotherkey: String
 )
 ----
-[source, kotlin, title="Access configuration"]
+
+[source,kotlin,title="Access configuration"]
 ----
 property<Properties> { myKey }
 property<Properties> { myValue }

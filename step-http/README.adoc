@@ -15,10 +15,10 @@ image::{gitplant}/step-http/doc/diag/model.puml[]
 * url: String // mandatory
 * method: String // optional, default is GET
 * body: Any? // optional, default is null
-* headers: Map<String, String> // optional, default is empty
-this function can be used to pass result of step on another step
+* headers: Map<String, String> // optional, default is empty this function can be used to pass result of step on another step
 
 == Sample
+
 [source,kotlin]
 ----
 val stepResult = `given http call`<String> {
