@@ -17,12 +17,8 @@ class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
     lateinit var filter: List<Pair<String, Any?>>
     lateinit var update: List<Pair<String, Any?>>
 
-    var host = mongoDBProperty { host }
-    var port = mongoDBProperty { port }
+    var connection = mongoDBProperty { connection }
     var database = mongoDBProperty { database }
-    var user = mongoDBProperty { user }
-    var password = mongoDBProperty { password }
-    var authSource = mongoDBProperty { authSource }
 
 
     override fun build(): Execution<Unit> {
@@ -31,12 +27,8 @@ class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
             collection,
             filter,
             update,
-            host,
-            port,
+            connection,
             database,
-            user,
-            password,
-            authSource
         )
     }
 }

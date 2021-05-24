@@ -15,15 +15,11 @@ class MongoDBInsertDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
     lateinit var document: String
     lateinit var collection: String
 
-    var host = mongoDBProperty { host }
-    var port = mongoDBProperty { port }
+    var connection = mongoDBProperty { connection }
     var database = mongoDBProperty { database }
-    var user = mongoDBProperty { user }
-    var password = mongoDBProperty { password }
-    var authSource = mongoDBProperty { authSource }
 
 
     override fun build(): Execution<Unit> {
-        return MongoDBInsertDocumentExecution(name, document, collection, host, port, database, user, password, authSource)
+        return MongoDBInsertDocumentExecution(name, document, collection, connection, database)
     }
 }

@@ -10,20 +10,13 @@ data class MongoDBUpdateDocumentExecution(
     val collection: String,
     val filter: List<Pair<String, Any?>>,
     val update: List<Pair<String, Any?>>,
-    val host: String,
-    val port: Int,
+    val connection: String,
     val database: String,
-    val user: String?,
-    val password: String?,
-    val authSource: String?,
 ) : Execution<Unit>() {
 
     override fun execute() {
 
-        val auth = user?.let { "$user:$password@" } ?: ""
-        val authSource = user?.let { "authSource=$authSource" } ?: ""
-
-        MongoClients.create("mongodb://$auth$host/?$authSource").getDatabase(database)
+        MongoClients.create(connection).getDatabase(database)
             .getCollection(collection)
             .updateMany(
                 Document().apply {

@@ -9,20 +9,13 @@ data class MongoDBInsertDocumentExecution(
     override val name: StepName?,
     val document: String,
     val collection: String,
-    val host: String,
-    val port: Int,
+    val connection: String,
     val database: String,
-    val user: String?,
-    val password: String?,
-    val authSource: String?,
 ) : Execution<Unit>() {
 
     override fun execute() {
 
-        val auth = user?.let { "$user:$password@" } ?: ""
-        val authSource = user?.let { "authSource=$authSource" } ?: ""
-
-        MongoClients.create("mongodb://$auth$host/?$authSource").getDatabase(database)
+        MongoClients.create(connection).getDatabase(database)
             .getCollection(collection)
             .insertOne(Document.parse(document))
 

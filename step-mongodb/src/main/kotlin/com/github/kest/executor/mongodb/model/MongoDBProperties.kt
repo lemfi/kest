@@ -8,12 +8,8 @@ data class MongoDBProperties(
 )
 
 data class MongoDBProp(
-    val host: String = "localhost",
-    val port: Int = 27017,
-    val user: String? = null,
-    val password: String? = null,
+    val connection: String = "mongodb://localhost:27017",
     val database: String = "test",
-    val authSource: String = ""
 )
 
 inline fun <R> mongoDBProperty(crossinline l: MongoDBProp.() -> R): R {
