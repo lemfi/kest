@@ -42,3 +42,20 @@ fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?) {
         +${(0..max.length + 1).joinToString("") { "-" }}+
     """.trimIndent(), expected, observed)
 }
+
+fun AssertionsBuilder.fail(message: String, cause: Throwable) {
+    val scenario = "Scenario: ${scenarioName.name}"
+    val step = if (stepName != null) "Step: ${stepName.name}" else ""
+    val execution = if (executionDescription != null) "  > ${executionDescription.description}" else ""
+    val max = listOf(scenario, step, message, execution).maxByOrNull { it.length }!!
+    throw AssertionFailedError("""
+        
+        +${(0..max.length + 1).joinToString("") { "-" }}+
+        | ${scenario.padEnd(max.length, ' ')} |
+        | ${step.padEnd(max.length, ' ')} |
+        | ${execution.padEnd(max.length, ' ')} |
+        |${(0..max.length + 1).joinToString("") { " " }}|
+        | ${message.padEnd(max.length, ' ')} |
+        +${(0..max.length + 1).joinToString("") { "-" }}+
+    """.trimIndent(), cause)
+}

@@ -6,6 +6,7 @@ sealed class ScenarioBuilder {
 
     var name: ScenarioName? = null
         private set(value) { field = value }
+        get() = field ?: throw IllegalAccessException("a scenario should have a name dude!")
 
     val steps = mutableListOf<Step<*>>()
 

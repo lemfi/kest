@@ -62,10 +62,12 @@ private fun Step<Any>.run(): Step<Any> {
 
 private fun retryableStepExecution(retry: Int, delay: Long, step: Step<Any>, execution: Execution<Any>) {
 
+    val assertion = AssertionsBuilder(step.scenarioName, step.name, execution.description)
+
     try {
         val res = execution.execute()
         step.postExecution.assertions.forEach { assert ->
-            AssertionsBuilder(step.scenarioName, step.name, execution.description).assert(res)
+           assertion.assert(res)
         }
         step.postExecution.setResult(res)
 
@@ -73,6 +75,8 @@ private fun retryableStepExecution(retry: Int, delay: Long, step: Step<Any>, exe
         if (retry > 0) {
             Thread.sleep(delay)
             retryableStepExecution(retry - 1, delay, step, execution)
-        } else throw e
+        } else assertion.fail(e.localizedMessage, e)
+    } catch (e: Throwable) {
+        assertion.fail(e.localizedMessage, e)
     }
 }
