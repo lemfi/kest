@@ -2,18 +2,18 @@ package com.github.lemfi.kest.core.executor
 
 import com.github.lemfi.kest.core.cli.run
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.NestedScenario
-import com.github.lemfi.kest.core.model.StepName
 
 class NestedScenarioStepExecution<T>(
     val scenario: () -> NestedScenario<T>,
 ) : Execution<T>() {
-    override var name: StepName? = null
+    override var description: ExecutionDescription? = null
 
     override fun execute(): T =
         scenario()
             .apply {
-                this@NestedScenarioStepExecution.name = StepName(this.name.name)
+                this@NestedScenarioStepExecution.description = ExecutionDescription(this.name.name)
             }
             .let {
                 it.run()

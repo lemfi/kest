@@ -2,15 +2,15 @@ package com.github.lemfi.kest.executor.http.builder
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.http.executor.HttpExecution
 import com.github.lemfi.kest.executor.http.model.HttpResponse
 
 class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResponse<T>>() {
 
-    private var name: StepName? = null
-    fun name(l: ()->String) {
-        name = StepName(l())
+    private var description: ExecutionDescription? = null
+    fun description(l: ()->String) {
+        description = ExecutionDescription(l())
     }
 
     lateinit var url: String
@@ -23,6 +23,6 @@ class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResp
 
 
     override fun build(): Execution<HttpResponse<T>> {
-        return HttpExecution(name, url, method, cls, body, headers, contentType, expectedContentType, followRedirect)
+        return HttpExecution(description, url, method, cls, body, headers, contentType, expectedContentType, followRedirect)
     }
 }

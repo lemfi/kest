@@ -3,7 +3,10 @@ package com.github.lemfi.kest.sample.allinone
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.core.model.RetryStep
+import com.github.lemfi.kest.core.model.`delayed by`
+import com.github.lemfi.kest.core.model.ms
+import com.github.lemfi.kest.core.model.seconds
+import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
@@ -247,7 +250,9 @@ class TestHttpServer {
                 )
             }
 
-            `given http call`<JsonMap> {
+            `given http call`<JsonMap>("validate OTP") {
+
+                description { "try to validate OTP 'whatever'" }
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
@@ -271,7 +276,7 @@ class TestHttpServer {
         scenario {
             name { "a step should be retried as specified when not passing" }
 
-            `given http call`<String>(RetryStep(100, 10L)) {
+            `given http call`<String>(retry = 100.times `delayed by` 10.ms) {
                 url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
                 method = "GET"
             } `assert that` {

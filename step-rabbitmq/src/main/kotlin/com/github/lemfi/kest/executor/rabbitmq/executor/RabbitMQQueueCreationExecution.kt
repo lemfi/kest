@@ -1,12 +1,13 @@
 package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.StepName
 import com.rabbitmq.client.ConnectionFactory
 import java.net.URLEncoder
 
 class RabbitMQQueueCreationExecution(
-    override val name: StepName?,
+    override val description: ExecutionDescription?,
     val queueName: String,
     val bind: Pair<String, String>,
     val protocol: String,

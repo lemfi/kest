@@ -4,6 +4,7 @@ import com.github.lemfi.kest.core.builder.AssertionsBuilder
 
 data class Step<T>(
     val scenarioName: ScenarioName,
+    val name: StepName?,
     val execution: () -> Execution<T>,
     val retry: RetryStep?,
 ) {
@@ -54,3 +55,8 @@ data class RetryStep(
     val retries: Int = 3,
     val delay: Long = 1000L,
 )
+
+val Int.times: RetryStep get() = RetryStep(retries = this)
+val Int.ms: Long get() = this.toLong()
+val Int.seconds: Long get() = this * 1000L
+infix fun RetryStep.`delayed by`(milliseconds: Long) = copy(delay = milliseconds)

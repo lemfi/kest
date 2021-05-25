@@ -2,6 +2,7 @@ package com.github.lemfi.kest.cadence.executor
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.StepName
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
@@ -20,7 +21,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.javaType
 
 class ActivityExecution<RESULT>(
-    override val name: StepName?,
+    override val description: ExecutionDescription?,
     private val cadenceHost: String,
     private val cadencePort: Int,
     private val cadenceDomain: String,

@@ -1,6 +1,7 @@
 package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.executor.rabbitmq.listener.startRabbitMQProxy
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
@@ -11,7 +12,7 @@ import java.util.*
 
 
 data class RabbitMQMessageExecution(
-    override val name: StepName?,
+    override val description: ExecutionDescription?,
     val message: String,
     val protocol: String,
     val host: String,

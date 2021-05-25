@@ -13,9 +13,10 @@ infix fun <I, T, R> IStepPostExecution<I, T, R>.`assert that`(l: AssertionsBuild
     return this
 }
 
-fun <T> ScenarioBuilder.step(retryStep: RetryStep? = null, l: NestedScenarioBuilder<T>.() -> Unit): StepPostExecution<T> {
+fun <T> ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioBuilder<T>.() -> Unit): StepPostExecution<T> {
     return Step(
-        scenarioName = name!!,
+        name = name?.let { StepName(it) },
+        scenarioName = this.name!!,
         execution =  {
             NestedScenarioExecutionBuilder {
                 NestedScenarioBuilder<T>()
@@ -30,9 +31,10 @@ fun <T> ScenarioBuilder.step(retryStep: RetryStep? = null, l: NestedScenarioBuil
 }
 
 @JvmName("anyStep")
-inline fun ScenarioBuilder.step(retryStep: RetryStep? = null, crossinline l: NestedScenarioBuilder<Any>.() -> Unit) {
+inline fun ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null, crossinline l: NestedScenarioBuilder<Any>.() -> Unit) {
     Step(
-        scenarioName = name!!,
+        name = name?.let { StepName(it) },
+        scenarioName = this.name!!,
         execution = {
             NestedScenarioExecutionBuilder {
                 NestedScenarioBuilder<Any>()
@@ -62,8 +64,8 @@ private fun retryableStepExecution(retry: Int, delay: Long, step: Step<Any>, exe
 
     try {
         val res = execution.execute()
-        step.postExecution.assertions.forEach {
-            AssertionsBuilder(step.scenarioName, execution.name).it(res)
+        step.postExecution.assertions.forEach { assert ->
+            AssertionsBuilder(step.scenarioName, step.name, execution.description).assert(res)
         }
         step.postExecution.setResult(res)
 

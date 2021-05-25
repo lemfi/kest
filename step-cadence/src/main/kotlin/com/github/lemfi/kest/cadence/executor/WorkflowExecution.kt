@@ -1,6 +1,7 @@
 package com.github.lemfi.kest.cadence.executor
 
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.StepName
 import com.uber.cadence.client.WorkflowClient
 import com.uber.cadence.client.WorkflowOptions
@@ -14,7 +15,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.javaType
 
 class WorkflowExecution<RESULT>(
-    override val name: StepName?,
+    override val description: ExecutionDescription?,
     private val cadenceHost: String,
     private val cadencePort: Int,
     private val cadenceDomain: String,

@@ -2,15 +2,15 @@ package com.github.lemfi.kest.executor.rabbitmq.builder
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.rabbitmq.executor.RabbitMQQueueCreationExecution
 import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
 class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit>() {
 
-    private var name: StepName? = null
-    fun name(l: ()->String) {
-        name = StepName(l())
+    private var description: ExecutionDescription? = null
+    fun description(l: ()->String) {
+        description = ExecutionDescription(l())
     }
 
     lateinit var queue: String
@@ -27,7 +27,7 @@ class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit>() {
 
     override fun build(): Execution<Unit> {
         return RabbitMQQueueCreationExecution(
-            name, queue, bind, protocol, host, port, vhost, user, password,
+            description, queue, bind, protocol, host, port, vhost, user, password,
         )
     }
 }

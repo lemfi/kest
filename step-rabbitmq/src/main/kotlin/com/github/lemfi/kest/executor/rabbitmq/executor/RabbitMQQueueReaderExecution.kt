@@ -1,13 +1,14 @@
 package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.StepName
 import com.rabbitmq.client.ConnectionFactory
 import org.opentest4j.AssertionFailedError
 import java.net.URLEncoder
 
 class RabbitMQQueueReaderExecution<T>(
-    override val name: StepName?,
+    override val description: ExecutionDescription?,
     val queueName: String,
     val deleteQueue: Boolean,
     val protocol: String,

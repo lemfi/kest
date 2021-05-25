@@ -46,7 +46,7 @@ fun ScenarioBuilder.`validate otp`(otp: () -> String) =
 
     `given http call`<JsonMap> {
 
-        name { "validate otp ${otp()}" }
+        description { "validate otp ${otp()}" }
 
         url = "http://localhost:8080/otp"
         method = "POST"
