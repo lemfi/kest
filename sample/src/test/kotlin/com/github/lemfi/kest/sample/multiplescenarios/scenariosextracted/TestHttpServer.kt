@@ -1,6 +1,6 @@
-package com.github.lemfi.kest.sample.scenariosextracted
+package com.github.lemfi.kest.sample.multiplescenarios.scenariosextracted
 
-import com.github.lemfi.kest.junit5.runner.`run scenarios`
+import com.github.lemfi.kest.junit5.runner.`play scenarios`
 import com.github.lemfi.kest.sample.sampleapi.startSampleApi
 import com.github.lemfi.kest.sample.sampleapi.stopSampleApi
 import org.junit.jupiter.api.TestFactory
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestFactory
 class TestHttpServer {
 
     @TestFactory
-    fun `http server hello`() = `run scenarios`(
+    fun `http server hello`() = `play scenarios`(
         `api says hello and remembers it!`,
 
         beforeEach = { startSampleApi() },
@@ -16,7 +16,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `http server goodbye`() = `run scenarios`(
+    fun `http server goodbye`() = `play scenarios`(
         `api says goodbye and forgets people!`,
 
         beforeEach = { startSampleApi() },
@@ -24,7 +24,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `http server hello and goodbye`() = `run scenarios`(
+    fun `http server hello and goodbye`() = `play scenarios`(
         `api says hello and remembers it!`,
         `api says goodbye and forgets people!`,
 
@@ -34,9 +34,10 @@ class TestHttpServer {
 
 
     @TestFactory
-    fun `otp flows`() = `run scenarios`(
+    fun `otp flows`() = `play scenarios`(
         `get and validate correct otp`,
         `get and validate wrong otp`,
+
         beforeEach = { startSampleApi() },
         afterEach = { stopSampleApi() }
     )

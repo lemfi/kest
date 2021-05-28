@@ -27,8 +27,8 @@ fun AssertionsBuilder.`false`(observed: Boolean?, message: (()->String)? = null)
 }
 
 fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?) {
-    val scenario = "Scenario: ${scenarioName.name}"
-    val step = if (stepName != null) "Step: ${stepName.name}" else ""
+    val scenario = "Scenario: ${scenarioName.value}"
+    val step = if (stepName != null) "Step: ${stepName.value}" else ""
     val execution = if (executionDescription != null) "  > ${executionDescription.description}" else ""
     val max = listOf(scenario, step, message, execution).maxByOrNull { it.length }!!
     throw AssertionFailedError("""
@@ -44,8 +44,8 @@ fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?) {
 }
 
 fun AssertionsBuilder.fail(message: String, cause: Throwable) {
-    val scenario = "Scenario: ${scenarioName.name}"
-    val step = if (stepName != null) "Step: ${stepName.name}" else ""
+    val scenario = "Scenario: ${scenarioName.value}"
+    val step = if (stepName != null) "Step: ${stepName.value}" else ""
     val execution = if (executionDescription != null) "  > ${executionDescription.description}" else ""
     val max = listOf(scenario, step, message, execution).maxByOrNull { it.length }!!
     throw AssertionFailedError("""

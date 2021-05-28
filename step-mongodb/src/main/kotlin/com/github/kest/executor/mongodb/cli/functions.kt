@@ -4,39 +4,39 @@ import com.github.kest.executor.mongodb.builder.MongoDBInsertDocumentExecutionBu
 import com.github.kest.executor.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
 import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.cli.addToScenario
 import com.github.lemfi.kest.core.model.RetryStep
-import com.github.lemfi.kest.core.model.Step
+import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
-import com.github.lemfi.kest.core.model.StepPostExecution
 import com.mongodb.client.MongoClients
 import org.bson.Document
 
-inline fun ScenarioBuilder.`insert mongo document`(
+fun ScenarioBuilder.`insert mongo document`(
     name: String? = null,
     retryStep: RetryStep? = null,
-    crossinline h: MongoDBInsertDocumentExecutionBuilder.() -> Unit
+    h: MongoDBInsertDocumentExecutionBuilder.() -> Unit
 ) {
-    Step(
+    val executionBuilder = MongoDBInsertDocumentExecutionBuilder()
+    StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("insert mongo document"),
         scenarioName = this.name!!,
-        execution = { MongoDBInsertDocumentExecutionBuilder().apply(h).build() },
         retry = retryStep
     )
-        .apply { steps.add(this) }
+        .addToScenario(this, executionBuilder, h)
 }
 
-inline fun ScenarioBuilder.`update mongo document`(
+fun ScenarioBuilder.`update mongo document`(
     name: String? = null,
     retryStep: RetryStep? = null,
-    crossinline h: MongoDBUpdateDocumentExecutionBuilder.() -> Unit
+    h: MongoDBUpdateDocumentExecutionBuilder.() -> Unit
 ) {
-    Step(
+    val executionBuilder = MongoDBUpdateDocumentExecutionBuilder()
+
+    StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("update mongo document"),
         scenarioName = this.name!!,
-        execution = { MongoDBUpdateDocumentExecutionBuilder().apply(h).build() },
         retry = retryStep
-    )
-        .apply { steps.add(this) }
+    ).addToScenario(this, executionBuilder, h)
 }
 
 fun `insert mongo document`(collection: String, data: String) {

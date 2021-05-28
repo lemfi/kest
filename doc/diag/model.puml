@@ -5,8 +5,10 @@ Scenario "1" o-- "1..*" Step
 Step  "1" *-- Execution
 
 Scenario : name: String
+Step : name: String
 Step : assertions: ()->Unit
 
 Execution : execute: ()->T
+Execution : description: String
 
 @enduml

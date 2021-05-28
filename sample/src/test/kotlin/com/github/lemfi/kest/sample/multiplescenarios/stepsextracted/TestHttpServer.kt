@@ -1,4 +1,4 @@
-package com.github.lemfi.kest.sample.stepsextracted
+package com.github.lemfi.kest.sample.multiplescenarios.stepsextracted
 
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
@@ -7,15 +7,16 @@ import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
-import com.github.lemfi.kest.junit5.runner.`run scenarios`
+import com.github.lemfi.kest.junit5.runner.`play scenarios`
 import com.github.lemfi.kest.sample.sampleapi.startSampleApi
 import com.github.lemfi.kest.sample.sampleapi.stopSampleApi
+import com.github.lemfi.kest.sample.multiplescenarios.scenariosextracted.`validate otp`
 import org.junit.jupiter.api.TestFactory
 
 class TestHttpServer {
 
     @TestFactory
-    fun `http server hello`() = `run scenarios`(
+    fun `http server hello`() = `play scenarios`(
         scenario {
 
             name { "api says hello and remembers it!" }
@@ -30,7 +31,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `http server goodbye`() = `run scenarios`(
+    fun `http server goodbye`() = `play scenarios`(
         scenario {
 
             name { "api says goodbye and forgets people!" }
@@ -59,15 +60,17 @@ class TestHttpServer {
 
 
     @TestFactory
-    fun `otp flows`() = `run scenarios`(
+    fun `otp flows`() = `play scenarios`(
         scenario {
 
             name { "get and validate correct otp" }
 
             val generateOtps = `generate otps`()
 
-            step {
+            step("validate OTPs") {
                 val otps = generateOtps()
+                `validate otp` { generateOtps().first() }
+                `validate otp` { generateOtps().last() }
                 (otps.indices).forEach {
                     `validate otp`(otps[it])
                 }

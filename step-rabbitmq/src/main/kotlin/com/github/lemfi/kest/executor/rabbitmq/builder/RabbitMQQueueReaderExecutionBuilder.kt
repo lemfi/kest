@@ -6,7 +6,7 @@ import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.rabbitmq.executor.RabbitMQQueueReaderExecution
 import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
-class RabbitMQQueueReaderExecutionBuilder<T> : ExecutionBuilder<T>() {
+class RabbitMQQueueReaderExecutionBuilder<T> : ExecutionBuilder<T> {
 
     private var description: ExecutionDescription? = null
     fun description(l: ()->String) {
@@ -24,7 +24,7 @@ class RabbitMQQueueReaderExecutionBuilder<T> : ExecutionBuilder<T>() {
     var user = rabbitMQProperty { user }
     var password = rabbitMQProperty { password }
 
-    override fun build(): Execution<T> {
+    override fun toExecution(): Execution<T> {
         return RabbitMQQueueReaderExecution(
             description, queue, deleteQueue, protocol, host, port, vhost, user, password, messageTransformer
         )

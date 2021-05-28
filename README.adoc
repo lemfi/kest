@@ -13,11 +13,11 @@ Easy to use, easy to extend.
 
 [source,kotlin]
 ----
-    implementation("com.github.lemfi.kest:core:0.0.12")
-    implementation("com.github.lemfi.kest:junit5:0.0.12")
+    implementation("com.github.lemfi.kest:core:0.1.0")
+    implementation("com.github.lemfi.kest:junit5:0.1.0")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.0.12")
+    implementation("com.github.lemfi.kest:step-http:0.1.0")
 ----
 
 === Maven
@@ -28,13 +28,13 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>core</artifactId>
-        <version>0.0.12</version>
+        <version>0.1.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>junit5</artifactId>
-        <version>0.0.12</version>
+        <version>0.1.0</version>
         <scope>test</scope>
     </dependency>
 
@@ -42,7 +42,7 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
-        <version>0.0.12</version>
+        <version>0.1.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -127,7 +127,11 @@ To run a scenario Kest uses Junit5 engine:
 
 . Create a class to hold your test
 . Create a function annotated with Junit5 `@TestFactory`
-. Make it call Kest function `run scenarios
+. Make it call Kest function
+.. `play scenarios` to play multiple scenarios in a single junit5 test factory +
+=> in this case you can pass `beforeEach` and `afterEach` functions to be played before and after each scenario if needed.
+.. `play scenario` to play one scenario per junit5 test factory +
+=> in this case you can use junit5 annotations `@BeforeEach` and `@AfterEach`
 
 [source,kotlin]
 ----
@@ -135,19 +139,50 @@ To run a scenario Kest uses Junit5 engine:
 class TestHttpServer {
 
     @TestFactory
-    fun `http server says hello`() = `run scenarios`(
+    fun `http server says hello`() = `play scenarios`(
             scenario { ... },
             scenario { ... },
-            scenario { ... }
+            scenario { ... },
+
+            beforeEach = { ... },
+            afterEach = { ... }
     )
 
 
     @TestFactory
-    fun `http server says goodbye`() = `run scenarios`(
+    fun `http server says goodbye`() = `play scenarios`(
             scenario { ... },
             scenario { ... },
             scenario { ... }
+
+            beforeEach = { ... },
+            afterEach = { ... }
     )
+
+
+class TestHttpServer {
+
+    @BeforeEach
+    fun beforeEach() {
+        ...
+    }
+
+    @AfterEach
+    fun afterEach() {
+        ...
+    }
+
+    @TestFactory
+    fun `http server says hello - scenario 1`() = `play scenario`(
+            scenario { ... }
+    )
+
+    @TestFactory
+    fun `http server says hello - scenario 2`() = `play scenario`(
+            scenario { ... }
+    )
+
+}
 ----
 
 == It's Kotlin make it easy to read!
@@ -196,7 +231,7 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
 class TestHttpServer {
 
     @TestFactory
-    fun `http server hello`() = `run scenarios`(
+    fun `http server hello`() = `play scenarios`(
             scenario {
 
                 name { "api says hello and remembers it!" }
@@ -211,7 +246,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `http server goodbye`() = `run scenarios`(
+    fun `http server goodbye`() = `play scenarios`(
             scenario {
 
                 name { "api says goodbye and forgets people!" }
@@ -283,7 +318,7 @@ val `api says goodbye and forgets people!` = scenario {
 class TestHttpServer {
 
     @TestFactory
-    fun `http server hello`() = `run scenarios`(
+    fun `http server hello`() = `play scenarios`(
             `api says hello and remembers it!`,
 
             beforeEach = { startSampleApi() },
@@ -291,7 +326,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `http server goodbye`() = `run scenarios`(
+    fun `http server goodbye`() = `play scenarios`(
            `api says goodbye and forgets people!`,
 
             beforeEach = { startSampleApi() },
@@ -299,7 +334,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `http server hello and goodbye`() = `run scenarios`(
+    fun `http server hello and goodbye`() = `play scenarios`(
             `api says hello and remembers it!`,
             `api says goodbye and forgets people!`,
 
@@ -316,6 +351,9 @@ image::{gitplant}/doc/diag/model.puml[]
 
 When a scenario is launched, all its steps are launched sequentially, if one step fails the scenario fails without running remaining steps. +
 When a step is launched its execution is played, then assertions are played against execution result. +
+A step returns an object
+. which is invokable: you may reuse its result in another step
+. which you may complete by your own assertions, they will be added to assertions already defined on step
 
 == Available Steps
 

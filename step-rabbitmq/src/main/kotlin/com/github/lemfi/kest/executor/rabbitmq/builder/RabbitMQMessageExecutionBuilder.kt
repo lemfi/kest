@@ -6,7 +6,7 @@ import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.rabbitmq.executor.RabbitMQMessageExecution
 import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
-class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit>() {
+class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
 
     private var description: ExecutionDescription? = null
     fun description(l: ()->String) {
@@ -26,7 +26,7 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit>() {
     var timeout = rabbitMQProperty { timeout }
 
 
-    override fun build(): Execution<Unit> {
+    override fun toExecution(): Execution<Unit> {
         return RabbitMQMessageExecution(
             description,
             message,

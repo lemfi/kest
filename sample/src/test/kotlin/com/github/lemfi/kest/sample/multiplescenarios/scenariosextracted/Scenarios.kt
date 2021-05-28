@@ -1,4 +1,4 @@
-package com.github.lemfi.kest.sample.scenariosextracted
+package com.github.lemfi.kest.sample.multiplescenarios.scenariosextracted
 
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
@@ -25,7 +25,7 @@ val `api says goodbye and forgets people!` = scenario {
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
 
-    `given http call`<String> {
+    `given http call`<String>("say goodbye to Darth Vader") {
 
         url = "http://localhost:8080/hello?who=Darth Vader"
         method = "DELETE"
@@ -47,8 +47,8 @@ val `get and validate correct otp` =
         name { "get and validate correct otp" }
 
         val generatedOtps = generateOtps()
-
-        step {
+        
+        step("validate OTPs") {
             val otps = generatedOtps()
             (otps.indices).forEach {
                 `validate otp` { otps[it] }
@@ -61,7 +61,7 @@ val `get and validate wrong otp` = scenario {
 
     name { "get and validate wrong otp" }
 
-    `given http call`<JsonMap> {
+    `given http call`<JsonMap>("get OTP") {
 
         url = "http://localhost:8080/otp"
         method = "GET"
@@ -79,7 +79,7 @@ val `get and validate wrong otp` = scenario {
         )
     }
 
-    `given http call`<JsonMap> {
+    `given http call`<JsonMap>("try to validate wrong otp") {
 
         url = "http://localhost:8080/otp"
         method = "POST"

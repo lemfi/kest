@@ -14,6 +14,8 @@ Default return type is `ByteArray`
 
 === Parameters to provide on step
 
+* name: () -> String? // optional, give a name to your step to make scenario execution more readable
+
 * queueName: String // mandatory
 * messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
 

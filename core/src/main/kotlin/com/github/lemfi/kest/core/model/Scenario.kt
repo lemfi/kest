@@ -3,7 +3,7 @@ package com.github.lemfi.kest.core.model
 typealias Scenario = StandaloneScenario
 
 @JvmInline
-value class ScenarioName(val name: String)
+value class ScenarioName(val value: String)
 
 sealed class IScenario {
     abstract val name: ScenarioName
@@ -17,6 +17,7 @@ class StandaloneScenario(
 
 class NestedScenario<T>(
     override val name: ScenarioName,
+    val parentStep: Step<T>,
     override val steps: MutableList<Step<*>>,
     val result: () -> T
 ): IScenario()

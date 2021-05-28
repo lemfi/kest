@@ -8,7 +8,7 @@ import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.uber.cadence.context.ContextPropagator
 import kotlin.reflect.KFunction
 
-class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>) : ExecutionBuilder<RESULT>() {
+class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>) : ExecutionBuilder<RESULT> {
 
     private var description: ExecutionDescription? = null
     fun description(l: ()->String) {
@@ -35,7 +35,7 @@ class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>) : Exe
         this.params = contextPropagators
     }
 
-    override fun build(): Execution<RESULT> {
+    override fun toExecution(): Execution<RESULT> {
         return ActivityExecution(
             description, host, port, domain, tasklist, cls, activity, params, contextPropagators
         )

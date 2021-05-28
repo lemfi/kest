@@ -12,6 +12,7 @@ image::{gitplant}/step-http/doc/diag/model.puml[]
 
 == Parameters to provide on step
 
+* name: () -> String? // optional, give a name to your step to make scenario execution more readable
 * url: String // mandatory
 * method: String // optional, default is GET
 * body: Any? // optional, default is null
@@ -31,5 +32,5 @@ val stepResult = `given http call`<String> {
             "who": "Darth Vader"
         }
     """
-}.result
+}
 ----

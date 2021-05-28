@@ -14,25 +14,12 @@ sealed class ScenarioBuilder {
         name = ScenarioName(l())
     }
 
-    abstract fun build(): IScenario
+    abstract fun toScenario(): IScenario
 }
 
 class StandaloneScenarioBuilder: ScenarioBuilder() {
 
-    override fun build(): StandaloneScenario {
+    override fun toScenario(): StandaloneScenario {
         return StandaloneScenario(requireNotNull(name) { "a scenario should have a name dude!" } , steps)
-    }
-}
-
-class NestedScenarioBuilder<T>: ScenarioBuilder() {
-
-    private var result: () -> T = { throw IllegalArgumentException("A nested scenario must have a result!") }
-
-    fun returns(l: () -> T) {
-        result = l
-    }
-
-    override fun build(): NestedScenario<T> {
-        return NestedScenario(name!!, steps, result)
     }
 }

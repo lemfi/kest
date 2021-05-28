@@ -6,7 +6,7 @@ import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
 
-class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
+class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit> {
 
     private var description: ExecutionDescription? = null
     fun description(l: ()->String) {
@@ -21,7 +21,7 @@ class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
     var database = mongoDBProperty { database }
 
 
-    override fun build(): Execution<Unit> {
+    override fun toExecution(): Execution<Unit> {
         return MongoDBUpdateDocumentExecution(
             description,
             collection,

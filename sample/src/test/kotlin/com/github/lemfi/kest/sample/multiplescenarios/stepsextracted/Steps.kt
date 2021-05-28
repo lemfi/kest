@@ -1,4 +1,4 @@
-package com.github.lemfi.kest.sample.stepsextracted
+package com.github.lemfi.kest.sample.multiplescenarios.stepsextracted
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
@@ -9,7 +9,7 @@ import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
 
 fun ScenarioBuilder.`say hello`(who: String) {
-    `given http call`<String> {
+    `given http call`<String>("$who says hello") {
 
         url = "http://localhost:8080/hello"
         method = "POST"
@@ -27,7 +27,7 @@ fun ScenarioBuilder.`say hello`(who: String) {
 }
 
 fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
-    `given http call`<List<String>> {
+    `given http call`<List<String>>("${expectedGreeted.joinToString(", ")} were greeted") {
 
         url = "http://localhost:8080/hello"
         method = "GET"
@@ -41,7 +41,7 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
 }
 
 fun ScenarioBuilder.`get otp`() =
-    `given http call`<JsonMap> {
+    `given http call`<JsonMap>("generate OTP") {
 
         url = "http://localhost:8080/otp"
         method = "GET"
@@ -61,7 +61,9 @@ fun ScenarioBuilder.`get otp`() =
 
 fun ScenarioBuilder.`validate otp`(otp: String) =
 
-    `given http call`<JsonMap> {
+    `given http call`<JsonMap>("validate otp") {
+
+        description { "validate otp $otp" }
 
         url = "http://localhost:8080/otp"
         method = "POST"
@@ -74,7 +76,7 @@ fun ScenarioBuilder.`validate otp`(otp: String) =
         eq(204, stepResult.status)
     }
 
-fun ScenarioBuilder.`generate otps`() = step<List<String>> {
+fun ScenarioBuilder.`generate otps`() = step<List<String>>("generate 3 OTPs") {
 
     val otp1 = `get otp`().`map result to` { it.body["otp"] as String }
     val otp2 = `get otp`().`map result to` { it.body["otp"] as String }

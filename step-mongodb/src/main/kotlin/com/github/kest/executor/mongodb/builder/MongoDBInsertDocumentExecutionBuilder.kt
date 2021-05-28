@@ -7,7 +7,7 @@ import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.core.model.StepName
 
-class MongoDBInsertDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
+class MongoDBInsertDocumentExecutionBuilder : ExecutionBuilder<Unit> {
 
     private var description: ExecutionDescription? = null
     fun description(l: ()->String) {
@@ -19,7 +19,7 @@ class MongoDBInsertDocumentExecutionBuilder : ExecutionBuilder<Unit>() {
     var connection = mongoDBProperty { connection }
     var database = mongoDBProperty { database }
 
-    override fun build(): Execution<Unit> {
+    override fun toExecution(): Execution<Unit> {
         return MongoDBInsertDocumentExecution(description, document, collection, connection, database)
     }
 }
