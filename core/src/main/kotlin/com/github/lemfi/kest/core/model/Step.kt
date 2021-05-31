@@ -8,7 +8,7 @@ sealed class Step<T> {
     abstract var execution: () -> Execution<T>
     abstract val retry: RetryStep?
 
-    var postExecution: StepPostExecution<T> = StepPostExecution(null) { t -> t }
+    abstract var postExecution: IStepPostExecution<T, T>
 }
 
 class StandaloneStep<T>(
@@ -16,6 +16,8 @@ class StandaloneStep<T>(
     override val name: StepName?,
     override val retry: RetryStep?,
 ): Step<T>() {
+
+    override var postExecution: IStepPostExecution<T, T> = StandaloneStepPostExecution<T, T, T>(null) { t -> t }
 
     override lateinit var execution: () -> Execution<T>
 }
@@ -26,18 +28,22 @@ class NestedScenarioStep<T>(
     override val retry: RetryStep?,
 ): Step<T>() {
 
+    override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepPostExecution(null) { t -> t }
+
     override lateinit var execution: () -> Execution<T>
 }
 
 @JvmInline
 value class StepName(val value: String)
 
-typealias StepPostExecution<T> = IStepPostExecution<T, T, T>
+typealias StepPostExecution<T> = StandaloneStepPostExecution<T, T, T>
 
-class IStepPostExecution<I: Any?, T, R>(
-    private val pe: IStepPostExecution<I, *, T>?,
+sealed class IStepPostExecution<T, R>(
+    private val pe: IStepPostExecution<*, T>?,
     private val transformer: (T) -> R
 ) {
+
+    abstract fun <M, V: IStepPostExecution<R, M>> wrapPostExecution(mapper: (R) -> M): V
 
     constructor(asyncResult: () -> R) : this(null, { asyncResult() }) {
         resSet = true
@@ -53,7 +59,7 @@ class IStepPostExecution<I: Any?, T, R>(
         else throw IllegalAccessException("Step not played yet!")
     }
 
-    infix fun <M> `map result to`(l: (R) -> M): IStepPostExecution<I, R, M> = IStepPostExecution(this, l)
+    infix fun <M> `map result to`(l: (R) -> M): IStepPostExecution<R, M> = wrapPostExecution(l)
 
     operator fun invoke() = result()
 
@@ -61,11 +67,30 @@ class IStepPostExecution<I: Any?, T, R>(
         resSet = true
         res = t
     }
+}
+class StandaloneStepPostExecution<I: Any?, T, R>(
+    private val pe: StandaloneStepPostExecution<I, *, T>?,
+    transformer: (T) -> R
+): IStepPostExecution<T, R>(pe, transformer) {
+
+    override fun <M, V : IStepPostExecution<R, M>> wrapPostExecution(mapper: (R) -> M): V {
+        return StandaloneStepPostExecution(this, mapper) as V
+    }
 
     val assertions: MutableList<AssertionsBuilder.(I) -> Unit> = mutableListOf()
 
     fun addAssertion(assertion: AssertionsBuilder.(I) -> Unit) {
         pe?.addAssertion(assertion) ?: assertions.add(assertion)
+    }
+}
+
+class NestedScenarioStepPostExecution<T, R>(
+    pe: NestedScenarioStepPostExecution<*, T>?,
+    transformer: (T) -> R
+): IStepPostExecution<T, R>(pe, transformer) {
+
+    override fun <M, V : IStepPostExecution<R, M>> wrapPostExecution(mapper: (R) -> M): V {
+        return NestedScenarioStepPostExecution(this, mapper) as V
     }
 }
 

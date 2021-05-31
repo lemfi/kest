@@ -8,12 +8,12 @@ fun scenario(s: ScenarioBuilder.() -> Unit): Scenario {
     return StandaloneScenarioBuilder().apply(s).toScenario()
 }
 
-infix fun <I, T, R> IStepPostExecution<I, T, R>.`assert that`(l: AssertionsBuilder.(stepResult: I) -> Unit): IStepPostExecution<I, T, R> {
+infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(l: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
     addAssertion(l)
     return this
 }
 
-fun <T> ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<T>.() -> Unit): StepPostExecution<T> {
+fun <T> ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<T>.() -> Unit): NestedScenarioStepPostExecution<T, T> {
     val executionBuilder = NestedScenarioExecutionBuilder<T>(name)
 
     return NestedScenarioStep<T>(
@@ -25,15 +25,27 @@ fun <T> ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null,
         .addToScenario(this, executionBuilder, l)
 }
 
-fun <T, E: ExecutionBuilder<T>> Step<T>.addToScenario(
+fun <T, E: ExecutionBuilder<T>> StandaloneStep<T>.addToScenario(
     scenario: ScenarioBuilder,
     executionBuilder: E,
     executionConfiguration: E.() -> Unit
-): StepPostExecution<T> =
+): StandaloneStepPostExecution<T, T, T> =
     let { step ->
         scenario.steps.add(this)
         step.execution = { executionBuilder.apply(executionConfiguration).toExecution() }
-        step.postExecution
+        @Suppress("unchecked_cast")
+        step.postExecution as StandaloneStepPostExecution<T, T, T>
+    }
+
+fun <T, E: ExecutionBuilder<T>> NestedScenarioStep<T>.addToScenario(
+    scenario: ScenarioBuilder,
+    executionBuilder: E,
+    executionConfiguration: E.() -> Unit
+): NestedScenarioStepPostExecution<T, T> =
+    let { step ->
+        scenario.steps.add(this)
+        step.execution = { executionBuilder.apply(executionConfiguration).toExecution() }
+        step.postExecution as NestedScenarioStepPostExecution<T, T>
     }
 
 @JvmName("noResultStep")
@@ -69,8 +81,11 @@ private fun <T> retryableStepExecution(retry: Int, delay: Long, step: Step<T>, e
 
     try {
         val res = execution.execute()
-        step.postExecution.assertions.forEach { assert ->
-            assertion.assert(res)
+        if (step.postExecution is StandaloneStepPostExecution<*, *, *>) {
+            @Suppress("unchecked_cast")
+            (step.postExecution as StandaloneStepPostExecution<T, *, *>).assertions.forEach { assert ->
+                assertion.assert(res)
+            }
         }
         step.postExecution.setResult(res)
 
