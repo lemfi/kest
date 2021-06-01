@@ -3,15 +3,17 @@ package com.github.lemfi.kest.cadence.executor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.uber.cadence.activity.ActivityOptions
 import com.uber.cadence.client.WorkflowClient
+import com.uber.cadence.client.WorkflowClientOptions
 import com.uber.cadence.client.WorkflowOptions
 import com.uber.cadence.common.RetryOptions
 import com.uber.cadence.context.ContextPropagator
-import com.uber.cadence.worker.Worker
+import com.uber.cadence.serviceclient.ClientOptions
+import com.uber.cadence.serviceclient.WorkflowServiceTChannel
+import com.uber.cadence.worker.WorkerFactory
 import com.uber.cadence.worker.WorkerOptions
 import com.uber.cadence.workflow.Workflow
 import com.uber.cadence.workflow.WorkflowMethod
@@ -39,24 +41,24 @@ class ActivityExecution<RESULT>(
     @Suppress("unchecked_cast")
     override fun execute(): RESULT {
 
-        Worker.Factory(cadenceHost, cadencePort, cadenceDomain).apply {
-            val worker = newWorker(
-                "KEST_TL", WorkerOptions
-                    .Builder()
-                    .setReportActivityFailureRetryOptions(
-                        RetryOptions.Builder()
-                            .setInitialInterval(Duration.ofSeconds(5))
-                            .setExpiration(Duration.ofMinutes(30))
-                            .setMaximumInterval(Duration.ofMinutes(1))
-                            .setMaximumAttempts(10)
-                            .build()
-                    )
+        WorkerFactory.newInstance(
+            WorkflowClient.newInstance(
+                WorkflowServiceTChannel(ClientOptions.newBuilder()
+                    .setHost(cadenceHost)
+                    .setPort(cadencePort)
                     .build()
+                ),
+                WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
             )
+        )
+            .apply {
+                val worker = newWorker(
+                    "KEST_TL", WorkerOptions.defaultInstance()
+                )
 
-            worker.registerWorkflowImplementationTypes(com.github.lemfi.kest.cadence.executor.Workflow::class.java)
+                worker.registerWorkflowImplementationTypes(com.github.lemfi.kest.cadence.executor.Workflow::class.java)
 
-        }.start()
+            }.start()
 
         val parameterTypes = activity.parameters.subList(1, activity.parameters.size).also {
             if ((params?.size ?: 0) != it.size) throw AssertionFailedError(
@@ -66,7 +68,14 @@ class ActivityExecution<RESULT>(
             )
         }
 
-        return WorkflowClient.newInstance(cadenceHost, cadencePort, cadenceDomain)
+        return WorkflowClient.newInstance(
+            WorkflowServiceTChannel(ClientOptions.newBuilder()
+                .setHost(cadenceHost)
+                .setPort(cadencePort)
+                .build()
+            ),
+            WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
+        )
             .newWorkflowStub(IWorkflow::class.java, WorkflowOptions.Builder()
                 .setExecutionStartToCloseTimeout(Duration.ofSeconds(30))
                 .setTaskList("KEST_TL")
@@ -137,6 +146,7 @@ class Workflow : IWorkflow {
     }
 
     fun <T> getActivity(cls: Class<T>, tasklist: String): T {
+
         return Workflow.newActivityStub(
             cls,
             ActivityOptions.Builder()

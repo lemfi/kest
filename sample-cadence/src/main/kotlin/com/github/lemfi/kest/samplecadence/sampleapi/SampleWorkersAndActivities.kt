@@ -1,16 +1,32 @@
 package com.github.lemfi.kest.samplecadence.sampleapi
 
 import com.uber.cadence.activity.ActivityOptions
-import com.uber.cadence.worker.Worker
+import com.uber.cadence.client.WorkflowClient
+import com.uber.cadence.client.WorkflowClientOptions
+import com.uber.cadence.serviceclient.ClientOptions
+import com.uber.cadence.serviceclient.WorkflowServiceTChannel
+import com.uber.cadence.worker.WorkerFactory
+import com.uber.cadence.worker.WorkerFactoryOptions
 import com.uber.cadence.workflow.Workflow
 import com.uber.cadence.workflow.WorkflowMethod
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 
-var factory: Worker.Factory? = null
+var factory: WorkerFactory? = null
 
 fun startActivitiesAndWorkflows() {
 
-    if (factory == null) factory = Worker.Factory("kest")
+    if (factory == null) factory =
+        WorkerFactory.newInstance(
+            WorkflowClient.newInstance(
+                WorkflowServiceTChannel(ClientOptions.defaultInstance()),
+                WorkflowClientOptions.newBuilder()
+                    .setDomain("kest")
+                    .build()
+            ),
+            WorkerFactoryOptions.newBuilder().build()
+        )
+
     factory!!.newWorker("SAMPLE_CADENCE").let { worker ->
         worker.registerActivitiesImplementations(HelloActivity(), StartConversationActivity(), MayTheForceBeWithYouActivity())
         worker.registerWorkflowImplementationTypes(HelloWorldWorkflow::class.java)
@@ -20,7 +36,7 @@ fun startActivitiesAndWorkflows() {
 }
 
 fun stopActivitiesAndWorkflows() {
-    factory?.shutdown()
+    factory?.awaitTermination(200, TimeUnit.MILLISECONDS)
     factory = null
 }
 

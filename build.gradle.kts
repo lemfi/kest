@@ -12,7 +12,7 @@ val slf4jVersion: String by extra { "1.7.28" }
 val junitVersion: String by extra { "5.5.0" }
 val jacksonVersion: String by extra { "2.11.3" }
 val okhttpVersion: String by extra { "4.9.0" }
-val cadenceVersion: String by extra { "2.7.8" }
+val cadenceVersion: String by extra { "3.1.0" }
 val mongoVersion: String by extra { "4.1.1" }
 val rabbitmqVersion: String by extra { "5.7.3" }
 

@@ -2,12 +2,13 @@ package com.github.lemfi.kest.cadence.executor
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
 import com.uber.cadence.client.WorkflowClient
+import com.uber.cadence.client.WorkflowClientOptions
 import com.uber.cadence.client.WorkflowOptions
-import com.uber.cadence.common.RetryOptions
 import com.uber.cadence.context.ContextPropagator
-import com.uber.cadence.worker.Worker
+import com.uber.cadence.serviceclient.ClientOptions
+import com.uber.cadence.serviceclient.WorkflowServiceTChannel
+import com.uber.cadence.worker.WorkerFactory
 import com.uber.cadence.worker.WorkerOptions
 import org.opentest4j.AssertionFailedError
 import java.time.Duration
@@ -40,25 +41,25 @@ class WorkflowExecution<RESULT>(
             ?.toSet()
             ?.let {
                 it.forEach { tasklist ->
-                    Worker.Factory(cadenceHost, cadencePort, cadenceDomain).apply {
-                        val worker = newWorker(
-                            tasklist, WorkerOptions
-                                .Builder()
-                                .setReportActivityFailureRetryOptions(
-                                    RetryOptions.Builder()
-                                        .setInitialInterval(Duration.ofSeconds(5))
-                                        .setExpiration(Duration.ofSeconds(30))
-                                        .setMaximumInterval(Duration.ofSeconds(10))
-                                        .setMaximumAttempts(2)
-                                        .build()
-                                )
+                    WorkerFactory.newInstance(
+                        WorkflowClient.newInstance(
+                            WorkflowServiceTChannel(ClientOptions.newBuilder()
+                                .setHost(cadenceHost)
+                                .setPort(cadencePort)
                                 .build()
+                            ),
+                            WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
                         )
+                    )
+                        .apply {
+                            val worker = newWorker(
+                                tasklist, WorkerOptions.defaultInstance()
+                            )
 
-                        worker.registerActivitiesImplementations(*activities.filter { it.second == tasklist }
-                            .map { it.first }.toTypedArray())
+                            worker.registerActivitiesImplementations(*activities.filter { it.second == tasklist }
+                                .map { it.first }.toTypedArray())
 
-                    }.start()
+                        }.start()
                 }
             }
 
@@ -76,7 +77,14 @@ class WorkflowExecution<RESULT>(
         val method = parameterTypes?.let { workflowClass.getMethod(workflow.name, *parameterTypes.toTypedArray()) }
             ?: workflowClass.getMethod(workflow.name)
 
-        return WorkflowClient.newInstance(cadenceHost, cadencePort, cadenceDomain)
+        return WorkflowClient.newInstance(
+            WorkflowServiceTChannel(ClientOptions.newBuilder()
+                .setHost(cadenceHost)
+                .setPort(cadencePort)
+                .build()
+            ),
+            WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
+        )
             .newWorkflowStub(workflowClass, WorkflowOptions.Builder()
                 .setExecutionStartToCloseTimeout(Duration.ofMinutes(3))
                 .apply {
