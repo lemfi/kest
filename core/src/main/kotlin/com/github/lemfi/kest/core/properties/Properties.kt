@@ -10,9 +10,9 @@ val config: MutableMap<Class<*>, Any> = mutableMapOf()
 
 inline fun <reified E : Any, R> property(l: E.() -> R): R {
     val conf =
-        when (config.get(E::class.java)) {
+        when (config[E::class.java]) {
             null ->
-                listOf(System.getProperty("kest-conf", ""), System.getenv("kest-conf"), "/kest.yml").let { source ->
+                listOf(System.getProperty("kest-conf", ""), System.getenv().getOrDefault("KEST_CONF", ""), "/kest.yml").let { source ->
                     var configuration: ConfigResult<E> = ConfigFailure.UnknownSource("").invalid()
                     val sourcesIterator = source.iterator()
                     while (configuration.isInvalid() && sourcesIterator.hasNext()) {
@@ -21,7 +21,7 @@ inline fun <reified E : Any, R> property(l: E.() -> R): R {
                     configuration.getUnsafe()
                 }
                     .apply { config[E::class.java] = this }
-            else -> config.get(E::class.java) as E
+            else -> config[E::class.java] as E
         }
     return conf.l()
 }
