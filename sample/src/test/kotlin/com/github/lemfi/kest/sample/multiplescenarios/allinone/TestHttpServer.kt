@@ -201,6 +201,8 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
+            } `map result to` {
+                it.body["otp"] as String
             } `assert that` { stepResult ->
 
                 eq(201, stepResult.status)
@@ -211,7 +213,7 @@ class TestHttpServer {
                         }
                     """.trimIndent(), stepResult.body
                 )
-            } `map result to` { it.body["otp"] as String }
+            }
 
             `given http call`<JsonMap>("validate an OTP") {
 
