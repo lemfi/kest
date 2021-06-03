@@ -17,16 +17,12 @@ class RabbitMQQueueReaderExecutionBuilder<T> : ExecutionBuilder<T> {
     lateinit var messageTransformer: ByteArray.() -> T
     var deleteQueue = false
 
-    var protocol = rabbitMQProperty { protocol }
-    var host = rabbitMQProperty { host }
-    var port = rabbitMQProperty { port }
+    var connection = rabbitMQProperty { connection }
     var vhost = rabbitMQProperty { vhost }
-    var user = rabbitMQProperty { user }
-    var password = rabbitMQProperty { password }
 
     override fun toExecution(): Execution<T> {
         return RabbitMQQueueReaderExecution(
-            description, queue, deleteQueue, protocol, host, port, vhost, user, password, messageTransformer
+            description, queue, deleteQueue, connection, vhost, messageTransformer
         )
     }
 }

@@ -14,15 +14,10 @@ import java.util.*
 data class RabbitMQMessageExecution(
     override val description: ExecutionDescription?,
     val message: String,
-    val protocol: String,
-    val host: String,
-    val port: Int,
+    val connection: String,
     val vhost: String,
-    val user: String,
-    val password: String,
     val exchange: String,
     val routingKey: String,
-    val timeout: Long,
     val rabbitMQSnifferProp: RabbitMQSnifferProp,
 ) : Execution<Unit>() {
 
@@ -31,20 +26,11 @@ data class RabbitMQMessageExecution(
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
     override fun execute() {
 
-        if (rabbitMQSnifferProp.active && rabbitMQSnifferProp.startedByKest) startRabbitMQProxy(
-            user,
-            password,
-            host,
-            port,
-            encodedVhost,
-            rabbitMQSnifferProp
-        )
-
         val listeningQueue = "kest-${UUID.randomUUID()}"
 
         ConnectionFactory().also {
 
-            it.setUri("$protocol://$user:$password@$host:$port/$encodedVhost")
+            it.setUri("$connection/$encodedVhost")
         }
             .newConnection("kest connection")
             .createChannel().apply {
@@ -85,14 +71,12 @@ data class RabbitMQMessageExecution(
                     }
                 })
 
-            var waiting = timeout
+            var waiting = rabbitMQSnifferProp.ackTimeout
             while (!messageConsumed && waiting > 0) {
                 waiting -= 100
                 Thread.sleep(100)
             }
             if (waiting <= 0) throw AssertionFailedError("Message not consumed in time")
-        } else {
-            Thread.sleep(timeout)
         }
 
 

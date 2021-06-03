@@ -13,33 +13,30 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
         description = ExecutionDescription(l())
     }
 
-    lateinit var message: String
-    lateinit var routingKey: String
+    fun publish(message: ()->String) = RabbitMQMessage(message()).also { this.message = it }
+    infix fun RabbitMQMessage.`to exchange`(exchange: String) = also { it.exchange = exchange }
+    infix fun RabbitMQMessage.`with routing key`(routingKey: String?) = also { it.routingKey = routingKey }
 
-    var protocol = rabbitMQProperty { protocol }
-    var host = rabbitMQProperty { host }
-    var port = rabbitMQProperty { port }
+    private lateinit var message: RabbitMQMessage
+
+    var connection = rabbitMQProperty { connection }
     var vhost = rabbitMQProperty { vhost }
-    var user = rabbitMQProperty { user }
-    var password = rabbitMQProperty { password }
-    var exchange = rabbitMQProperty { exchange }
-    var timeout = rabbitMQProperty { timeout }
 
 
     override fun toExecution(): Execution<Unit> {
         return RabbitMQMessageExecution(
             description,
-            message,
-            protocol,
-            host,
-            port,
+            message.message,
+            connection,
             vhost,
-            user,
-            password,
-            exchange,
-            routingKey,
-            timeout,
-            rabbitMQProperty { consumedMessageListener },
+            message.exchange ?: rabbitMQProperty { exchange },
+            requireNotNull(message.routingKey) { "please give a routing key for publishing a message" } ,
+            rabbitMQProperty { rabbitProxy },
         )
     }
 }
+data class RabbitMQMessage(
+    val message: String,
+    var routingKey: String? = null,
+    var exchange: String? = null
+)

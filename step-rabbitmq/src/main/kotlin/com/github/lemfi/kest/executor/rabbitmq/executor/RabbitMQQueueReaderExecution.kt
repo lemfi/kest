@@ -11,12 +11,8 @@ class RabbitMQQueueReaderExecution<T>(
     override val description: ExecutionDescription?,
     val queueName: String,
     val deleteQueue: Boolean,
-    val protocol: String,
-    val host: String,
-    val port: Int,
+    val connection: String,
     vhost: String,
-    val user: String,
-    val password: String,
     val l: ByteArray.() -> T,
 ) : Execution<T>() {
 
@@ -26,7 +22,7 @@ class RabbitMQQueueReaderExecution<T>(
 
         return ConnectionFactory().also {
 
-            it.setUri("$protocol://$user:$password@$host:$port/$encodedVhost")
+            it.setUri("$connection/$encodedVhost")
         }
             .newConnection("kest connection")
             .createChannel().run {

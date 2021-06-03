@@ -2,10 +2,51 @@
 
 = RabbitMQ Steps
 
-Two steps are available:
-
+* create a queue ````create rabbitmq queue````
 * publish a message on a queue ````publish rabbitmq message````
 * read a message from a queue ````given message from rabbitmq queue````
+
+== Create a queue on RabbitMQ
+
+This step may seem useless, consider it as a helper to build scenarios
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQQueueCreationExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** description: () -> String? // optional, describe execution
+** message: QueueAndBinding // mandatory, configuration of queue to create
+*** queue: String // mandatory, queue to create
+*** exchange: String? // optional, if not set no binding will be created to any exchange
+*** routingKey: String // optional, routing key to bind on exchange
++
+[source,kotlin]
+----
+// QueueAndBinding is built by a combination if three functions written as follows:
+`create queue` { "world" } `and bind it to exchange` "universe" `with routing key` "galaxy"
+----
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to / +
++
+connection and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+`create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
+    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" `with routing key` "Force"
+}
+----
 
 == Read a message from rabbitMQ
 
@@ -14,28 +55,24 @@ Default return type is `ByteArray`
 
 === Parameters to provide on step
 
-* name: () -> String? // optional, give a name to your step to make scenario execution more readable
-
-* queueName: String // mandatory
-* messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
-
-* protocol: String // optional, amqp or amqps, defaults to amqp
-* host: String // optional, defaults to localhost
-* port: String // optional, defaults to 5672
-* vhost: String // optional, defaults to /
-* user: String // optional, defaults to guest
-* password: String // optional, defaults to guest
-
-protocol / host / port / vhost / user / password can be set globally on kest configuration file:
-
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQMessageExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** description: () -> String? // optional, describe execution
+** queue: String // queue from which read message
+** messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
+** deleteQueue: Boolean // Should queue be deleted after reading, defaults to false
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to / +
++
+connection and vhost can be set globally on kest configuration file:
++
 [source,yml,title=kest.yml]
 ----
 rabbitmq:
-  host: localhost
-  port: 5672
-  user: guest
-  password: guest
-  vhost: /
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
 ----
 
 === Sample
@@ -45,7 +82,7 @@ rabbitmq:
 `given message from rabbitmq queue`<String> {
         queue = "kest"
         messageTransformer = { toString(Charsets.UTF_8) }
-    }
+}
 ----
 
 N.B: For messages with Json format you may use `toJson` function, which maps `ByteArray` to a `JsonMap`. +
@@ -55,44 +92,41 @@ See link:../json/README.adoc[Kest JSON] documentation for more details.
 
 === Parameters to provide on step
 
-* message: String // mandatory, message to publish
-* routingKey: String // mandatory,
-* exchange: String // optional, defaults to "" (routing key has to be queue name)
-
-* protocol: String // optional, amqp or amqps, defaults to amqp
-* host: String // optional, defaults to localhost
-* port: String // optional, defaults to 5672
-* vhost: String // optional, defaults to /
-* user: String // optional, defaults to guest
-* password: String // optional, defaults to guest
-* timeout: String // time in milliseconds to wait before message is assumed consumed, defaults to 2000
-
-protocol / host / port / vhost / user / password / timeout / exchange can be set globally on kest configuration file:
-
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQMessageExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** description: () -> String? // optional, describe execution
+** message: RabbitMQMessage // mandatory, configuration of message to deliver
+*** message: String // mandatory, message to deliver
+*** exchange: String? // optional, exchange on which deliver message, defaults to ""
+*** routingKey: String // mandatory, routing key for message
++
+[source,kotlin]
+----
+// RabbitMQMessage is built by a combination if three functions written as follows:
+publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key"
+----
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to /
++
+connection, vhost and exchange can be set globally on kest configuration file:
++
 [source,yml,title=kest.yml]
 ----
 rabbitmq:
-  host: localhost
-  port: 5672
-  user: guest
-  password: guest
-  vhost: /
-  exchange:
-  timeout: 2000
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+  exchange: my_exchange
 ----
 
 === Sample
 
 [source,kotlin]
 ----
-`publish rabbitmq message` {
-            message = """
-            {
-                "hello": "world"
-            }
-            """
-            routingKey = "universe"
-        }
+`publish rabbitmq message`("say hello world through universe") {
+    publish { """ { "hello": "world" } """ } `to exchange` "" `with routing key` "universe"
+}
 ----
 
 === Message consumed listener
@@ -107,6 +141,6 @@ You just have to connect your backend to this proxy server instead of RabbitMQ, 
 [source,yaml,title="Configuration for Rabbit Proxy Server"]
 ----
 rabbitmq:
-  consumedMessageListener:
+  rabbitProxy:
     active: true
 ----

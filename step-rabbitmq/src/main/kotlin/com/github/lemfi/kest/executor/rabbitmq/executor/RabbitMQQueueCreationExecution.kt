@@ -2,20 +2,15 @@ package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.executor.rabbitmq.builder.QueueAndBinding
 import com.rabbitmq.client.ConnectionFactory
 import java.net.URLEncoder
 
 class RabbitMQQueueCreationExecution(
     override val description: ExecutionDescription?,
-    val queueName: String,
-    val bind: Pair<String, String>,
-    val protocol: String,
-    val host: String,
-    val port: Int,
+    val queueAndBinding: QueueAndBinding,
+    val connection: String,
     vhost: String,
-    val user: String,
-    val password: String,
 ) : Execution<Unit>() {
 
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
@@ -23,13 +18,14 @@ class RabbitMQQueueCreationExecution(
     override fun execute() {
 
         ConnectionFactory().also {
-            it.setUri("$protocol://$user:$password@$host:$port/$encodedVhost")
+            it.setUri("$connection/$encodedVhost")
         }
             .newConnection("kest connection")
             .createChannel()
             .apply {
-                queueDeclare(queueName, false, false, true, mutableMapOf())
-                queueBind(queueName, bind.first, bind.second)
+                queueDeclare(queueAndBinding.queue, false, false, true, mutableMapOf())
+                if (queueAndBinding.exchange != null && queueAndBinding.routingKey != null)
+                    queueBind(queueAndBinding.queue, queueAndBinding.exchange, queueAndBinding.routingKey)
             }
     }
 }

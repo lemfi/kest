@@ -8,26 +8,25 @@ import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
 class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
 
+    fun `create queue`(name: ()-> String) = QueueAndBinding(name()).also { queue = it }
+    infix fun QueueAndBinding.`and bind it to exchange`(exchange: String) = this.also { it.exchange = exchange }
+    infix fun QueueAndBinding.`with routing key`(routingKey: String) = this.also { it.routingKey = routingKey }
+
     private var description: ExecutionDescription? = null
     fun description(l: ()->String) {
         description = ExecutionDescription(l())
     }
 
-    lateinit var queue: String
+    private lateinit var queue: QueueAndBinding
 
-    /** exchange / routing key */
-    lateinit var bind: Pair<String, String>
-
-    var protocol = rabbitMQProperty { protocol }
-    var host = rabbitMQProperty { host }
-    var port = rabbitMQProperty { port }
+    var connection = rabbitMQProperty { connection }
     var vhost = rabbitMQProperty { vhost }
-    var user = rabbitMQProperty { user }
-    var password = rabbitMQProperty { password }
 
     override fun toExecution(): Execution<Unit> {
         return RabbitMQQueueCreationExecution(
-            description, queue, bind, protocol, host, port, vhost, user, password,
+            description, queue, connection, vhost,
         )
     }
 }
+
+data class QueueAndBinding(val queue: String, var exchange: String? = null, var routingKey: String? = null)

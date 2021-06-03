@@ -8,24 +8,19 @@ data class RabbitMQProperties(
 )
 
 data class RabbitMQProp(
-    val protocol: String = "amqp",
-    val host: String = "localhost",
-    val port: Int = 5672,
-    val user: String = "guest",
-    val password: String = "guest",
+    val connection: String = "amqp://guest:guest@localhost:5672",
     val vhost: String = "/",
     val exchange: String = "",
-    val timeout: Long = 2000,
-    val consumedMessageListener: RabbitMQSnifferProp = RabbitMQSnifferProp(),
+    val rabbitProxy: RabbitMQSnifferProp = RabbitMQSnifferProp(),
 )
 
 data class RabbitMQSnifferProp(
     val active: Boolean = false,
-    val startedByKest: Boolean = true,
+    val ackTimeout: Long = 10000,
     val port: Int = 5673,
 )
 
-inline fun <R> rabbitMQProperty(crossinline l: RabbitMQProp.() -> R): R {
+fun <R> rabbitMQProperty(l: RabbitMQProp.() -> R): R {
     val shortcut: RabbitMQProperties.() -> R = { rabbitmq.l() }
     return try {
         property(shortcut)

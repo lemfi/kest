@@ -17,6 +17,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
+import java.net.URI
 
 private val replies: MutableMap<Pair<String, Int>, String?> = mutableMapOf()
 
@@ -27,34 +28,32 @@ private lateinit var channel: Channel
 
 fun main(args: List<String>) {
     startRabbitMQProxy(
-        args[0], args[1], args[2], args[3].toInt(), args[4], RabbitMQSnifferProp(
-            true, false, args[5].toInt()
-        )
+        args[0], args[1], args[2].toInt()
     )
 }
 
+
 @Suppress("BlockingMethodInNonBlockingContext")
 fun startRabbitMQProxy(
-    rabbitUser: String,
-    rabbitPassword: String,
-    rabbitHost: String,
-    rabbitPort: Int,
-    rabbitVhost: String,
-    properties: RabbitMQSnifferProp
+    connection: String,
+    vhost: String,
+    port: Int
 ) {
 
     if (server == null) {
 
+        val uri = URI.create("$connection/$vhost")
         GlobalScope.launch {
-            server = ServerSocket(properties.port)
+            server = ServerSocket(port)
 
             channel = ConnectionFactory().apply {
-                setUri("amqp://$rabbitUser:$rabbitPassword@$rabbitHost:$rabbitPort/$rabbitVhost")
+                setUri(uri)
             }
                 .newConnection("sniffer connection")
                 .createChannel()
 
-            rabbitmqSocket = Socket(rabbitHost, rabbitPort)
+
+            rabbitmqSocket = Socket(uri.host, uri.port)
 
             while (true) {
                 val proxyServer = server!!.accept()
@@ -62,6 +61,13 @@ fun startRabbitMQProxy(
             }
         }
     }
+    while (server == null) { /* wait for server to be up */ }
+}
+
+@Suppress("BlockingMethodInNonBlockingContext")
+fun stopRabbitMQProxy() {
+    server?.close()
+    server = null
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")
