@@ -96,6 +96,6 @@ private fun <T> retryableStepExecution(retry: Int, delay: Long, step: Step<T>, e
         } else
             throw e
     } catch (e: Throwable) {
-        assertion.fail(e.localizedMessage, e)
+        assertion.fail(e.message ?: "null", e)
     }
 }
