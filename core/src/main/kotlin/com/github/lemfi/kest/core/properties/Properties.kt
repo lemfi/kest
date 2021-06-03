@@ -6,11 +6,11 @@ import com.sksamuel.hoplite.ConfigResult
 import com.sksamuel.hoplite.fp.invalid
 import org.slf4j.LoggerFactory
 
-val config: MutableMap<Class<*>, Any> = mutableMapOf()
+val kestconfig: MutableMap<Class<*>, Any> = mutableMapOf()
 
 inline fun <reified E : Any, R> property(l: E.() -> R): R {
     val conf =
-        when (config[E::class.java]) {
+        when (kestconfig[E::class.java]) {
             null ->
                 listOf(System.getProperty("kest-conf", ""), System.getenv().getOrDefault("KEST_CONF", ""), "/kest.yml").let { source ->
                     var configuration: ConfigResult<E> = ConfigFailure.UnknownSource("").invalid()
@@ -20,8 +20,10 @@ inline fun <reified E : Any, R> property(l: E.() -> R): R {
                     }
                     configuration.getUnsafe()
                 }
-                    .apply { config[E::class.java] = this }
-            else -> config[E::class.java] as E
+                    .apply { kestconfig[E::class.java] = this }
+            else -> {
+                kestconfig[E::class.java] as E
+            }
         }
     return conf.l()
 }
