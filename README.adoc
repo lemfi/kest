@@ -13,11 +13,11 @@ Easy to use, easy to extend.
 
 [source,kotlin]
 ----
-    implementation("com.github.lemfi.kest:core:0.1.2")
-    implementation("com.github.lemfi.kest:junit5:0.1.2")
+    implementation("com.github.lemfi.kest:core:0.1.3")
+    implementation("com.github.lemfi.kest:junit5:0.1.3")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.1.2")
+    implementation("com.github.lemfi.kest:step-http:0.1.3")
 ----
 
 === Maven
@@ -28,13 +28,13 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>core</artifactId>
-        <version>0.1.2</version>
+        <version>0.1.3</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>junit5</artifactId>
-        <version>0.1.2</version>
+        <version>0.1.3</version>
         <scope>test</scope>
     </dependency>
 
@@ -42,7 +42,7 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
-        <version>0.1.2</version>
+        <version>0.1.3</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
