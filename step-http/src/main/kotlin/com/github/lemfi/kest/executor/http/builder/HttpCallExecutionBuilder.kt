@@ -17,12 +17,11 @@ class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResp
     var method: String = "GET"
     var body: Any? = null
     var contentType: String? = null
-    var expectedContentType: String? = null
     val headers = mutableMapOf<String, String>()
     var followRedirect = false
 
 
     override fun toExecution(): Execution<HttpResponse<T>> {
-        return HttpExecution(description, url, method, cls, body, headers, contentType, expectedContentType, followRedirect)
+        return HttpExecution(description, url, method, cls, body, headers, contentType, followRedirect)
     }
 }

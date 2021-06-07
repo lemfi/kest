@@ -24,9 +24,10 @@ data class HttpExecution<T>(
     val body: Any? = null,
     val headers: MutableMap<String, String>,
     val contentType: String?,
-    val accept: String?,
     val followRedirect: Boolean
 ) : Execution<HttpResponse<T>>() {
+
+    val accept = headers.getOrDefault("Accept", null)
 
     companion object {
         private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Pair<Any?, String?>>()
@@ -36,7 +37,7 @@ data class HttpExecution<T>(
                         try {
                             jacksonObjectMapper().readValue(data, it)
                         } catch (e: Throwable) {
-                            throw DeserializeException(it, data)
+                            throw DeserializeException(it, data, e)
                         } to data
                     } ?: null to null
                 }
