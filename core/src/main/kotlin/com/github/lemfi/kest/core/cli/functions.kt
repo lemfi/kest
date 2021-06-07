@@ -89,13 +89,11 @@ private fun <T> retryableStepExecution(retry: Int, delay: Long, step: Step<T>, e
         }
         step.postExecution.setResult(res)
 
-    } catch (e: AssertionFailedError) {
+    } catch (e: Throwable) {
         if (retry > 0) {
             Thread.sleep(delay)
             retryableStepExecution(retry - 1, delay, step, execution)
-        } else
-            throw e
-    } catch (e: Throwable) {
-        assertion.fail(e.message ?: "null", e)
+        } else if (e is AssertionFailedError) throw e
+        else assertion.fail(e.message ?: "null", e)
     }
 }
