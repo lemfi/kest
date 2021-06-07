@@ -2,8 +2,6 @@ package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
-import com.github.lemfi.kest.executor.rabbitmq.listener.startRabbitMQProxy
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
 import com.rabbitmq.client.*
 import org.opentest4j.AssertionFailedError

@@ -2,7 +2,6 @@ package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
 import com.rabbitmq.client.ConnectionFactory
 import org.opentest4j.AssertionFailedError
 import java.net.URLEncoder
