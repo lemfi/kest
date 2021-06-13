@@ -9,6 +9,7 @@ val coroutineVersion: String by extra { "1.4.1" }
 val opentest4jVersion: String by extra { "1.2.0" }
 val hopliteVersion: String by extra { "1.3.8" }
 val slf4jVersion: String by extra { "1.7.28" }
+val junitLauncherVersion: String by extra { "1.7.2" }
 val junitVersion: String by extra { "5.5.0" }
 val jacksonVersion: String by extra { "2.11.3" }
 val okhttpVersion: String by extra { "4.9.0" }
