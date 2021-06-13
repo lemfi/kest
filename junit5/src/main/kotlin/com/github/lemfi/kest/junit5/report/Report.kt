@@ -74,11 +74,12 @@ td.summary {
     color: #FFFFFF;
 }
 
-.summary.ok {
-    background-color: var(--acid-green);
-}
 .summary.ko {
     background-color: var(--red);
+}
+
+.summary.ok {
+    background-color: var(--acid-green);
 }
 
 .ratio {
@@ -102,24 +103,17 @@ ul {
     list-style-type: none;
 }
 
-dl::before {
-    content: "\2B1B";
-    float: left;
-    padding: 0 4px 0 0;
-}
-
-dl.ok::before {
-    color: var(--acid-green);
-}
-
-dl.ko::before {
+dl.ko span.status {
     color: var(--red);
+}
+
+dl.ok span.status {
+    color: var(--acid-green);
 }
 
 dt {
     padding: 2px 5px;
     margin: 1px 0;
-
 }
 
 .hidden {
@@ -131,8 +125,13 @@ dt a {
     color: black;
 }
 
-dt span {
+dt span.time {
     float: right;
+}
+
+dt span.status {
+    border-left: solid 18px;
+    padding: 0 4px 0 0;
 }
 
 dl {
@@ -215,7 +214,7 @@ pre.err {
         <ul>
             <li>
                 <dl class="${if (this.success) "ok" else "ko"}">
-                    <dt><a href="javascript:void(0)" onclick="javascript:showHide('$htmlId')">${this.name} <span>${this.duration.duration()}</span></a></dt>
+                    <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$htmlId')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
                     <dd id="$htmlId" class="hidden">
                         ${buildTests(children(id))}
                     </dd>
@@ -229,7 +228,7 @@ pre.err {
         UUID.randomUUID().toString().let { id ->
             """   
 <dl class="${if (this.success) "ok" else "ko"}">
-    <dt><a href="javascript:void(0)" onclick="javascript:showHide('$id')">${this.name} <span>${this.duration.duration()}</span></a></dt>
+    <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$id')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
     <dd id="$id" class="hidden">
 ${if (console.isNotBlank()) "<pre class=\"out\">$console</pre>" else ""}
 ${if (failure.isNotBlank()) "<pre class=\"err\">$failure</pre>" else ""}
