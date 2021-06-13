@@ -26,8 +26,8 @@ fun IScenario.toDynamicContainer(beforeEach: (() -> Unit)? = null, afterEach: ((
 
 fun `play scenarios`(
     vararg scenario: Scenario,
-    beforeEach: () -> Unit = {},
-    afterEach: () -> Unit = {}
+    beforeEach: (() -> Unit)? = null,
+    afterEach: (() -> Unit)? = null
 ): List<DynamicNode> {
 
     autoconfigure()
