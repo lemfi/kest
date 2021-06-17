@@ -2,8 +2,6 @@ package com.github.lemfi.kest.executor.http.executor
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.executor.http.model.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -17,7 +15,6 @@ import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 data class HttpExecution<T>(
-    override val description: ExecutionDescription?,
     val url: String,
     val method: String,
     val returnType: Class<T>,

@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.model.*
 
 class NestedScenarioExecutionBuilder<T>(name: String?): ScenarioBuilder(), ExecutionBuilder<T> {
 
-    init { name?.also { name { it } } }
+    init { name { name ?: "anonymous nested scenario" } }
 
     lateinit var step: Step<T>
 

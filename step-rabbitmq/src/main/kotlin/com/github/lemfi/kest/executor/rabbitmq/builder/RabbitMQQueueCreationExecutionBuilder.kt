@@ -2,7 +2,6 @@ package com.github.lemfi.kest.executor.rabbitmq.builder
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.rabbitmq.executor.RabbitMQQueueCreationExecution
 import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
@@ -12,11 +11,6 @@ class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
     infix fun QueueAndBinding.`and bind it to exchange`(exchange: String) = this.also { it.exchange = exchange }
     infix fun QueueAndBinding.`with routing key`(routingKey: String) = this.also { it.routingKey = routingKey }
 
-    private var description: ExecutionDescription? = null
-    fun description(l: ()->String) {
-        description = ExecutionDescription(l())
-    }
-
     private lateinit var queue: QueueAndBinding
 
     var connection = rabbitMQProperty { connection }
@@ -24,7 +18,7 @@ class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
 
     override fun toExecution(): Execution<Unit> {
         return RabbitMQQueueCreationExecution(
-            description, queue, connection, vhost,
+            queue, connection, vhost,
         )
     }
 }

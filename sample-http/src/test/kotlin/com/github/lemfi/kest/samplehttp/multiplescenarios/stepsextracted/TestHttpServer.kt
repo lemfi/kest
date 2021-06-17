@@ -3,7 +3,7 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.core.cli.step
+import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
@@ -67,7 +67,7 @@ class TestHttpServer {
 
             val generateOtps = `generate otps`()
 
-            step("validate OTPs") {
+            nestedScenario("validate OTPs") {
                 val otps = generateOtps()
                 `validate otp` { generateOtps().first() }
                 `validate otp` { generateOtps().last() }

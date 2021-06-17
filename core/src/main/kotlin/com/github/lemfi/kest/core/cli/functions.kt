@@ -13,7 +13,22 @@ infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(l: Assert
     return this
 }
 
-fun <T> ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<T>.() -> Unit): NestedScenarioStepPostExecution<T, T> {
+fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: () -> T): StepPostExecution<T> {
+    val executionBuilder = object : ExecutionBuilder<T> {
+        override fun toExecution(): Execution<T> = object : Execution<T>() {
+            override fun execute(): T = l()
+        }
+    }
+
+    return StandaloneStep<T>(
+        scenarioName = this.name!!,
+        name = name?.let { StepName(it) } ?: StepName("generic step"),
+        retry = retry
+    )
+        .addToScenario(this, executionBuilder) {}
+}
+
+fun <T> ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<T>.() -> Unit): NestedScenarioStepPostExecution<T, T> {
     val executionBuilder = NestedScenarioExecutionBuilder<T>(name)
 
     return NestedScenarioStep<T>(
@@ -49,7 +64,7 @@ fun <T, E: ExecutionBuilder<T>> NestedScenarioStep<T>.addToScenario(
     }
 
 @JvmName("noResultStep")
-fun ScenarioBuilder.step(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<Any>.() -> Unit) {
+fun ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<Any>.() -> Unit) {
     val executionBuilder = NestedScenarioExecutionBuilder<Any>(name).apply { returns {} }
 
     NestedScenarioStep<Any>(
@@ -77,7 +92,7 @@ fun <T> Step<T>.run(): Step<T> {
 
 private fun <T> retryableStepExecution(retry: Int, delay: Long, step: Step<T>, execution: Execution<T>) {
 
-    val assertion = AssertionsBuilder(step.scenarioName, step.name, execution.description)
+    val assertion = AssertionsBuilder(step.scenarioName, step.name)
 
     try {
         val res = execution.execute()

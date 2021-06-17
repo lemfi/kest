@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
 import com.rabbitmq.client.*
 import org.opentest4j.AssertionFailedError
@@ -10,7 +9,6 @@ import java.util.*
 
 
 data class RabbitMQMessageExecution(
-    override val description: ExecutionDescription?,
     val message: String,
     val connection: String,
     val vhost: String,

@@ -253,8 +253,6 @@ class TestHttpServer {
 
             `given http call`<JsonMap>("validate an invalid OTP") {
 
-                description { "try to validate OTP 'whatever'" }
-
                 url = "http://localhost:8080/otp"
                 method = "POST"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="

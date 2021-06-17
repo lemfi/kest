@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.opentest4j.AssertionFailedError
 
-private fun assertionBuilder() = AssertionsBuilder(ScenarioName("json test"), null, null)
+private fun assertionBuilder() = AssertionsBuilder(ScenarioName("json test"), null)
 
 class JsonAssertionsTest {
 

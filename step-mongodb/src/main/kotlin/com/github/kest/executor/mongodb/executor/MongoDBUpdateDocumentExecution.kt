@@ -1,13 +1,10 @@
 package com.github.kest.executor.mongodb.executor
 
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.ExecutionDescription
-import com.github.lemfi.kest.core.model.StepName
 import com.mongodb.client.MongoClients
 import org.bson.Document
 
 data class MongoDBUpdateDocumentExecution(
-    override val description: ExecutionDescription?,
     val collection: String,
     val filter: List<Pair<String, Any?>>,
     val update: List<Pair<String, Any?>>,

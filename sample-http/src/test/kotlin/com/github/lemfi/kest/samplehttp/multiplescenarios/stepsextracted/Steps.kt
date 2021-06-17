@@ -3,7 +3,7 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
-import com.github.lemfi.kest.core.cli.step
+import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatchesObject
 import com.github.lemfi.kest.json.model.JsonMap
@@ -63,8 +63,6 @@ fun ScenarioBuilder.`validate otp`(otp: String) =
 
     `given http call`<JsonMap>("validate otp") {
 
-        description { "validate otp $otp" }
-
         url = "http://localhost:8080/otp"
         method = "POST"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
@@ -76,7 +74,7 @@ fun ScenarioBuilder.`validate otp`(otp: String) =
         eq(204, stepResult.status)
     }
 
-fun ScenarioBuilder.`generate otps`() = step<List<String>>("generate 3 OTPs") {
+fun ScenarioBuilder.`generate otps`() = nestedScenario<List<String>>("generate 3 OTPs") {
 
     val otp1 = `get otp`().`map result to` { it.body["otp"] as String }
     val otp2 = `get otp`().`map result to` { it.body["otp"] as String }

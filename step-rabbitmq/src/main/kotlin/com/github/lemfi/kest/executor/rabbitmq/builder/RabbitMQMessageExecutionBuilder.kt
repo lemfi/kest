@@ -2,16 +2,10 @@ package com.github.lemfi.kest.executor.rabbitmq.builder
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.ExecutionDescription
 import com.github.lemfi.kest.executor.rabbitmq.executor.RabbitMQMessageExecution
 import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
 class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
-
-    private var description: ExecutionDescription? = null
-    fun description(l: ()->String) {
-        description = ExecutionDescription(l())
-    }
 
     fun publish(message: ()->String) = RabbitMQMessage(message()).also { this.message = it }
     infix fun RabbitMQMessage.`to exchange`(exchange: String) = also { it.exchange = exchange }
@@ -25,7 +19,6 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
 
     override fun toExecution(): Execution<Unit> {
         return RabbitMQMessageExecution(
-            description,
             message.message,
             connection,
             vhost,
