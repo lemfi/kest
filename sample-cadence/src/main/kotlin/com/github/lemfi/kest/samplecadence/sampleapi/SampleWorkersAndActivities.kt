@@ -1,5 +1,6 @@
 package com.github.lemfi.kest.samplecadence.sampleapi
 
+import com.github.lemfi.kest.cadence.cli.`create domain`
 import com.uber.cadence.activity.ActivityOptions
 import com.uber.cadence.client.WorkflowClient
 import com.uber.cadence.client.WorkflowClientOptions
@@ -15,6 +16,8 @@ import java.util.concurrent.TimeUnit
 var factory: WorkerFactory? = null
 
 fun startActivitiesAndWorkflows() {
+
+    `create domain`("kest")
 
     if (factory == null) factory =
         WorkerFactory.newInstance(
