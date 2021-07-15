@@ -22,7 +22,6 @@ buildscript {
     val dokkaVersion: String by extra { "1.4.32" }
 
     repositories {
-        jcenter()
         mavenCentral()
         maven(url = "https://dl.bintray.com/kotlin/dokka")
     }
@@ -43,7 +42,6 @@ allprojects {
 
     repositories {
         mavenLocal()
-        jcenter()
         maven(url = "https://dl.bintray.com/kotlin/dokka")
         maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
         mavenCentral()
