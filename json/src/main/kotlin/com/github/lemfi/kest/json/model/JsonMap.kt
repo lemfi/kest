@@ -23,4 +23,5 @@ class JsonMap : HashMap<String, Any>() {
     }
 }
 
-class JsonArray : ArrayList<JsonMap>()
+class JsonArray: KestArray<JsonMap>()
+open class KestArray<T> : ArrayList<T>()

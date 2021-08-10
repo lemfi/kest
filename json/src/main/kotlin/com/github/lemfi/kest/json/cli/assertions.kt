@@ -7,6 +7,7 @@ import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.fail
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
+import com.github.lemfi.kest.json.model.KestArray
 import org.opentest4j.AssertionFailedError
 import kotlin.reflect.KClass
 
@@ -33,6 +34,7 @@ private data class ClassPatternJsonMatcher(
 sealed class JsonMatcher {
 
     abstract val matcher: String
+    // is list to is nullable list
     abstract val isList: Pair<Boolean, Boolean>
     abstract val isNullable: Boolean
     abstract val pattern: String
@@ -148,13 +150,15 @@ fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: JsonMap?) {
  */
 fun AssertionsBuilder.jsonMatchesObject(expected: List<String>, observed: JsonMap?) {
 
-    try {
-        jsonMatchesObject(expected.first(), observed)
-    } catch (e: Throwable) {
-        if (expected.size > 1) {
-            jsonMatchesObject(expected.subList(1, expected.size), observed)
-        } else {
-            throw e
+    expected.toMutableList().let { tries ->
+        try {
+            jsonMatchesObject(tries.removeFirst(), observed)
+        } catch (e: Throwable) {
+            if (tries.size > 0) {
+                jsonMatchesObject(expected.subList(1, expected.size), observed)
+            } else {
+                throw e
+            }
         }
     }
 }
@@ -177,15 +181,41 @@ fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: JsonArray?) {
  * @param expected expected patterns
  * @param observed JsonArray object
  */
-fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: JsonArray?) {
+fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: KestArray<*>?) {
 
-    if (observed == null && !expected.first()
-            .endsWith("?")
-    ) fail("expected matching $expected, got null", expected, observed)
+    if (observed == null && !expected.any { it.endsWith("?") })
+        fail("expected matching $expected, got null", expected, observed)
 
-    observed?.forEach {
-        jsonMatchesObject(expected, it)
-    }
+    if (observed is JsonArray)
+        observed.forEach {
+            jsonMatchesObject(expected, it)
+        }
+    else if (!(observed != null && observed.containsAll(expected) && expected.size == observed.size)) fail(
+        "expected $expected, got $observed",
+        expected,
+        observed
+    )
+}
+
+/**
+ * Check whether all elements of a JsonArray matches one of provided patterns
+ *
+ * @param expected expected patterns
+ * @param observed JsonArray object
+ */
+fun AssertionsBuilder.jsonMatchesArray(expected: KestArray<*>, observed: KestArray<*>?) {
+
+    if (observed == null) fail("expected matching $expected, got null", expected, observed)
+
+    if (observed is JsonArray && expected is JsonArray)
+        observed.forEachIndexed { index, it ->
+            jsonMatchesObject(expected[index], it)
+        }
+    else if (!(observed != null && observed.containsAll(expected) && expected.size == observed.size)) fail(
+        "expected $expected, got $observed",
+        expected,
+        observed
+    )
 }
 
 /**
@@ -195,7 +225,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: JsonArr
  * @param observed Json as String
  */
 fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: String?) {
-    return jsonMatchesObject(listOf(expected), observed.toJsonMap(fail()))
+    return jsonMatchesObject(expected, observed.toJsonMap(fail()))
 }
 
 /**
@@ -243,13 +273,28 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: JsonMap, observed: Jso
                 mapper.writeValueAsString(expected[it]),
                 mapper.writeValueAsString(observed[it])
             )
+            isArray(expectedValue) ->
+                jsonMatchesArray(
+                    mapper.writeValueAsString(expectedValue).toJsonArray(fail()),
+                    mapper.writeValueAsString(observed[it]).toJsonArray(fail())
+                )
             isNumber(expectedValue) || isBoolean(expected[it]) -> eq(expected[it], observed[it])
+            isPattern(expectedValue) -> {
+                val matcher = JsonMatcher.getMatcher(expectedValue as String)
+                jsonMatches(matcher!!, observed[it])
+            }
             isString(expectedValue) -> {
-                val observedValue = observed[it]?.let { mapper.writeValueAsString(it) }
-                JsonMatcher.getMatcher(expectedValue as String)?.let { matcher ->
-                    jsonMatches(matcher, observedValue)
 
-                } ?: eq(expectedValue, observed[it])
+                if (observed[it]?.let { String::class.java.isAssignableFrom(it.javaClass) } == false) {
+                    fail("expected ${String::class.java} got ${observed[it]?.javaClass}", String::class.java, observed[it]?.javaClass)
+                } else {
+
+                    val observedValue = observed[it]?.let { mapper.writeValueAsString(it) }
+                    JsonMatcher.getMatcher(expectedValue as String)?.let { matcher ->
+                        jsonMatches(matcher, observedValue)
+
+                    } ?: eq(expectedValue, observed[it])
+                }
             }
         }
     }
@@ -258,13 +303,13 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: JsonMap, observed: Jso
 private fun isString(data: Any?) = data?.let { String::class.java.isAssignableFrom(it.javaClass) } ?: false
 private fun isNumber(data: Any?) = data?.let { Number::class.java.isAssignableFrom(it.javaClass) } ?: false
 private fun isMap(data: Any?) = data?.let { Map::class.java.isAssignableFrom(it.javaClass) } ?: false
+private fun isArray(data: Any?) = data?.let { List::class.java.isAssignableFrom(it.javaClass) } ?: false
 private fun isBoolean(data: Any?) = data?.let { Boolean::class.java.isAssignableFrom(it.javaClass) } ?: false
+private fun isPattern(data: Any?) = data?.let {
+    isString(data) && (data as String).let { it.startsWith("[[") && it.endsWith("]]") || it.startsWith("{{") && it.endsWith("}}") }
+} ?: false
 
-private fun AssertionsBuilder.jsonMatches(matcher: JsonMatcher, observed: JsonMap?) {
-    jsonMatches(matcher, mapper.writeValueAsString(observed))
-}
-
-private fun AssertionsBuilder.jsonMatches(matcher: JsonMatcher, observed: String?) {
+private fun AssertionsBuilder.jsonMatches(matcher: JsonMatcher, observed: Any?) {
     when (matcher) {
         is ClassPatternJsonMatcher -> jsonMatches(matcher, observed)
         is StringPatternJsonMatcher -> jsonMatches(matcher, observed)
@@ -272,25 +317,33 @@ private fun AssertionsBuilder.jsonMatches(matcher: JsonMatcher, observed: String
 }
 
 
-private fun AssertionsBuilder.jsonMatches(matcher: StringPatternJsonMatcher, observed: String?) {
-    if (matcher.isList.first) {
-        if (!(matcher.isList.second && observed == null)) jsonMatchesArray(
-            matcher.clsDescriptor + if (matcher.isNullable) "?" else "",
-            observed
-        )
+private fun AssertionsBuilder.jsonMatches(matcher: StringPatternJsonMatcher, observed: Any?) {
+    val observedString = mapper.writeValueAsString(observed)
+    val (isList, isNullableList) = matcher.isList
+    if (isList) {
+        if (!(isNullableList && observed == null))
+            jsonMatchesArray(
+                matcher.clsDescriptor.map { if (matcher.isNullable) "$it?" else it } ,
+                observedString
+            )
     } else {
-        jsonMatchesObject(matcher.clsDescriptor, observed)
+        jsonMatchesObject(matcher.clsDescriptor, observedString)
     }
 }
 
-
-private fun AssertionsBuilder.jsonMatches(matcher: ClassPatternJsonMatcher, observed: String?) {
+private fun AssertionsBuilder.jsonMatches(matcher: ClassPatternJsonMatcher, observed: Any?) {
+    val observedString = mapper.writeValueAsString(observed)
     try {
-        if (matcher.isList.first) {
-            if (!(matcher.isList.second && observed == null)) mapper.readValue(observed, List::class.java)
+        val (isList, isNullableList) = matcher.isList
+        if (isList) {
+            if (!(isNullableList && observed == null)) mapper.readValue(observedString, List::class.java)
                 .let { elements ->
                     elements.forEach { element ->
-                        mapper.writeValueAsString(element).let { mapper.readValue(it, matcher.cls.java) }
+                        if (matcher.cls == String::class && element?.let { matcher.cls.java.isAssignableFrom(it.javaClass) } == false) {
+                            fail("expected ${matcher.cls} got ${element.javaClass}", matcher.cls, element)
+                        } else {
+                            mapper.writeValueAsString(element).let { mapper.readValue(it, matcher.cls.java) }
+                        }
                     }
                 }
 
@@ -300,9 +353,13 @@ private fun AssertionsBuilder.jsonMatches(matcher: ClassPatternJsonMatcher, obse
             }
             if (!(matcher.isNullable && observed == null)) {
 
-                mapper.readValue(observed, matcher.cls.java)
+                if (matcher.cls == String::class && observed?.let { matcher.cls.java.isAssignableFrom(it.javaClass) } == false) {
+                    fail("expected ${matcher.cls} got ${observed.javaClass}", matcher.cls, observed)
+                } else {
+                    mapper.readValue(observedString, matcher.cls.java)
+                }
                 if (matcher.cls == Boolean::class && !matcher.isNullable && mapper.readValue(
-                        observed,
+                        observedString,
                         String::class.java
                     ) == null
                 ) {
@@ -328,12 +385,16 @@ private fun String?.toJsonMap(fail: (String, Any?, Any?)->Unit): JsonMap {
     }
 }
 
-private fun String?.toJsonArray(fail: (String, Any?, Any?)->Unit): JsonArray {
+private fun String?.toJsonArray(fail: (String, Any?, Any?)->Unit): KestArray<*> {
     return try {
         mapper.readValue(this, JsonArray::class.java)
     } catch (e: Throwable) {
-        fail("expected json array structure", """[..., ...]""", this)
-        throw e
+        try {
+            mapper.readValue(this, KestArray::class.java)
+        } catch (e: Throwable) {
+            fail("expected json array structure", """[..., ...]""", this)
+            throw e
+        }
     }
 }
 

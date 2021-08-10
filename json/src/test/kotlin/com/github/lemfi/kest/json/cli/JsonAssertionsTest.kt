@@ -42,6 +42,106 @@ class JsonAssertionsTest {
     }
 
     @Test
+    fun `json object with arrays of simple types with errors`() {
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "strings": "[[{{string}}]]"
+                   } 
+                """,
+                """
+                   {
+                        "strings": ["hello", 1]
+                   } 
+                """
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "numbers": "[[{{number}}]]"
+                   } 
+                """,
+                """
+                   {
+                        "numbers": [1, "world"],
+                   } 
+                """
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "booleans": "[[{{boolean}}]]"
+                   } 
+                """,
+                """
+                   {
+                        "booleans": [true, "world", 1]
+                   } 
+                """
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "some strings": ["hello", "world"]
+                   } 
+                """,
+                """
+                   {
+                        "some strings": ["hello", "worlds"]
+                   } 
+                """
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "some numbers": [1, 2]
+                   } 
+                """,
+                """
+                   {
+                        "some numbers": [1, true]
+                   } 
+                """
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "some booleans": [true, false]
+                   } 
+                """,
+                """
+                   {
+                        "some booleans": [true, 2]
+                   } 
+                """
+            )
+        }
+    }
+
+    @Test
     fun `json object with arrays of simple types`() {
 
         assertionBuilder().jsonMatchesObject(
@@ -52,7 +152,7 @@ class JsonAssertionsTest {
                         "booleans": "[[{{boolean}}]]",
                         "some strings": ["hello", "world"],
                         "some numbers": [1, 2],
-                        "some boleans": [true, false]
+                        "some booleans": [true, false]
                    } 
                 """,
             """
@@ -62,7 +162,7 @@ class JsonAssertionsTest {
                         "booleans": [true, false],
                         "some strings": ["hello", "world"],
                         "some numbers": [1, 2],
-                        "some boleans": [true, false]
+                        "some booleans": [true, false]
                    } 
                 """
         )
@@ -83,6 +183,26 @@ class JsonAssertionsTest {
                 """
                    {
                         "string": null
+                   } 
+                """
+            )
+        }
+    }
+
+    @Test
+    fun `json int does not match when string requested`() {
+
+        assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatchesObject(
+                """
+                   {
+                        "string": "{{string}}"
+                   } 
+                """,
+                """
+                   {
+                        "string": 12
                    } 
                 """
             )
@@ -651,6 +771,41 @@ class JsonAssertionsTest {
                             "yolo2": "world"
                        }
                     ]
+                """
+        )
+    }
+
+    @Test
+    fun `matcher registration - polymorphism in arrays`() {
+
+        JsonMatcher.addMatcher(
+            "{{yolo}}", listOf(
+                """{
+                    "common": "c1",
+                    "yolo1": "{{string}}"
+                }""",
+                """{
+                    "common": "c2",
+                    "yolo2": "{{string}}"
+                }"""
+            )
+        )
+        assertionBuilder().jsonMatchesObject(
+            """
+                   {
+                        "data": "[[{{yolo?}}]]"
+                   } 
+                """,
+            """
+                   {
+                        "data": [{
+                            "common": "c1",
+                            "yolo1": "1"
+                        }, {
+                            "common": "c2",
+                            "yolo2": "2"
+                        }, null]
+                   } 
                 """
         )
     }
