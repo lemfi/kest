@@ -17,7 +17,7 @@ class JsonAssertionsTest {
     @Test
     fun `json object with simple types that matches`() {
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "string": "{{string}}",
@@ -46,7 +46,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "strings": "[[{{string}}]]"
@@ -62,7 +62,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "numbers": "[[{{number}}]]"
@@ -78,7 +78,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "booleans": "[[{{boolean}}]]"
@@ -94,7 +94,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "some strings": ["hello", "world"]
@@ -110,7 +110,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "some numbers": [1, 2]
@@ -126,7 +126,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "some booleans": [true, false]
@@ -144,7 +144,7 @@ class JsonAssertionsTest {
     @Test
     fun `json object with arrays of simple types`() {
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "strings": "[[{{string}}]]",
@@ -174,7 +174,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "string": "{{string}}"
@@ -194,7 +194,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "string": "{{string}}"
@@ -212,7 +212,7 @@ class JsonAssertionsTest {
     @Test
     fun `json object with nullable string passes`() {
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "string": "{{string?}}"
@@ -232,7 +232,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "number": "{{number}}"
@@ -250,7 +250,7 @@ class JsonAssertionsTest {
     @Test
     fun `json object with nullable number passes`() {
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "number": "{{number?}}"
@@ -270,7 +270,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "boolean": "{{boolean}}"
@@ -288,7 +288,7 @@ class JsonAssertionsTest {
     @Test
     fun `json object with nullable boolean passes`() {
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "boolean": "{{boolean?}}"
@@ -308,7 +308,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                    {
                         "number": "{{number}}"
@@ -329,7 +329,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                         {
                             "boolean": "{{boolean}}"
@@ -350,7 +350,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                         {
                             "data": "1234"
@@ -370,7 +370,7 @@ class JsonAssertionsTest {
 
         assertThrows<AssertionFailedError> {
 
-            assertionBuilder().jsonMatchesObject(
+            assertionBuilder().jsonMatches(
                 """
                         {
                             "data1": "1234"
@@ -427,7 +427,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{descdata}}", """{"data": "{{number}}"}""")
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                     {
                         "string": "{{string?}}",
@@ -451,7 +451,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{descdata}}", """{"data": "{{number}}"}""")
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                     {
                         "string": "{{string?}}",
@@ -475,7 +475,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{descdata}}", """{"data": "{{number}}"}""")
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                     {
                         "string": "{{string?}}",
@@ -496,7 +496,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {{mydata}} 
                 """,
@@ -515,7 +515,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "data": "{{mydata}}"
@@ -538,7 +538,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "data": "{{mydata?}}"
@@ -557,7 +557,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {{mydata}} 
                 """,
@@ -593,7 +593,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "data": "[[{{mydata}}]]"
@@ -616,7 +616,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "data": "[[{{mydata?}}]]"
@@ -790,7 +790,7 @@ class JsonAssertionsTest {
                 }"""
             )
         )
-        assertionBuilder().jsonMatchesObject(
+        assertionBuilder().jsonMatches(
             """
                    {
                         "data": "[[{{yolo?}}]]"

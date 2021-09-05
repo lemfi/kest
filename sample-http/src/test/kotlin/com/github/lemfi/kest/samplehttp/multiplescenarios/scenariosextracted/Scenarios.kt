@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
-import com.github.lemfi.kest.json.cli.jsonMatchesObject
+import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 
 val `api says hello and remembers it!` = scenario {
@@ -70,7 +70,7 @@ val `get and validate wrong otp` = scenario {
     } `assert that` { stepResult ->
 
         eq(201, stepResult.status)
-        jsonMatchesObject(
+        jsonMatches(
             """
                         {
                             "otp": "{{string}}" 
@@ -90,7 +90,7 @@ val `get and validate wrong otp` = scenario {
     } `assert that` { stepResult ->
 
         eq(400, stepResult.status)
-        jsonMatchesObject("{{error}}", stepResult.body)
+        jsonMatches("{{error}}", stepResult.body)
     }
 
 }

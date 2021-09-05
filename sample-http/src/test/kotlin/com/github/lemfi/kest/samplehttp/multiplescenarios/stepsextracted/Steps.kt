@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
-import com.github.lemfi.kest.json.cli.jsonMatchesObject
+import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 
 fun ScenarioBuilder.`say hello`(who: String) {
@@ -50,7 +50,7 @@ fun ScenarioBuilder.`get otp`() =
     } `assert that` { stepResult ->
 
         eq(201, stepResult.status)
-        jsonMatchesObject(
+        jsonMatches(
             """
                         {
                             "otp": "{{string}}"

@@ -125,7 +125,7 @@ sealed class JsonMatcher {
  * @param expected expected pattern
  * @param observed JsonMap object
  */
-fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: JsonMap?) {
+fun AssertionsBuilder.jsonMatches(expected: String, observed: JsonMap?) {
     if (JsonMatcher.getMatcher(expected) != null) {
         jsonMatches(JsonMatcher.getMatcher(expected)!!, observed)
     } else {
@@ -136,7 +136,7 @@ fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: JsonMap?) {
         )
 
         observed?.apply {
-            jsonMatchesObject(expected.toJsonMap(fail()), observed)
+            jsonMatches(expected.toJsonMap(fail()), observed)
         }
     }
 }
@@ -148,14 +148,14 @@ fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: JsonMap?) {
  * @param expected expected patterns
  * @param observed JsonMap object
  */
-fun AssertionsBuilder.jsonMatchesObject(expected: List<String>, observed: JsonMap?) {
+fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: JsonMap?) {
 
     expected.toMutableList().let { tries ->
         try {
-            jsonMatchesObject(tries.removeFirst(), observed)
+            jsonMatches(tries.removeFirst(), observed)
         } catch (e: Throwable) {
             if (tries.size > 0) {
-                jsonMatchesObject(expected.subList(1, expected.size), observed)
+                jsonMatches(tries, observed)
             } else {
                 throw e
             }
@@ -188,7 +188,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: KestArr
 
     if (observed is JsonArray)
         observed.forEach {
-            jsonMatchesObject(expected, it)
+            jsonMatches(expected, it)
         }
     else if (!(observed != null && observed.containsAll(expected) && expected.size == observed.size)) fail(
         "expected $expected, got $observed",
@@ -209,7 +209,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: KestArray<*>, observed: KestArr
 
     if (observed is JsonArray && expected is JsonArray)
         observed.forEachIndexed { index, it ->
-            jsonMatchesObject(expected[index], it)
+            jsonMatches(expected[index], it)
         }
     else if (!(observed != null && observed.containsAll(expected) && expected.size == observed.size)) fail(
         "expected $expected, got $observed",
@@ -224,8 +224,8 @@ fun AssertionsBuilder.jsonMatchesArray(expected: KestArray<*>, observed: KestArr
  * @param expected expected pattern
  * @param observed Json as String
  */
-fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: String?) {
-    return jsonMatchesObject(expected, observed.toJsonMap(fail()))
+fun AssertionsBuilder.jsonMatches(expected: String, observed: String?) {
+    return jsonMatches(expected, observed.toJsonMap(fail()))
 }
 
 /**
@@ -235,8 +235,8 @@ fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: String?) {
  * @param expected expected patterns
  * @param observed Json as String
  */
-fun AssertionsBuilder.jsonMatchesObject(expected: List<String>, observed: String?) {
-    return jsonMatchesObject(expected, observed.toJsonMap(fail()))
+fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: String?) {
+    return jsonMatches(expected, observed.toJsonMap(fail()))
 }
 
 /**
@@ -259,7 +259,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: String?
     return jsonMatchesArray(expected, observed.toJsonArray(fail()))
 }
 
-private fun AssertionsBuilder.jsonMatchesObject(expected: JsonMap, observed: JsonMap) {
+private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) {
 
     if (expected.keys != observed.keys) fail(
         "expected ${expected.keys} entries, got ${observed.keys} entries",
@@ -269,7 +269,7 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: JsonMap, observed: Jso
     expected.keys.forEach {
         val expectedValue = expected[it]
         when {
-            isMap(expectedValue) -> jsonMatchesObject(
+            isMap(expectedValue) -> jsonMatches(
                 mapper.writeValueAsString(expected[it]),
                 mapper.writeValueAsString(observed[it])
             )
@@ -327,7 +327,7 @@ private fun AssertionsBuilder.jsonMatches(matcher: StringPatternJsonMatcher, obs
                 observedString
             )
     } else {
-        jsonMatchesObject(matcher.clsDescriptor, observedString)
+        jsonMatches(matcher.clsDescriptor, observedString)
     }
 }
 

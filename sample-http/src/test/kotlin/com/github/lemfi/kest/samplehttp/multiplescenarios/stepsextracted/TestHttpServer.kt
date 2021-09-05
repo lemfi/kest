@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
-import com.github.lemfi.kest.json.cli.jsonMatchesObject
+import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
 import com.github.lemfi.kest.samplehttp.sampleapi.startSampleApi
@@ -93,7 +93,7 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 eq(400, stepResult.status)
-                jsonMatchesObject("{{error}}", stepResult.body)
+                jsonMatches("{{error}}", stepResult.body)
             }
 
         },
