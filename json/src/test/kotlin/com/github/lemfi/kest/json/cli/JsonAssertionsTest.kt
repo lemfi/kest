@@ -388,16 +388,16 @@ class JsonAssertionsTest {
     @Test
     fun `json array of simple types strings`() {
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
-                    {
+                    [[{
                         "string": "{{string?}}",
                         "number": "{{number?}}",
                         "boolean": "{{boolean?}}",
                         "a string": "hello",
                         "a number": 1,
                         "a boolean": false
-                   } 
+                   }]] 
                 """,
             """
                    [
@@ -574,17 +574,17 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
-                   {{mydata}}
-                """,
+                [[{{mydata}}]]
+            """,
             """
-                   [{
-                            "string": "hello",
-                            "number": 1,
-                            "boolean": false
-                    }] 
-                """
+                [{
+                    "string": "hello",
+                    "number": 1,
+                    "boolean": false
+                }] 
+            """
         )
     }
 
@@ -595,19 +595,19 @@ class JsonAssertionsTest {
 
         assertionBuilder().jsonMatches(
             """
-                   {
-                        "data": "[[{{mydata}}]]"
-                   } 
-                """,
+                {
+                    "data": "[[{{mydata}}]]"
+                } 
+            """,
             """
-                   {
-                        "data": [{
-                            "string": "hello",
-                            "number": 1,
-                            "boolean": false
-                        }]
-                   } 
-                """
+                {
+                    "data": [{
+                        "string": "hello",
+                        "number": 1,
+                        "boolean": false
+                    }]
+               } 
+            """
         )
     }
 
@@ -639,7 +639,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
                    {{mydata}} 
                 """,
@@ -660,7 +660,7 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{yolo}}", Yolo::class)
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
                    {{yolo}} 
                 """,
@@ -697,7 +697,7 @@ class JsonAssertionsTest {
             )
         )
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
                    {{yolo}} 
                 """,
@@ -723,9 +723,9 @@ class JsonAssertionsTest {
 
         JsonMatcher.addMatcher("{{yolo}}", Yolo::class)
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
-                   {{yolo}} 
+                   [[{{yolo}}]] 
                 """,
             """[
                        {
@@ -757,9 +757,9 @@ class JsonAssertionsTest {
             )
         )
 
-        assertionBuilder().jsonMatchesArray(
+        assertionBuilder().jsonMatches(
             """
-                   {{yolo}} 
+                   [[{{yolo}}]] 
                 """,
             """[
                        {

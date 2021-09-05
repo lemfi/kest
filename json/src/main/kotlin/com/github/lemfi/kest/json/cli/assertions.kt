@@ -169,9 +169,9 @@ fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: JsonMap?) {
  * @param expected expected pattern
  * @param observed JsonArray object
  */
-fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: JsonArray?) {
+fun AssertionsBuilder.jsonMatches(expected: String, observed: JsonArray?) {
 
-    jsonMatchesArray(listOf(expected), observed)
+    jsonMatches(listOf(expected), observed)
 }
 
 /**
@@ -181,7 +181,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: JsonArray?) {
  * @param expected expected patterns
  * @param observed JsonArray object
  */
-fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: KestArray<*>?) {
+fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: KestArray<*>?) {
 
     if (observed == null && !expected.any { it.endsWith("?") })
         fail("expected matching $expected, got null", expected, observed)
@@ -203,7 +203,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: KestArr
  * @param expected expected patterns
  * @param observed JsonArray object
  */
-fun AssertionsBuilder.jsonMatchesArray(expected: KestArray<*>, observed: KestArray<*>?) {
+fun AssertionsBuilder.jsonMatches(expected: KestArray<*>, observed: KestArray<*>?) {
 
     if (observed == null) fail("expected matching $expected, got null", expected, observed)
 
@@ -225,7 +225,20 @@ fun AssertionsBuilder.jsonMatchesArray(expected: KestArray<*>, observed: KestArr
  * @param observed Json as String
  */
 fun AssertionsBuilder.jsonMatches(expected: String, observed: String?) {
-    return jsonMatches(expected, observed.toJsonMap(fail()))
+    if (expected.isObject()) {
+        jsonMatches(expected, observed.toJsonMap(fail()))
+    } else {
+        if (isPattern(expected)) {
+
+            val start = expected.indexOf("[[")
+            val end = expected.lastIndexOf("]]")
+
+            jsonMatchesArray(listOf(expected
+                .removeRange(end, expected.length)
+                .removeRange(0, start + 2)
+            ), observed)
+        }
+    }
 }
 
 /**
@@ -239,15 +252,15 @@ fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: String?) {
     return jsonMatches(expected, observed.toJsonMap(fail()))
 }
 
-/**
- * Check whether all elements of a Json Array as String matches a pattern
- *
- * @param expected expected pattern
- * @param observed Json Array as String object
- */
-fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: String?) {
-    return jsonMatchesArray(listOf(expected), observed.toJsonArray(fail()))
-}
+///**
+// * Check whether all elements of a Json Array as String matches a pattern
+// *
+// * @param expected expected pattern
+// * @param observed Json Array as String object
+// */
+//fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: String?) {
+//    return jsonMatchesArray(listOf(expected), observed)
+//}
 
 /**
  * Check whether all elements of a Json Array as String matches one of provided patterns
@@ -256,7 +269,7 @@ fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: String?) {
  * @param observed Json Array as String object
  */
 fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: String?) {
-    return jsonMatchesArray(expected, observed.toJsonArray(fail()))
+    return jsonMatches(expected, observed.toJsonArray(fail()))
 }
 
 private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) {
@@ -274,7 +287,7 @@ private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) 
                 mapper.writeValueAsString(observed[it])
             )
             isArray(expectedValue) ->
-                jsonMatchesArray(
+                jsonMatches(
                     mapper.writeValueAsString(expectedValue).toJsonArray(fail()),
                     mapper.writeValueAsString(observed[it]).toJsonArray(fail())
                 )
@@ -401,3 +414,5 @@ private fun String?.toJsonArray(fail: (String, Any?, Any?)->Unit): KestArray<*> 
 private fun AssertionsBuilder.fail() = { s: String, a: Any?, b: Any? ->
     fail(s, a, b)
 }
+
+private fun String?.isObject() = this?.trimIndent()?.trim()?.startsWith("{") ?: true
