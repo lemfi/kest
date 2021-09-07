@@ -425,7 +425,7 @@ class JsonAssertionsTest {
     @Test
     fun `json array of object in subtype`() {
 
-        JsonMatcher.addMatcher("{{descdata}}", """{"data": "{{number}}"}""")
+        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
 
         assertionBuilder().jsonMatches(
             """
@@ -449,7 +449,7 @@ class JsonAssertionsTest {
     @Test
     fun `json array of nullable object in subtype`() {
 
-        JsonMatcher.addMatcher("{{descdata}}", """{"data": "{{number}}"}""")
+        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
 
         assertionBuilder().jsonMatches(
             """
@@ -473,7 +473,7 @@ class JsonAssertionsTest {
     @Test
     fun `json array of nullable object in subtypez`() {
 
-        JsonMatcher.addMatcher("{{descdata}}", """{"data": "{{number}}"}""")
+        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
 
         assertionBuilder().jsonMatches(
             """
@@ -494,7 +494,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed is string`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -513,7 +513,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - matcher in subtype`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -536,7 +536,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - nullable matcher in subtype`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -555,7 +555,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed is JsonMap`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -572,7 +572,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed an array displayed as string`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -591,7 +591,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - matcher in subtype as array`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -614,7 +614,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - nullable matcher in subtype as array`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -637,7 +637,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed is JsonArray`() {
 
-        JsonMatcher.addMatcher("{{mydata}}", TestDataObject::class)
+        `add json matcher`("{{mydata}}", TestDataObject::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -658,7 +658,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as class - observed is a polymorphic JsonArray`() {
 
-        JsonMatcher.addMatcher("{{yolo}}", Yolo::class)
+        `add json matcher`("{{yolo}}", Yolo::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -684,7 +684,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as string - observed is a polymorphic JsonArray`() {
 
-        JsonMatcher.addMatcher(
+        `add json matcher`(
             "{{yolo}}", listOf(
                 """{
                     "common": "c1",
@@ -721,7 +721,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as class - observed is a polymorphic json array as string`() {
 
-        JsonMatcher.addMatcher("{{yolo}}", Yolo::class)
+        `add json matcher`("{{yolo}}", Yolo::class)
 
         assertionBuilder().jsonMatches(
             """
@@ -744,7 +744,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as string - observed is a polymorphic json array as string`() {
 
-        JsonMatcher.addMatcher(
+        `add json matcher`(
             "{{yolo}}", listOf(
                 """{
                     "common": "c1",
@@ -778,7 +778,7 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - polymorphism in arrays`() {
 
-        JsonMatcher.addMatcher(
+        `add json matcher`(
             "{{yolo}}", listOf(
                 """{
                     "common": "c1",

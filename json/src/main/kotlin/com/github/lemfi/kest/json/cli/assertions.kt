@@ -31,6 +31,82 @@ private data class ClassPatternJsonMatcher(
     val cls: KClass<*>
 ) : JsonMatcher()
 
+private val matchers = mutableMapOf<String, Pair<KClass<*>?, List<String>?>>(
+    "{{string}}" to Pair(String::class, null),
+    "{{number}}" to Pair(Number::class, null),
+    "{{boolean}}" to Pair(Boolean::class, null)
+)
+
+/**
+ * Add a matcher
+ *
+ * @param key the key for your matcher, for example {{my_matcher}}
+ * @param value KClass representing of your matcher, jackson annotations can be used on that Class, for polyphormism for example
+ */
+fun `add json matcher`(key: String, value: KClass<*>) {
+    matchers.put(key, value to null)
+}
+
+/**
+ * Add a matcher
+ *
+ * @param key the key for your matcher, for example {{my_matcher}}
+ * @param pattern string description for matcher, for example:
+ *          {
+ *              "mykey": "{{string}},
+ *              "myotherkey": "{{number}}
+ *          }
+ */
+fun `add json matcher`(key: String, pattern: String) {
+    matchers.put(key, null to listOf(pattern))
+}
+
+/**
+ * Add a matcher
+ *
+ * @param key the key for your matcher, for example {{my_matcher}}
+ * @param patterns a list of possible string description for matcher, to use for polymorphism
+ */
+fun `add json matcher`(key: String, patterns: List<String>) {
+    matchers.put(key, null to patterns)
+}
+
+private fun getMatcher(key: String): JsonMatcher? {
+    return key.trim().replace(" ", "").let { keyWithoutSpaces ->
+        val list =
+            keyWithoutSpaces.startsWith("[[") && keyWithoutSpaces.endsWith("]]") || keyWithoutSpaces.endsWith("]]?")
+        val listNullable = list && keyWithoutSpaces.endsWith("?")
+
+        val keyWithoutList = keyWithoutSpaces.removePrefix("[[").removeSuffix("]]")
+
+        val type =
+            keyWithoutList.removePrefix("{{").substringBefore("?").substringBefore("|").substringBefore("}}")
+        val nullable =
+            keyWithoutList.substringAfter(type).substringBefore("|").substringBefore("}}").equals("?")
+        val pattern =
+            keyWithoutList.substringAfter(type).let { if (nullable) keyWithoutList.substringAfter("?") else it }
+                .substringAfter("|").substringBefore("}}")
+
+        matchers["{{$type}}"]?.toJsonMatcher(type, list to listNullable, nullable, pattern)
+
+    }
+}
+
+private fun Pair<KClass<*>?, List<String>?>.toJsonMatcher(
+    type: String,
+    list: Pair<Boolean, Boolean>,
+    nullable: Boolean,
+    pattern: String
+): JsonMatcher {
+    return if (first != null) ClassPatternJsonMatcher(
+        type,
+        list,
+        nullable,
+        pattern,
+        first!!
+    ) else StringPatternJsonMatcher(type, list, nullable, pattern, second!!)
+}
+
 sealed class JsonMatcher {
 
     abstract val matcher: String
@@ -38,85 +114,6 @@ sealed class JsonMatcher {
     abstract val isList: Pair<Boolean, Boolean>
     abstract val isNullable: Boolean
     abstract val pattern: String
-
-    companion object {
-
-        private val matchers = mutableMapOf<String, Pair<KClass<*>?, List<String>?>>(
-            "{{string}}" to Pair(String::class, null),
-            "{{number}}" to Pair(Number::class, null),
-            "{{boolean}}" to Pair(Boolean::class, null)
-        )
-
-        /**
-         * Add a matcher
-         *
-         * @param key the key for your matcher, for example {{my_matcher}}
-         * @param value KClass representing of your matcher, jackson annotations can be used on that Class, for polyphormism for example
-         */
-        fun addMatcher(key: String, value: KClass<*>) {
-            matchers.put(key, value to null)
-        }
-
-        /**
-         * Add a matcher
-         *
-         * @param key the key for your matcher, for example {{my_matcher}}
-         * @param pattern string description for matcher, for example:
-         *          {
-         *              "mykey": "{{string}},
-         *              "myotherkey": "{{number}}
-         *          }
-         */
-        fun addMatcher(key: String, pattern: String) {
-            matchers.put(key, null to listOf(pattern))
-        }
-
-        /**
-         * Add a matcher
-         *
-         * @param key the key for your matcher, for example {{my_matcher}}
-         * @param patterns a list of possible string description for matcher, to use for polymorphism
-         */
-        fun addMatcher(key: String, patterns: List<String>) {
-            matchers.put(key, null to patterns)
-        }
-
-        fun getMatcher(key: String): JsonMatcher? {
-            return key.trim().replace(" ", "").let { keyWithoutSpaces ->
-                val list =
-                    keyWithoutSpaces.startsWith("[[") && keyWithoutSpaces.endsWith("]]") || keyWithoutSpaces.endsWith("]]?")
-                val listNullable = list && keyWithoutSpaces.endsWith("?")
-
-                val keyWithoutList = keyWithoutSpaces.removePrefix("[[").removeSuffix("]]")
-
-                val type =
-                    keyWithoutList.removePrefix("{{").substringBefore("?").substringBefore("|").substringBefore("}}")
-                val nullable =
-                    keyWithoutList.substringAfter(type).substringBefore("|").substringBefore("}}").equals("?")
-                val pattern =
-                    keyWithoutList.substringAfter(type).let { if (nullable) keyWithoutList.substringAfter("?") else it }
-                        .substringAfter("|").substringBefore("}}")
-
-                matchers["{{$type}}"]?.toJsonMatcher(type, list to listNullable, nullable, pattern)
-
-            }
-        }
-
-        private fun Pair<KClass<*>?, List<String>?>.toJsonMatcher(
-            type: String,
-            list: Pair<Boolean, Boolean>,
-            nullable: Boolean,
-            pattern: String
-        ): JsonMatcher {
-            return if (first != null) ClassPatternJsonMatcher(
-                type,
-                list,
-                nullable,
-                pattern,
-                first!!
-            ) else StringPatternJsonMatcher(type, list, nullable, pattern, second!!)
-        }
-    }
 }
 
 /**
@@ -126,8 +123,8 @@ sealed class JsonMatcher {
  * @param observed JsonMap object
  */
 fun AssertionsBuilder.jsonMatches(expected: String, observed: JsonMap?) {
-    if (JsonMatcher.getMatcher(expected) != null) {
-        jsonMatches(JsonMatcher.getMatcher(expected)!!, observed)
+    if (getMatcher(expected) != null) {
+        jsonMatches(getMatcher(expected)!!, observed)
     } else {
         if (observed == null && !expected.endsWith("?")) fail(
             "expected matching $expected, got null",
@@ -273,7 +270,7 @@ private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) 
                 )
             isNumber(expectedValue) || isBoolean(expected[it]) -> eq(expected[it], observed[it])
             isPattern(expectedValue) -> {
-                val matcher = JsonMatcher.getMatcher(expectedValue as String)
+                val matcher = getMatcher(expectedValue as String)
                 jsonMatches(matcher!!, observed[it])
             }
             isString(expectedValue) -> {
@@ -283,7 +280,7 @@ private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) 
                 } else {
 
                     val observedValue = observed[it]?.let { mapper.writeValueAsString(it) }
-                    JsonMatcher.getMatcher(expectedValue as String)?.let { matcher ->
+                    getMatcher(expectedValue as String)?.let { matcher ->
                         jsonMatches(matcher, observedValue)
 
                     } ?: eq(expectedValue, observed[it])
