@@ -36,12 +36,12 @@ data class HttpExecution<T>(
                         } catch (e: Throwable) {
                             throw DeserializeException(it, data, e)
                         } to data
-                    } ?: null to null
+                    } ?: (null to null)
                 }
                 put("text/plain") {
                     this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
                         data to data
-                    } ?: null to null
+                    } ?: (null to null)
                 }
             }
 
