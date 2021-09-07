@@ -18,7 +18,7 @@ val mongoVersion: String by extra { "4.1.1" }
 val rabbitmqVersion: String by extra { "5.7.3" }
 
 buildscript {
-    val kotlinVersion: String by extra { "1.5.0" }
+    val kotlinVersion: String by extra { "1.5.30" }
     val dokkaVersion: String by extra { "1.4.32" }
 
     repositories {
