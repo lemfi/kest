@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "com.github.lemfi.kest"
 version = "0.1.7-SNAPSHOT"
 
-val kotlinVersion: String by extra { "1.5.0" }
+val kotlinVersion: String by extra { "1.5.30" }
 val coroutineVersion: String by extra { "1.4.1" }
 val opentest4jVersion: String by extra { "1.2.0" }
 val hopliteVersion: String by extra { "1.3.8" }
@@ -65,11 +65,11 @@ subprojects {
 
     val compileKotlin: KotlinCompile by tasks
     compileKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-    compileKotlin.kotlinOptions.jvmTarget = "1.8"
+    compileKotlin.kotlinOptions.jvmTarget = "11"
 
     val compileTestKotlin: KotlinCompile by tasks
     compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-    compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+    compileTestKotlin.kotlinOptions.jvmTarget = "11"
 
     tasks.withType<DokkaTask>().configureEach {
         dokkaSourceSets {
