@@ -12,7 +12,7 @@ import com.uber.cadence.worker.WorkerOptions
 import org.opentest4j.AssertionFailedError
 import java.time.Duration
 import kotlin.reflect.KFunction
-import kotlin.reflect.javaType
+import kotlin.reflect.jvm.javaType
 
 class WorkflowExecution<RESULT>(
     private val cadenceHost: String,
@@ -28,7 +28,6 @@ class WorkflowExecution<RESULT>(
 
     ) : Execution<RESULT>() {
 
-    @ExperimentalStdlibApi
     @Suppress("unchecked_cast")
     override fun execute(): RESULT {
 
@@ -70,7 +69,7 @@ class WorkflowExecution<RESULT>(
                     it.map { it.type }.joinToString(", ")
                 }] got ${params?.toList()}"
             )
-        }.map { Class.forName(it.type::javaType.get().typeName) }.takeIf { it.isNotEmpty() }
+        }.map { Class.forName(it.type.javaType.typeName) }.takeIf { it.isNotEmpty() }
 
         val method = parameterTypes?.let { workflowClass.getMethod(workflow.name, *parameterTypes.toTypedArray()) }
             ?: workflowClass.getMethod(workflow.name)

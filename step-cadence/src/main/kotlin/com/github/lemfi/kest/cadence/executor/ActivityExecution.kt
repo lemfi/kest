@@ -20,6 +20,7 @@ import org.opentest4j.AssertionFailedError
 import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.javaType
+import kotlin.reflect.jvm.javaType
 
 class ActivityExecution<RESULT>(
     private val cadenceHost: String,
@@ -35,7 +36,6 @@ class ActivityExecution<RESULT>(
 
     ) : Execution<RESULT>() {
 
-    @ExperimentalStdlibApi
     @Suppress("unchecked_cast")
     override fun execute(): RESULT {
 
