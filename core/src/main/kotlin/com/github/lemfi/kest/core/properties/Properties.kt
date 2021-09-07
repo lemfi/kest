@@ -5,6 +5,7 @@ import com.sksamuel.hoplite.ConfigLoader
 import com.sksamuel.hoplite.ConfigResult
 import com.sksamuel.hoplite.fp.invalid
 import org.slf4j.LoggerFactory
+import kotlin.reflect.full.createInstance
 
 val kestconfig: MutableMap<Class<*>, Any> = mutableMapOf()
 
@@ -38,7 +39,7 @@ fun autoconfigure() {
         null
     }?.let { cls ->
         try {
-            Class.forName(cls).getDeclaredConstructor().newInstance()
+            Class.forName(cls).kotlin.createInstance()
         } catch (e: Throwable) {
             LoggerFactory.getLogger("AUTOCONFIGURATION-Kest").error("cannot instantiate configuration", e)
             throw e
