@@ -34,7 +34,7 @@ class TestHttpServer {
                         """
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status) { "Saying Hello should return a 202, was ${stepResult.status}!" }
+                eq(201, stepResult.status) { "Saying Hello should return a 201, was ${stepResult.status}!" }
                 eq("Hello Darth Vader!", stepResult.body)
             }
 
