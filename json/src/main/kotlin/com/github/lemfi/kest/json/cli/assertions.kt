@@ -169,7 +169,7 @@ fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: JsonMap?) {
  * @param expected expected pattern
  * @param observed JsonArray object
  */
-fun AssertionsBuilder.jsonMatches(expected: String, observed: JsonArray?) {
+fun AssertionsBuilder.jsonMatches(expected: String, observed: Collection<*>?) {
 
     jsonMatches(listOf(expected), observed)
 }
@@ -181,7 +181,7 @@ fun AssertionsBuilder.jsonMatches(expected: String, observed: JsonArray?) {
  * @param expected expected patterns
  * @param observed JsonArray object
  */
-fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: KestArray<*>?) {
+private fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: Collection<*>?) {
 
     if (observed == null && !expected.any { it.endsWith("?") })
         fail("expected matching $expected, got null", expected, observed)
@@ -233,10 +233,10 @@ fun AssertionsBuilder.jsonMatches(expected: String, observed: String?) {
             val start = expected.indexOf("[[")
             val end = expected.lastIndexOf("]]")
 
-            jsonMatchesArray(listOf(expected
+            jsonMatches(listOf(expected
                 .removeRange(end, expected.length)
                 .removeRange(0, start + 2)
-            ), observed)
+            ), observed.toJsonArray(fail()))
         }
     }
 }
@@ -250,26 +250,6 @@ fun AssertionsBuilder.jsonMatches(expected: String, observed: String?) {
  */
 fun AssertionsBuilder.jsonMatches(expected: List<String>, observed: String?) {
     return jsonMatches(expected, observed.toJsonMap(fail()))
-}
-
-///**
-// * Check whether all elements of a Json Array as String matches a pattern
-// *
-// * @param expected expected pattern
-// * @param observed Json Array as String object
-// */
-//fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: String?) {
-//    return jsonMatchesArray(listOf(expected), observed)
-//}
-
-/**
- * Check whether all elements of a Json Array as String matches one of provided patterns
- *
- * @param expected expected patterns
- * @param observed Json Array as String object
- */
-fun AssertionsBuilder.jsonMatchesArray(expected: List<String>, observed: String?) {
-    return jsonMatches(expected, observed.toJsonArray(fail()))
 }
 
 private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) {
@@ -335,9 +315,9 @@ private fun AssertionsBuilder.jsonMatches(matcher: StringPatternJsonMatcher, obs
     val (isList, isNullableList) = matcher.isList
     if (isList) {
         if (!(isNullableList && observed == null))
-            jsonMatchesArray(
+            jsonMatches(
                 matcher.clsDescriptor.map { if (matcher.isNullable) "$it?" else it } ,
-                observedString
+                observedString.toJsonArray(fail())
             )
     } else {
         jsonMatches(matcher.clsDescriptor, observedString)

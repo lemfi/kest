@@ -726,7 +726,7 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    [[{{yolo}}]] 
-                """,
+            """,
             """[
                        {
                             "common": "c1",
