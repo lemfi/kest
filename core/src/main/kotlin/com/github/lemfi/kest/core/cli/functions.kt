@@ -25,7 +25,7 @@ fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: 
         name = name?.let { StepName(it) } ?: StepName("generic step"),
         retry = retry
     )
-        .addToScenario(this, executionBuilder) {}
+        .addToScenario(executionBuilder) {}
 }
 
 fun <T> ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<T>.() -> Unit): NestedScenarioStepPostExecution<T, T> {
@@ -37,31 +37,8 @@ fun <T> ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetrySte
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
-        .addToScenario(this, executionBuilder, l)
+        .addToScenario(executionBuilder, l)
 }
-
-fun <T, E: ExecutionBuilder<T>> StandaloneStep<T>.addToScenario(
-    scenario: ScenarioBuilder,
-    executionBuilder: E,
-    executionConfiguration: E.() -> Unit
-): StandaloneStepPostExecution<T, T, T> =
-    let { step ->
-        scenario.steps.add(this)
-        step.execution = { executionBuilder.apply(executionConfiguration).toExecution() }
-        @Suppress("unchecked_cast")
-        step.postExecution as StandaloneStepPostExecution<T, T, T>
-    }
-
-fun <T, E: ExecutionBuilder<T>> NestedScenarioStep<T>.addToScenario(
-    scenario: ScenarioBuilder,
-    executionBuilder: E,
-    executionConfiguration: E.() -> Unit
-): NestedScenarioStepPostExecution<T, T> =
-    let { step ->
-        scenario.steps.add(this)
-        step.execution = { executionBuilder.apply(executionConfiguration).toExecution() }
-        step.postExecution as NestedScenarioStepPostExecution<T, T>
-    }
 
 @JvmName("noResultStep")
 fun ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<Any>.() -> Unit) {
@@ -73,7 +50,7 @@ fun ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? =
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
-        .addToScenario(this, executionBuilder, l)
+        .addToScenario(executionBuilder, l)
 
 }
 

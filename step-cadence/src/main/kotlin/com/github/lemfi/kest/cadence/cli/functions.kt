@@ -4,7 +4,6 @@ import com.github.lemfi.kest.cadence.builder.ActivityCallExecutionBuilder
 import com.github.lemfi.kest.cadence.builder.WorkflowExecutionBuilder
 import com.github.lemfi.kest.cadence.model.cadenceProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.cli.addToScenario
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -27,7 +26,7 @@ inline fun <reified R> ScenarioBuilder.`given activity call`(
         name = name?.let { StepName(it) } ?: StepName("cadence activity"),
         scenarioName = this.name!!,
         retry = retryStep
-    ).addToScenario(this, executionBuilder, h)
+    ).addToScenario(executionBuilder, h)
 }
 
 fun <R> ScenarioBuilder.`given workflow`(
@@ -40,7 +39,7 @@ fun <R> ScenarioBuilder.`given workflow`(
         name = name?.let { StepName(it) } ?: StepName("cadence workflow"),
         scenarioName = this.name!!,
         retry = retryStep
-    ).addToScenario(this, executionBuilder, h)
+    ).addToScenario(executionBuilder, h)
 
 }
 

@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.executor.rabbitmq.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.cli.addToScenario
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -20,7 +19,7 @@ fun ScenarioBuilder.`publish rabbitmq message`(
         name = name?.let { StepName(it) } ?: StepName("publish message to rabbitmq"),
         scenarioName = this.name!!,
         retry = retry
-    ).addToScenario(this, executionBuilder, builder)
+    ).addToScenario(executionBuilder, builder)
 }
 
 inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
@@ -37,7 +36,7 @@ inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
         name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
         scenarioName = this.name!!,
         retry = retry
-    ).addToScenario(this, executionBuilder, builder)
+    ).addToScenario(executionBuilder, builder)
 }
 
 @JvmName("readRabbitMQMessageAsByteArray")
@@ -59,5 +58,5 @@ fun ScenarioBuilder.`create rabbitmq queue`(
         name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
         scenarioName = this.name!!,
         retry = retry
-    ).addToScenario(this, executionBuilder, builder)
+    ).addToScenario(executionBuilder, builder)
 }

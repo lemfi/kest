@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.executor.http.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.cli.addToScenario
 import com.github.lemfi.kest.core.model.*
 import com.github.lemfi.kest.executor.http.builder.HttpCallExecutionBuilder
 import com.github.lemfi.kest.executor.http.model.HttpResponse
@@ -17,5 +16,5 @@ inline fun <reified T> ScenarioBuilder.`given http call`(
         scenarioName = this.name!!,
         name = name?.let { StepName(it) } ?: StepName("HTTP call"),
         retry = retry
-    ).addToScenario(this, executionBuilder, h)
+    ).addToScenario(executionBuilder, h)
 }

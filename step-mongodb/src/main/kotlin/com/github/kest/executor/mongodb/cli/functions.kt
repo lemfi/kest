@@ -4,7 +4,6 @@ import com.github.kest.executor.mongodb.builder.MongoDBInsertDocumentExecutionBu
 import com.github.kest.executor.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
 import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.cli.addToScenario
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -22,7 +21,7 @@ fun ScenarioBuilder.`insert mongo document`(
         scenarioName = this.name!!,
         retry = retryStep
     )
-        .addToScenario(this, executionBuilder, h)
+        .addToScenario(executionBuilder, h)
 }
 
 fun ScenarioBuilder.`update mongo document`(
@@ -36,7 +35,7 @@ fun ScenarioBuilder.`update mongo document`(
         name = name?.let { StepName(it) } ?: StepName("update mongo document"),
         scenarioName = this.name!!,
         retry = retryStep
-    ).addToScenario(this, executionBuilder, h)
+    ).addToScenario(executionBuilder, h)
 }
 
 fun `insert mongo document`(collection: String, data: String) {
