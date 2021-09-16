@@ -129,7 +129,7 @@ To run a scenario Kest uses Junit5 engine:
 . Create a function annotated with Junit5 `@TestFactory`
 . Make it call Kest function
 .. `play scenarios` to play multiple scenarios in a single junit5 test factory +
-=> in this case you can pass `beforeEach` and `afterEach` functions to be played before and after each scenario if needed.
+=> in this case you can pass `beforeEach` and `afterEach` attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
 .. `play scenario` to play one scenario per junit5 test factory +
 => in this case you can use junit5 annotations `@BeforeEach` and `@AfterEach`
 
@@ -144,8 +144,8 @@ class TestHttpServer {
             scenario { ... },
             scenario { ... },
 
-            beforeEach = { ... },
-            afterEach = { ... }
+            beforeEach = { scenario { ... }},
+            afterEach = { scenario { ... }}
     )
 
 
@@ -155,8 +155,8 @@ class TestHttpServer {
             scenario { ... },
             scenario { ... }
 
-            beforeEach = { ... },
-            afterEach = { ... }
+            beforeEach = { scenario { ... }},
+            afterEach = { scenario { ... }}
     )
 
 
@@ -241,8 +241,8 @@ class TestHttpServer {
 
                 `get greeted`("Darth Vader", "Han Solo")
             },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+            beforeEach = ::startSampleApi,
+            afterEach = ::stopSampleApi
     )
 
     @TestFactory
@@ -269,8 +269,8 @@ class TestHttpServer {
                 `get greeted`("Han Solo")
 
             },
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+            beforeEach = ::startSampleApi,
+            afterEach = ::stopSampleApi
     )
 }
 
@@ -321,16 +321,16 @@ class TestHttpServer {
     fun `http server hello`() = `play scenarios`(
             `api says hello and remembers it!`,
 
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+            beforeEach = ::startSampleApi,
+            afterEach = ::stopSampleApi
     )
 
     @TestFactory
     fun `http server goodbye`() = `play scenarios`(
            `api says goodbye and forgets people!`,
 
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+            beforeEach = ::startSampleApi,
+            afterEach = ::stopSampleApi
     )
 
     @TestFactory
@@ -338,8 +338,8 @@ class TestHttpServer {
             `api says hello and remembers it!`,
             `api says goodbye and forgets people!`,
 
-            beforeEach = { startSampleApi() },
-            afterEach = { stopSampleApi() }
+            beforeEach = ::startSampleApi,
+            afterEach = ::stopSampleApi
     )
 }
 

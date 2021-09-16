@@ -10,8 +10,8 @@ import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
-import com.github.lemfi.kest.samplehttp.sampleapi.startSampleApi
-import com.github.lemfi.kest.samplehttp.sampleapi.stopSampleApi
+import com.github.lemfi.kest.samplehttp.startSampleApi
+import com.github.lemfi.kest.samplehttp.stopSampleApi
 import org.junit.jupiter.api.TestFactory
 
 class TestHttpServer {
@@ -92,8 +92,8 @@ class TestHttpServer {
                 eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
             }
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 
     @TestFactory
@@ -158,8 +158,8 @@ class TestHttpServer {
                 eq(listOf("Han Solo"), stepResult.body)
             }
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 
     @TestFactory
@@ -185,8 +185,8 @@ class TestHttpServer {
             }
 
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 
     @TestFactory
@@ -266,8 +266,8 @@ class TestHttpServer {
             }
 
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 
     @TestFactory
@@ -275,7 +275,10 @@ class TestHttpServer {
         scenario {
             name { "a step should be retried as specified when not passing" }
 
-            `given http call`<String>(name = "Sometimes retrying makes it pass!", retry = 100.times `delayed by` 10.ms) {
+            `given http call`<String>(
+                name = "Sometimes retrying makes it pass!",
+                retry = 100.times `delayed by` 10.ms
+            ) {
                 url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
                 method = "GET"
             } `assert that` {
@@ -283,7 +286,7 @@ class TestHttpServer {
             }
 
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 }

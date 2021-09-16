@@ -2,15 +2,15 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted
 
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
-import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.cli.nestedScenario
+import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
-import com.github.lemfi.kest.samplehttp.sampleapi.startSampleApi
-import com.github.lemfi.kest.samplehttp.sampleapi.stopSampleApi
 import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`validate otp`
+import com.github.lemfi.kest.samplehttp.startSampleApi
+import com.github.lemfi.kest.samplehttp.stopSampleApi
 import org.junit.jupiter.api.TestFactory
 
 class TestHttpServer {
@@ -26,8 +26,8 @@ class TestHttpServer {
 
             `get greeted`("Darth Vader", "Han Solo")
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 
     @TestFactory
@@ -54,8 +54,8 @@ class TestHttpServer {
             `get greeted`("Han Solo")
 
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 
 
@@ -97,8 +97,8 @@ class TestHttpServer {
             }
 
         },
-        beforeEach = { startSampleApi() },
-        afterEach = { stopSampleApi() }
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
     )
 }
 

@@ -56,8 +56,6 @@ subprojects {
     group = parent!!.group
     version = parent!!.version
 
-
-
     apply(plugin = "kotlin")
     apply(plugin = "java")
     apply(plugin = "maven-publish")

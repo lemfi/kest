@@ -1,6 +1,7 @@
 package com.github.lemfi.kest.junit5.runner
 
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
+import com.github.lemfi.kest.core.cli.run
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.properties.autoconfigure
@@ -8,15 +9,15 @@ import org.junit.jupiter.api.DynamicContainer
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest
 
-fun IScenario.toDynamicContainer(beforeEach: (() -> Unit)? = null, afterEach: (() -> Unit)? = null): DynamicContainer {
+fun IScenario.toDynamicContainer(beforeEach: (()->Scenario)? = null, afterEach: (()->Scenario)? = null): DynamicContainer {
     return DynamicContainer.dynamicContainer(name.value,
 
         object: Iterable<DynamicNode> {
             override fun iterator(): Iterator<DynamicNode> {
                 return iterator {
-                    beforeEach?.also { yield(DynamicTest.dynamicTest("prepare scenario", it)) }
+                    beforeEach?.also { yieldAll(ScenarioStepsIterator(beforeEach()) as Iterator<DynamicNode>) }
                     yieldAll(ScenarioStepsIterator(this@toDynamicContainer) as Iterator<DynamicNode>)
-                    afterEach?.also { yield(DynamicTest.dynamicTest("cleanup scenario", it)) }
+                    afterEach?.also { yieldAll(ScenarioStepsIterator(afterEach()) as Iterator<DynamicNode>) }
                 }
             }
         }
@@ -26,8 +27,8 @@ fun IScenario.toDynamicContainer(beforeEach: (() -> Unit)? = null, afterEach: ((
 
 fun `play scenarios`(
     vararg scenario: Scenario,
-    beforeEach: (() -> Unit)? = null,
-    afterEach: (() -> Unit)? = null
+    beforeEach: (()->Scenario)? = null,
+    afterEach: (()->Scenario)? = null
 ): List<DynamicNode> {
 
     autoconfigure()
