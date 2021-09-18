@@ -25,7 +25,7 @@ fun <R> rabbitMQProperty(l: RabbitMQProp.() -> R): R {
     return try {
         property(shortcut)
     } catch (e: Throwable) {
-        LoggerFactory.getLogger("RABBITMQ-Kest").warn("No configuration found for rabbitmq, use default values")
+        LoggerFactory.getLogger("RABBITMQ-Kest").debug("No configuration found for rabbitmq, use default values")
         RabbitMQProp().l()
     }
 }

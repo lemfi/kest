@@ -17,7 +17,7 @@ inline fun <R> mongoDBProperty(crossinline l: MongoDBProp.() -> R): R {
     return try {
         property(shortcut)
     } catch (e: Throwable) {
-        LoggerFactory.getLogger("MONGODB-Kest").warn("No configuration found for mongodb")
+        LoggerFactory.getLogger("MONGODB-Kest").debug("No configuration found for mongodb")
         MongoDBProp().l()
     }
 }

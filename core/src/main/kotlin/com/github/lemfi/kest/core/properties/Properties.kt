@@ -35,7 +35,7 @@ fun autoconfigure() {
     try {
         property<AutoConfiguration, String> { autoconfigure }
     } catch (e: Throwable) {
-        LoggerFactory.getLogger("AUTOCONFIGURATION-Kest").warn("no auto configuration set")
+        LoggerFactory.getLogger("AUTOCONFIGURATION-Kest").debug("no auto configuration set")
         null
     }?.let { cls ->
         try {

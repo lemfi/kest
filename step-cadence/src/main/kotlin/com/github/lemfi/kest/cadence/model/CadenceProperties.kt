@@ -17,7 +17,7 @@ inline fun <R> cadenceProperty(crossinline l: CadenceProp.() -> R): R {
     return try {
         property(shortcut)
     } catch (e: Throwable) {
-        LoggerFactory.getLogger("CADENCE-Kest").warn("No configuration found for cadence")
+        LoggerFactory.getLogger("CADENCE-Kest").debug("No configuration found for cadence")
         CadenceProp().l()
     }
 }
