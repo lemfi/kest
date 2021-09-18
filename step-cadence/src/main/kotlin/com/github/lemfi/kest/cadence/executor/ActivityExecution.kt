@@ -19,7 +19,6 @@ import com.uber.cadence.workflow.WorkflowMethod
 import org.opentest4j.AssertionFailedError
 import java.time.Duration
 import kotlin.reflect.KFunction
-import kotlin.reflect.javaType
 import kotlin.reflect.jvm.javaType
 
 class ActivityExecution<RESULT>(
