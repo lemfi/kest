@@ -15,9 +15,9 @@ class StandaloneStep<T>(
     override val scenarioName: ScenarioName,
     override val name: StepName?,
     override val retry: RetryStep?,
-): Step<T>() {
+) : Step<T>() {
 
-    override var postExecution: IStepPostExecution<T, T> = StandaloneStepPostExecution<T, T, T>(null) { t -> t }
+    override var postExecution: IStepPostExecution<T, T> = StandaloneStepPostExecution<T, T, T>(this, null) { t -> t }
 
     override lateinit var execution: () -> Execution<T>
 }
@@ -26,9 +26,9 @@ class NestedScenarioStep<T>(
     override val scenarioName: ScenarioName,
     override val name: StepName?,
     override val retry: RetryStep?,
-): Step<T>() {
+) : Step<T>() {
 
-    override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepPostExecution(null) { t -> t }
+    override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepPostExecution(this, null) { t -> t }
 
     override lateinit var execution: () -> Execution<T>
 }
@@ -39,6 +39,7 @@ value class StepName(val value: String)
 typealias StepPostExecution<T> = StandaloneStepPostExecution<T, T, T>
 
 sealed class IStepPostExecution<T, R>(
+    private val step: Step<*>,
     private val pe: IStepPostExecution<*, T>?,
     private val transformer: (T) -> R
 ) {
@@ -48,10 +49,32 @@ sealed class IStepPostExecution<T, R>(
 
     @Suppress("unchecked_cast")
     private val result: () -> R = {
-        if (resSet) transformer(res as T)
-        else if (pe != null) transformer(pe.result())
-        else throw IllegalAccessException("Step not played yet!")
+
+        val tryResolveResult: (() -> R) -> R = {
+            try {
+                it()
+            } catch (e: StepResultFailure) {
+                throw e
+            } catch (e: Throwable) {
+                throw StepResultFailure(step)
+            }
+        }
+
+        if (resSet) tryResolveResult {
+            transformer(res as T)
+        }
+        else if (pe != null) tryResolveResult {
+            transformer(pe.result())
+        }
+        else throw StepResultFailure(
+            step,
+            """
+                |Step "${step.name?.value ?: step}" was not played yet! 
+                |You may use its result only in another step body
+                |""".trimMargin()
+        )
     }
+
 
     operator fun invoke() = result()
 
@@ -59,13 +82,20 @@ sealed class IStepPostExecution<T, R>(
         resSet = true
         res = t
     }
+
+    fun setFailed() {
+        resSet = true
+    }
+
 }
-class StandaloneStepPostExecution<I: Any?, T, R>(
+
+class StandaloneStepPostExecution<I : Any?, T, R>(
+    private val step: Step<*>,
     private val pe: StandaloneStepPostExecution<I, *, T>?,
     transformer: (T) -> R
-): IStepPostExecution<T, R>(pe, transformer) {
+) : IStepPostExecution<T, R>(step, pe, transformer) {
 
-    infix fun <M> `map result to`(mapper: (R) -> M) = StandaloneStepPostExecution(this, mapper)
+    infix fun <M> `map result to`(mapper: (R) -> M) = StandaloneStepPostExecution(step, this, mapper)
 
     val assertions: MutableList<AssertionsBuilder.(I) -> Unit> = mutableListOf()
 
@@ -75,11 +105,12 @@ class StandaloneStepPostExecution<I: Any?, T, R>(
 }
 
 class NestedScenarioStepPostExecution<T, R>(
+    private val step: Step<*>,
     pe: NestedScenarioStepPostExecution<*, T>?,
     transformer: (T) -> R
-): IStepPostExecution<T, R>(pe, transformer) {
+) : IStepPostExecution<T, R>(step, pe, transformer) {
 
-    infix fun <M> `map result to`(mapper: (R) -> M) = NestedScenarioStepPostExecution(this, mapper)
+    infix fun <M> `map result to`(mapper: (R) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
 
 }
 
@@ -92,3 +123,8 @@ val Int.times: RetryStep get() = RetryStep(retries = this)
 val Int.ms: Long get() = this.toLong()
 val Int.seconds: Long get() = this * 1000L
 infix fun RetryStep.`delayed by`(milliseconds: Long) = copy(delay = milliseconds)
+
+class StepResultFailure(
+    val step: Step<*>,
+    override val message: String? = """Could not get result from previous step "${step.name?.value ?: step}""""
+) : Throwable(message)

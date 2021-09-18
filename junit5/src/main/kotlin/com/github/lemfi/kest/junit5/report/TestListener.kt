@@ -13,7 +13,7 @@ import java.io.PrintStream
 import java.util.*
 
 
-class TestListener: TestExecutionListener {
+class TestListener : TestExecutionListener {
 
     private val consoleSpy = ConsoleSpy()
     private val file = junit5RunnerProperty { report }?.let { File(it) }
@@ -32,7 +32,7 @@ class TestListener: TestExecutionListener {
         if (file != null) {
             report.duration = Date().time - report.duration
             file.parentFile.mkdirs()
-            file. createNewFile()
+            file.createNewFile()
             file.appendText(report.build())
         }
     }
@@ -65,6 +65,7 @@ class TestListener: TestExecutionListener {
             if (testIdentifier.isTest) {
                 report.total += 1
                 if (testExecutionResult.status == TestExecutionResult.Status.SUCCESSFUL) report.nbSuccess += 1
+                if (testExecutionResult.status == TestExecutionResult.Status.ABORTED) report.nbSkipped += 1
                 if (testExecutionResult.status == TestExecutionResult.Status.FAILED) report.nbFailures += 1
             }
             report.getTest(testIdentifier.uniqueId)?.let { test ->
@@ -74,9 +75,15 @@ class TestListener: TestExecutionListener {
                         test.failure = testExecutionResult.throwable.orElseGet(null)?.stackTraceToString() ?: ""
                 }
                 test.duration = Date().time - test.duration
-                test.success = when (test) {
-                    is TestReport -> testExecutionResult.status == TestExecutionResult.Status.SUCCESSFUL
-                    is ContainerTestReport -> report.children(test.id).all { it.success }
+                test.status = when (test) {
+                    is TestReport -> when (testExecutionResult.status) {
+                        TestExecutionResult.Status.SUCCESSFUL -> TestStatus.SUCCESS
+                        TestExecutionResult.Status.FAILED -> TestStatus.FAILED
+                        TestExecutionResult.Status.ABORTED, null -> TestStatus.SKIPPED
+                    }
+                    is ContainerTestReport ->
+                        if (report.children(test.id).any { it.status == TestStatus.FAILED }) TestStatus.FAILED
+                        else TestStatus.SUCCESS
                 }
             }
         }
@@ -110,8 +117,8 @@ private class ConsoleSpy {
 
     private val spy = ByteArrayOutputStream()
 
-    private val printStream: (PrintStream, PrintStream)->PrintStream = { spied, spy ->
-        PrintStream(object: OutputStream() {
+    private val printStream: (PrintStream, PrintStream) -> PrintStream = { spied, spy ->
+        PrintStream(object : OutputStream() {
             override fun flush() {
                 spy.flush()
                 spied.flush()

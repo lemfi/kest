@@ -28,7 +28,11 @@ fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: 
         .addToScenario(executionBuilder) {}
 }
 
-fun <T> ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<T>.() -> Unit): NestedScenarioStepPostExecution<T, T> {
+fun <T> ScenarioBuilder.nestedScenario(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    l: NestedScenarioExecutionBuilder<T>.() -> Unit
+): NestedScenarioStepPostExecution<T, T> {
     val executionBuilder = NestedScenarioExecutionBuilder<T>(name)
 
     return NestedScenarioStep<T>(
@@ -41,7 +45,11 @@ fun <T> ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetrySte
 }
 
 @JvmName("noResultStep")
-fun ScenarioBuilder.nestedScenario(name: String? = null, retryStep: RetryStep? = null, l: NestedScenarioExecutionBuilder<Any>.() -> Unit) {
+fun ScenarioBuilder.nestedScenario(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    l: NestedScenarioExecutionBuilder<Any>.() -> Unit
+) {
     val executionBuilder = NestedScenarioExecutionBuilder<Any>(name).apply { returns {} }
 
     NestedScenarioStep<Any>(
@@ -85,7 +93,12 @@ private fun <T> retryableStepExecution(retry: Int, delay: Long, step: Step<T>, e
         if (retry > 0) {
             Thread.sleep(delay)
             retryableStepExecution(retry - 1, delay, step, execution)
-        } else if (e is AssertionFailedError) throw e
-        else assertion.fail(e.message ?: "null", e)
+        } else if (e is AssertionFailedError) {
+            step.postExecution.setFailed()
+            throw e
+        } else {
+            step.postExecution.setFailed()
+            assertion.fail(e.message ?: "null", e)
+        }
     }
 }

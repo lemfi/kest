@@ -7,6 +7,7 @@ data class Report(
     var total: Long = 0,
     var nbSuccess: Long = 0,
     var nbFailures: Long = 0,
+    var nbSkipped: Long = 0,
     var duration: Long = 0
 ) {
     fun getTest(id: String): ATestReport? = tests.firstOrNull { it.id == id }
@@ -16,6 +17,13 @@ data class Report(
     private fun root() = tests.filter { it.parent == null }.let {
         if (it.size == 1) children(it.first().id) else it
     }
+
+    private fun TestStatus.toCSS() =
+        when (this) {
+            TestStatus.SUCCESS -> "ok"
+            TestStatus.FAILED -> "ko"
+            TestStatus.SKIPPED -> "skipped"
+        }
 
     fun build() = """
 
@@ -82,6 +90,10 @@ td.summary {
     background-color: var(--acid-green);
 }
 
+.summary.skipped {
+    background-color: var(--honey-yellow);
+}
+
 .ratio {
     padding-top: 20px;
     float: right;
@@ -109,6 +121,10 @@ dl.ko span.status {
 
 dl.ok span.status {
     color: var(--acid-green);
+}
+
+dl.skipped span.status {
+    color: var(--honey-yellow);
 }
 
 dt {
@@ -175,21 +191,31 @@ pre.err {
         """
         <table>
             <tr>
-                <td rowspan="2" class="summary all">${total} tests</td>
-    ${
-            if(nbFailures > 0) {
+                <td rowspan="3" class="summary all">${total} tests</td>
+        ${
+            if (nbFailures > 0) {
                 """<td class="summary ko">${nbFailures} failed</td>"""
             } else ""
         }
-                <td class="summary ok">${nbSuccess} passed</td>
+        ${
+            if (nbSkipped > 0) {
+                """<td class="summary skipped">${nbSkipped} skipped</td>"""
+            } else ""
+        }
+        ${
+            if (nbSuccess > 0) {
+                """<td class="summary ok">${nbSuccess} passed</td>"""
+            } else ""
+        }
             </tr>
     ${
             if (nbFailures > 0) {
                 """
                  <tr>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ratio">
                         <div style="background-color: var(--red); width: ${(nbFailures * 100 / total) + if (nbFailures * 100 % total != 0L) 1 else 0}%"></div>
+                        <div style="background-color: var(--honey-yellow); width: ${(nbSkipped * 100 / total) + if (nbSkipped * 100 % total != 0L) 1 else 0}%"></div>
                         <div style="background-color: var(--acid-green); width: ${nbSuccess * 100 / total}%"></div>
                     </div>
                 </td>
@@ -213,7 +239,7 @@ pre.err {
             """
         <ul>
             <li>
-                <dl class="${if (this.success) "ok" else "ko"}">
+                <dl class="${status.toCSS()}"}">
                     <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$htmlId')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
                     <dd id="$htmlId" class="hidden">
                         ${buildTests(children(id))}
@@ -227,7 +253,7 @@ pre.err {
     private fun TestReport.buildTest() =
         UUID.randomUUID().toString().let { id ->
             """   
-<dl class="${if (this.success) "ok" else "ko"}">
+<dl class="${status.toCSS()}">
     <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$id')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
     <dd id="$id" class="hidden">
 ${if (console.isNotBlank()) "<pre class=\"out\">$console</pre>" else ""}
@@ -241,25 +267,29 @@ ${if (failure.isNotBlank()) "<pre class=\"err\">$failure</pre>" else ""}
 sealed class ATestReport {
     abstract val id: String
     abstract val name: String
-    abstract var success: Boolean
+    abstract var status: TestStatus
     abstract var duration: Long
     abstract val parent: String?
+}
+
+enum class TestStatus {
+    SUCCESS, FAILED, SKIPPED
 }
 
 data class ContainerTestReport(
     override val id: String,
     override val name: String,
-    override var success: Boolean = false,
+    override var status: TestStatus = TestStatus.FAILED,
     override var duration: Long = 0,
     override val parent: String? = null,
-): ATestReport()
+) : ATestReport()
 
 data class TestReport(
     override val id: String,
     override val name: String,
-    override var success: Boolean = false,
+    override var status: TestStatus = TestStatus.FAILED,
     override var duration: Long = 0,
     var console: String = "",
     var failure: String = "",
     override val parent: String? = null,
-): ATestReport()
+) : ATestReport()
