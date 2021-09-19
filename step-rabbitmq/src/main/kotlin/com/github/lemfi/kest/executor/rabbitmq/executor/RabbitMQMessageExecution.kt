@@ -4,6 +4,7 @@ import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
 import com.rabbitmq.client.*
 import org.opentest4j.AssertionFailedError
+import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 import java.util.*
 
@@ -21,6 +22,16 @@ data class RabbitMQMessageExecution(
 
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
     override fun execute() {
+
+        LoggerFactory.getLogger("RABBITMQ-Kest").info("""
+            |Write message:
+            |
+            |vhost: $vhost 
+            |message: $message 
+            |on exchange: 
+            |          exchange: ${exchange.ifBlank { """default ("")""" }}
+            |          routing key: $routingKey"""
+            .trimMargin())
 
         val listeningQueue = "kest-${UUID.randomUUID()}"
 
