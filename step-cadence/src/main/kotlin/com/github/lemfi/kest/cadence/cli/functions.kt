@@ -46,12 +46,14 @@ fun <R> ScenarioBuilder.`given workflow`(
 fun `create domain`(
     name: String,
     cadenceHost: String = cadenceProperty { host },
-    cadencePort: Int = cadenceProperty { port }) =
+    cadencePort: Int = cadenceProperty { port }
+) =
 
-    WorkflowServiceTChannel(ClientOptions.newBuilder()
-        .setHost(cadenceHost)
-        .setPort(cadencePort)
-        .build()
+    WorkflowServiceTChannel(
+        ClientOptions.newBuilder()
+            .setHost(cadenceHost)
+            .setPort(cadencePort)
+            .build()
     ).also { cadenceService ->
 
         try {

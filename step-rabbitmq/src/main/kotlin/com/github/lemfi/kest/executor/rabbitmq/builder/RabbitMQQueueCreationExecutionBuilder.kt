@@ -7,7 +7,7 @@ import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
 class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
 
-    fun `create queue`(name: ()-> String) = QueueAndBinding(name()).also { queue = it }
+    fun `create queue`(name: () -> String) = QueueAndBinding(name()).also { queue = it }
     infix fun QueueAndBinding.`and bind it to exchange`(exchange: String) = this.also { it.exchange = exchange }
     infix fun QueueAndBinding.`with routing key`(routingKey: String) = this.also { it.routingKey = routingKey }
 

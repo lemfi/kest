@@ -40,10 +40,11 @@ class WorkflowExecution<RESULT>(
                 it.forEach { tasklist ->
                     WorkerFactory.newInstance(
                         WorkflowClient.newInstance(
-                            WorkflowServiceTChannel(ClientOptions.newBuilder()
-                                .setHost(cadenceHost)
-                                .setPort(cadencePort)
-                                .build()
+                            WorkflowServiceTChannel(
+                                ClientOptions.newBuilder()
+                                    .setHost(cadenceHost)
+                                    .setPort(cadencePort)
+                                    .build()
                             ),
                             WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
                         )
@@ -75,10 +76,11 @@ class WorkflowExecution<RESULT>(
             ?: workflowClass.getMethod(workflow.name)
 
         return WorkflowClient.newInstance(
-            WorkflowServiceTChannel(ClientOptions.newBuilder()
-                .setHost(cadenceHost)
-                .setPort(cadencePort)
-                .build()
+            WorkflowServiceTChannel(
+                ClientOptions.newBuilder()
+                    .setHost(cadenceHost)
+                    .setPort(cadencePort)
+                    .build()
             ),
             WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
         )

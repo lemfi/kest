@@ -31,7 +31,11 @@ fun startActivitiesAndWorkflows() {
         )
 
     factory!!.newWorker("SAMPLE_CADENCE").let { worker ->
-        worker.registerActivitiesImplementations(HelloActivity(), StartConversationActivity(), MayTheForceBeWithYouActivity())
+        worker.registerActivitiesImplementations(
+            HelloActivity(),
+            StartConversationActivity(),
+            MayTheForceBeWithYouActivity()
+        )
         worker.registerWorkflowImplementationTypes(HelloWorldWorkflow::class.java)
     }
     factory!!.start()
@@ -45,8 +49,11 @@ fun stopActivitiesAndWorkflows() {
 
 
 data class MayTheForceBeWithYou(val who: String)
-interface IMayTheForceBeWithYouActivity { fun mayTheForceBeWithYou(who: MayTheForceBeWithYou): String }
-class MayTheForceBeWithYouActivity: IMayTheForceBeWithYouActivity {
+interface IMayTheForceBeWithYouActivity {
+    fun mayTheForceBeWithYou(who: MayTheForceBeWithYou): String
+}
+
+class MayTheForceBeWithYouActivity : IMayTheForceBeWithYouActivity {
 
     override fun mayTheForceBeWithYou(who: MayTheForceBeWithYou) =
         "May the Force be with you ${who.who}!"
@@ -59,26 +66,36 @@ interface IHelloWorldWorkflow {
     fun hello(hello: Hello): String
 }
 
-interface IHelloActivity { fun hello(who: Hello): String }
-class HelloActivity: IHelloActivity {
+interface IHelloActivity {
+    fun hello(who: Hello): String
+}
+
+class HelloActivity : IHelloActivity {
 
     override fun hello(who: Hello): String = "Hello ${who.who}!"
 }
 
-interface IStartConversationActivity { fun talk(who: Hello): String }
-class StartConversationActivity: IStartConversationActivity {
+interface IStartConversationActivity {
+    fun talk(who: Hello): String
+}
+
+class StartConversationActivity : IStartConversationActivity {
 
     override fun talk(who: Hello) = "How are you doing ${who.who}?"
 }
 
-class HelloWorldWorkflow: IHelloWorldWorkflow {
+class HelloWorldWorkflow : IHelloWorldWorkflow {
 
-    val helloActivity = Workflow.newActivityStub(IHelloActivity::class.java, ActivityOptions.Builder()
-        .setScheduleToCloseTimeout(Duration.ofMinutes(1))
-        .build())
-    val talkActivity = Workflow.newActivityStub(IStartConversationActivity::class.java, ActivityOptions.Builder()
-        .setScheduleToCloseTimeout(Duration.ofMinutes(1))
-        .build())
+    val helloActivity = Workflow.newActivityStub(
+        IHelloActivity::class.java, ActivityOptions.Builder()
+            .setScheduleToCloseTimeout(Duration.ofMinutes(1))
+            .build()
+    )
+    val talkActivity = Workflow.newActivityStub(
+        IStartConversationActivity::class.java, ActivityOptions.Builder()
+            .setScheduleToCloseTimeout(Duration.ofMinutes(1))
+            .build()
+    )
 
     override fun hello(hello: Hello): String = """
         ${helloActivity.hello(hello)}

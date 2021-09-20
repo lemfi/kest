@@ -11,12 +11,12 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("JUNIT-RUNNER-Kest")
 
-class ScenarioStepsIterator(private val scenario: IScenario): Iterator<DynamicNode>, Iterable<DynamicNode> {
+class ScenarioStepsIterator(private val scenario: IScenario) : Iterator<DynamicNode>, Iterable<DynamicNode> {
 
     val steps = scenario.steps.iterator()
 
     override fun hasNext(): Boolean {
-        if (scenario is NestedScenario<*> && !steps.hasNext() ) {
+        if (scenario is NestedScenario<*> && !steps.hasNext()) {
             scenario.resolve()
         }
         return steps.hasNext()
@@ -38,8 +38,7 @@ class ScenarioStepsIterator(private val scenario: IScenario): Iterator<DynamicNo
                 name?.value ?: "anonymous step",
                 ScenarioStepsIterator((execution() as NestedScenarioStepExecution).scenario())
             )
-        }
-        else DynamicTest.dynamicTest(name?.value ?: "anonymous step") {
+        } else DynamicTest.dynamicTest(name?.value ?: "anonymous step") {
             try {
                 run()
             } catch (e: StepResultFailure) {

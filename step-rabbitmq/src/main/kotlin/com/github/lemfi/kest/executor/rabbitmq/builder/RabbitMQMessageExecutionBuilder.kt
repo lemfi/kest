@@ -7,7 +7,7 @@ import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
 
 class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
 
-    fun publish(message: ()->String) = RabbitMQMessage(message()).also { this.message = it }
+    fun publish(message: () -> String) = RabbitMQMessage(message()).also { this.message = it }
     infix fun RabbitMQMessage.`to exchange`(exchange: String) = also { it.exchange = exchange }
     infix fun RabbitMQMessage.`with routing key`(routingKey: String?) = also { it.routingKey = routingKey }
 
@@ -23,11 +23,12 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
             connection,
             vhost,
             message.exchange ?: rabbitMQProperty { exchange },
-            requireNotNull(message.routingKey) { "please give a routing key for publishing a message" } ,
+            requireNotNull(message.routingKey) { "please give a routing key for publishing a message" },
             rabbitMQProperty { rabbitProxy },
         )
     }
 }
+
 data class RabbitMQMessage(
     val message: String,
     var routingKey: String? = null,

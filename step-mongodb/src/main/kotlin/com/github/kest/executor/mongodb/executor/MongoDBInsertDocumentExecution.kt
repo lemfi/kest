@@ -14,7 +14,8 @@ data class MongoDBInsertDocumentExecution(
 
     override fun execute() {
 
-        LoggerFactory.getLogger("MONGODB-Kest").info("""
+        LoggerFactory.getLogger("MONGODB-Kest").info(
+            """
             |Insert document: 
             |
             |database: $database
@@ -22,7 +23,8 @@ data class MongoDBInsertDocumentExecution(
             |
             |document: 
             |$document
-        """.trimMargin())
+        """.trimMargin()
+        )
 
         MongoClients.create(connection).getDatabase(database)
             .getCollection(collection)

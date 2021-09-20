@@ -110,6 +110,7 @@ private fun Pair<KClass<*>?, List<String>?>.toJsonMatcher(
 sealed class JsonMatcher {
 
     abstract val matcher: String
+
     // is list to is nullable list
     abstract val isList: Pair<Boolean, Boolean>
     abstract val isNullable: Boolean
@@ -230,10 +231,13 @@ fun AssertionsBuilder.jsonMatches(expected: String, observed: String?) {
             val start = expected.indexOf("[[")
             val end = expected.lastIndexOf("]]")
 
-            jsonMatches(listOf(expected
-                .removeRange(end, expected.length)
-                .removeRange(0, start + 2)
-            ), observed.toJsonArray(fail()))
+            jsonMatches(
+                listOf(
+                    expected
+                        .removeRange(end, expected.length)
+                        .removeRange(0, start + 2)
+                ), observed.toJsonArray(fail())
+            )
         }
     }
 }
@@ -276,7 +280,11 @@ private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) 
             isString(expectedValue) -> {
 
                 if (observed[it]?.let { String::class.java.isAssignableFrom(it.javaClass) } == false) {
-                    fail("expected ${String::class.java} got ${observed[it]?.javaClass}", String::class.java, observed[it]?.javaClass)
+                    fail(
+                        "expected ${String::class.java} got ${observed[it]?.javaClass}",
+                        String::class.java,
+                        observed[it]?.javaClass
+                    )
                 } else {
 
                     val observedValue = observed[it]?.let { mapper.writeValueAsString(it) }
@@ -296,7 +304,11 @@ private fun isMap(data: Any?) = data?.let { Map::class.java.isAssignableFrom(it.
 private fun isArray(data: Any?) = data?.let { List::class.java.isAssignableFrom(it.javaClass) } ?: false
 private fun isBoolean(data: Any?) = data?.let { Boolean::class.java.isAssignableFrom(it.javaClass) } ?: false
 private fun isPattern(data: Any?) = data?.let {
-    isString(data) && (data as String).let { it.startsWith("[[") && it.endsWith("]]") || it.startsWith("{{") && it.endsWith("}}") }
+    isString(data) && (data as String).let {
+        it.startsWith("[[") && it.endsWith("]]") || it.startsWith("{{") && it.endsWith(
+            "}}"
+        )
+    }
 } ?: false
 
 private fun AssertionsBuilder.jsonMatches(matcher: JsonMatcher, observed: Any?) {
@@ -313,7 +325,7 @@ private fun AssertionsBuilder.jsonMatches(matcher: StringPatternJsonMatcher, obs
     if (isList) {
         if (!(isNullableList && observed == null))
             jsonMatches(
-                matcher.clsDescriptor.map { if (matcher.isNullable) "$it?" else it } ,
+                matcher.clsDescriptor.map { if (matcher.isNullable) "$it?" else it },
                 observedString.toJsonArray(fail())
             )
     } else {
@@ -363,7 +375,7 @@ private fun AssertionsBuilder.jsonMatches(matcher: ClassPatternJsonMatcher, obse
     }
 }
 
-private fun String?.toJsonMap(fail: (String, Any?, Any?)->Unit): JsonMap {
+private fun String?.toJsonMap(fail: (String, Any?, Any?) -> Unit): JsonMap {
     return try {
         mapper.readValue(
             this.let { if (it?.endsWith("?") == true) it.substringBeforeLast("?") else it },
@@ -375,7 +387,7 @@ private fun String?.toJsonMap(fail: (String, Any?, Any?)->Unit): JsonMap {
     }
 }
 
-private fun String?.toJsonArray(fail: (String, Any?, Any?)->Unit): KestArray<*> {
+private fun String?.toJsonArray(fail: (String, Any?, Any?) -> Unit): KestArray<*> {
     return try {
         mapper.readValue(this, JsonArray::class.java)
     } catch (e: Throwable) {

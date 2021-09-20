@@ -17,19 +17,23 @@ class RabbitMQQueueCreationExecution(
     override fun execute() {
 
         LoggerFactory.getLogger("RABBITMQ-Kest")
-            .info("""
+            .info(
+                """
                 |Queue creation:
                 |
                 |vhost: $vhost
                 |name: ${queueAndBinding.queue} 
                 |
-                |${if (queueAndBinding.exchange != null) {
-                    """bound to exchange: 
+                |${
+                    if (queueAndBinding.exchange != null) {
+                        """bound to exchange: 
                 |          exchange: ${queueAndBinding.exchange} 
-                |          routing key: ${queueAndBinding.routingKey}""".trimMargin()   
-                } else {
-                    """bound to default ("") exchange"""
-                }}""".trimMargin())
+                |          routing key: ${queueAndBinding.routingKey}""".trimMargin()
+                    } else {
+                        """bound to default ("") exchange"""
+                    }
+                }""".trimMargin()
+            )
 
         ConnectionFactory().also {
             it.setUri("$connection/$encodedVhost")

@@ -40,10 +40,11 @@ class ActivityExecution<RESULT>(
 
         WorkerFactory.newInstance(
             WorkflowClient.newInstance(
-                WorkflowServiceTChannel(ClientOptions.newBuilder()
-                    .setHost(cadenceHost)
-                    .setPort(cadencePort)
-                    .build()
+                WorkflowServiceTChannel(
+                    ClientOptions.newBuilder()
+                        .setHost(cadenceHost)
+                        .setPort(cadencePort)
+                        .build()
                 ),
                 WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
             )
@@ -66,10 +67,11 @@ class ActivityExecution<RESULT>(
         }
 
         return WorkflowClient.newInstance(
-            WorkflowServiceTChannel(ClientOptions.newBuilder()
-                .setHost(cadenceHost)
-                .setPort(cadencePort)
-                .build()
+            WorkflowServiceTChannel(
+                ClientOptions.newBuilder()
+                    .setHost(cadenceHost)
+                    .setPort(cadencePort)
+                    .build()
             ),
             WorkflowClientOptions.newBuilder().setDomain(cadenceDomain).build()
         )

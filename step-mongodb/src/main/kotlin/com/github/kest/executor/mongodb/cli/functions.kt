@@ -3,13 +3,10 @@ package com.github.kest.executor.mongodb.cli
 import com.github.kest.executor.mongodb.builder.MongoDBCleanDatabaseExecutionBuilder
 import com.github.kest.executor.mongodb.builder.MongoDBInsertDocumentExecutionBuilder
 import com.github.kest.executor.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
-import com.github.kest.executor.mongodb.model.mongoDBProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
-import com.mongodb.client.MongoClients
-import org.bson.Document
 
 fun ScenarioBuilder.`insert mongo document`(
     name: String? = null,

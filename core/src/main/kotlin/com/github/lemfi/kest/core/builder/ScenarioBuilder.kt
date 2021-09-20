@@ -5,18 +5,20 @@ import com.github.lemfi.kest.core.model.*
 sealed class ScenarioBuilder {
 
     var name: ScenarioName? = null
-        private set(value) { field = value }
+        private set(value) {
+            field = value
+        }
         get() = field ?: throw IllegalAccessException("a scenario should have a name dude!")
 
     val steps = mutableListOf<Step<*>>()
 
-    fun name(l: ()->String) {
+    fun name(l: () -> String) {
         name = ScenarioName(l())
     }
 
     abstract fun toScenario(): IScenario
 
-    fun <T, E: ExecutionBuilder<T>> StandaloneStep<T>.addToScenario(
+    fun <T, E : ExecutionBuilder<T>> StandaloneStep<T>.addToScenario(
         executionBuilder: E,
         executionConfiguration: E.() -> Unit
     ): StandaloneStepPostExecution<T, T, T> =
@@ -27,7 +29,7 @@ sealed class ScenarioBuilder {
             step.postExecution as StandaloneStepPostExecution<T, T, T>
         }
 
-    fun <T, E: ExecutionBuilder<T>> NestedScenarioStep<T>.addToScenario(
+    fun <T, E : ExecutionBuilder<T>> NestedScenarioStep<T>.addToScenario(
         executionBuilder: E,
         executionConfiguration: E.() -> Unit
     ): NestedScenarioStepPostExecution<T, T> =
@@ -38,9 +40,9 @@ sealed class ScenarioBuilder {
         }
 }
 
-class StandaloneScenarioBuilder: ScenarioBuilder() {
+class StandaloneScenarioBuilder : ScenarioBuilder() {
 
     override fun toScenario(): StandaloneScenario {
-        return StandaloneScenario(requireNotNull(name) { "a scenario should have a name dude!" } , steps)
+        return StandaloneScenario(requireNotNull(name) { "a scenario should have a name dude!" }, steps)
     }
 }

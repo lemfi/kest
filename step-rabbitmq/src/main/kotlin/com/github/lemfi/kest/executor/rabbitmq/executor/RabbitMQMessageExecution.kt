@@ -23,7 +23,8 @@ data class RabbitMQMessageExecution(
     val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
     override fun execute() {
 
-        LoggerFactory.getLogger("RABBITMQ-Kest").info("""
+        LoggerFactory.getLogger("RABBITMQ-Kest").info(
+            """
             |Write message:
             |
             |vhost: $vhost 
@@ -31,7 +32,8 @@ data class RabbitMQMessageExecution(
             |on exchange: 
             |          exchange: ${exchange.ifBlank { """default ("")""" }}
             |          routing key: $routingKey"""
-            .trimMargin())
+                .trimMargin()
+        )
 
         val listeningQueue = "kest-${UUID.randomUUID()}"
 

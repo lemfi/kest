@@ -13,11 +13,11 @@ sealed class IScenario {
 class StandaloneScenario(
     override val name: ScenarioName,
     override val steps: MutableList<Step<*>>,
-): IScenario()
+) : IScenario()
 
 class NestedScenario<T>(
     override val name: ScenarioName,
     val parentStep: Step<T>,
     override val steps: MutableList<Step<*>>,
     val result: () -> T
-): IScenario()
+) : IScenario()

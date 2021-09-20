@@ -1,9 +1,9 @@
 package com.github.lemfi.kest.samplehttp.scenariobyscenario
 
 import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.*
 import com.github.lemfi.kest.samplehttp.sampleapi.startSampleApi
 import com.github.lemfi.kest.samplehttp.sampleapi.stopSampleApi
-import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestFactory
@@ -20,7 +20,8 @@ class TestHttpServer {
     fun `api says hello and remembers it! (unwrapped)`() = `play scenario`(`api says hello and remembers it!`)
 
     @TestFactory
-    fun `api says hello and remembers it! (wrapped)`() = `play scenario`(`api says hello and remembers it!`, unwrap = false)
+    fun `api says hello and remembers it! (wrapped)`() =
+        `play scenario`(`api says hello and remembers it!`, unwrap = false)
 
     @TestFactory
     fun `api says goodbye and forgets people!`() = `play scenario`(`api says goodbye and forgets people!`)

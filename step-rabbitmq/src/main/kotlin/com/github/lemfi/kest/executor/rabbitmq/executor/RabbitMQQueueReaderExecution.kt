@@ -18,12 +18,14 @@ class RabbitMQQueueReaderExecution<T>(
 
     override fun execute(): T {
 
-        LoggerFactory.getLogger("RABBITMQ-Kest").info("""
+        LoggerFactory.getLogger("RABBITMQ-Kest").info(
+            """
             |Read message:
             |
             |vhost: $vhost
             |queue: $queueName"""
-            .trimMargin())
+                .trimMargin()
+        )
 
         return ConnectionFactory().also {
 

@@ -13,11 +13,15 @@ inline fun <reified E : Any, R> property(l: E.() -> R): R {
     val conf =
         when (kestconfig[E::class.java]) {
             null ->
-                listOf(System.getProperty("kest-conf", ""), System.getenv().getOrDefault("KEST_CONF", ""), "/kest.yml").let { source ->
+                listOf(
+                    System.getProperty("kest-conf", ""),
+                    System.getenv().getOrDefault("KEST_CONF", ""),
+                    "/kest.yml"
+                ).let { source ->
                     var configuration: ConfigResult<E> = ConfigFailure.UnknownSource("").invalid()
                     val sourcesIterator = source.iterator()
                     while (configuration.isInvalid() && sourcesIterator.hasNext()) {
-                        configuration =  ConfigLoader().loadConfig(sourcesIterator.next())
+                        configuration = ConfigLoader().loadConfig(sourcesIterator.next())
                     }
                     configuration.getUnsafe()
                 }

@@ -2,8 +2,8 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted
 
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
-import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.cli.nestedScenario
+import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.executor.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
@@ -47,7 +47,7 @@ val `get and validate correct otp` =
         name { "get and validate correct otp" }
 
         val generatedOtps = generateOtps()
-        
+
         nestedScenario("validate OTPs") {
             val otps = generatedOtps()
             (otps.indices).forEach {

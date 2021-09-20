@@ -1,6 +1,5 @@
 package com.github.lemfi.kest.executor.rabbitmq.listener
 
-import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.BasicProperties
 import com.rabbitmq.client.Channel
@@ -61,7 +60,9 @@ fun startRabbitMQProxy(
             }
         }
     }
-    while (server == null) { /* wait for server to be up */ }
+    while (server == null) {
+        /* wait for server to be up */
+    }
 }
 
 @Suppress("BlockingMethodInNonBlockingContext")

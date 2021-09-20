@@ -21,7 +21,12 @@ fun startRabbitApplication(port: String = "5672") {
             val deliveryTag = envelope.deliveryTag
 
             Thread.sleep(8000)
-            channel.basicPublish("", body.toString(Charsets.UTF_8), AMQP.BasicProperties(), "Au secours ${body.toString(Charsets.UTF_8)}, vous êtes notre seul espoir !".toByteArray(Charsets.UTF_8))
+            channel.basicPublish(
+                "",
+                body.toString(Charsets.UTF_8),
+                AMQP.BasicProperties(),
+                "Au secours ${body.toString(Charsets.UTF_8)}, vous êtes notre seul espoir !".toByteArray(Charsets.UTF_8)
+            )
 
             channel.basicAck(deliveryTag, false)
         }

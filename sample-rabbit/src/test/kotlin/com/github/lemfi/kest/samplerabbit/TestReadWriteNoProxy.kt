@@ -41,7 +41,10 @@ class TestReadWriteNoProxy {
             publish { "obi-wan_kenobi" } `to exchange` "" `with routing key` "R2D2"
         }
 
-        `given message from rabbitmq queue`<String>(name = "read message from Leia", retry = 10.times `delayed by` 1.seconds) {
+        `given message from rabbitmq queue`<String>(
+            name = "read message from Leia",
+            retry = 10.times `delayed by` 1.seconds
+        ) {
             queue = "obi-wan_kenobi"
             messageTransformer = { toString(Charsets.UTF_8) }
         } `assert that` {

@@ -15,7 +15,8 @@ data class MongoDBUpdateDocumentExecution(
 
     override fun execute() {
 
-        LoggerFactory.getLogger("MONGODB-Kest").info("""
+        LoggerFactory.getLogger("MONGODB-Kest").info(
+            """
             |Updateocument: 
             |
             |database: $database
@@ -25,7 +26,8 @@ data class MongoDBUpdateDocumentExecution(
             |
             |update: 
             |${update.map { "${it.first}: ${it.second}\n" }}
-        """.trimMargin())
+        """.trimMargin()
+        )
 
         MongoClients.create(connection).getDatabase(database)
             .getCollection(collection)

@@ -1,7 +1,10 @@
 package com.github.lemfi.kest.executor.http.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.model.*
+import com.github.lemfi.kest.core.model.RetryStep
+import com.github.lemfi.kest.core.model.StandaloneStep
+import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.executor.http.builder.HttpCallExecutionBuilder
 import com.github.lemfi.kest.executor.http.model.HttpResponse
 
