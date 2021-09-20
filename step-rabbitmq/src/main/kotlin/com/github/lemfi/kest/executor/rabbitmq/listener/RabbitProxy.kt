@@ -8,6 +8,7 @@ import com.rabbitmq.client.impl.AMQCommand
 import com.rabbitmq.client.impl.AMQImpl
 import com.rabbitmq.client.impl.Frame
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.DataInputStream
@@ -32,6 +33,7 @@ fun main(args: List<String>) {
 }
 
 
+@OptIn(DelicateCoroutinesApi::class)
 @Suppress("BlockingMethodInNonBlockingContext")
 fun startRabbitMQProxy(
     connection: String,

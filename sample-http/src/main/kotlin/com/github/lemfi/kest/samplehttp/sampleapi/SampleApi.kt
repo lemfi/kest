@@ -1,6 +1,7 @@
 package com.github.lemfi.kest.samplehttp.sampleapi
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.OutputStream
@@ -15,6 +16,7 @@ private var server: ServerSocket? = null
 private val helloPeople = mutableListOf<String>()
 private val otps = mutableListOf<String>()
 
+@OptIn(DelicateCoroutinesApi::class)
 @Suppress("BlockingMethodInNonBlockingContext")
 fun startSampleApi() {
     if (server == null) {

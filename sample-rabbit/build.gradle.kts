@@ -1,6 +1,7 @@
 val rabbitmqVersion: String by project.rootProject.extra
 val junitVersion: String by project.rootProject.extra
 val coroutineVersion: String by project.rootProject.extra
+val slf4jVersion: String by project.rootProject.extra
 
 dependencies {
 
@@ -10,7 +11,7 @@ dependencies {
     implementation(project(":step-rabbitmq"))
     implementation(project(":junit5"))
 
-    implementation("org.slf4j:slf4j-simple:1.7.28")
+    implementation("org.slf4j:slf4j-simple:$slf4jVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
 
