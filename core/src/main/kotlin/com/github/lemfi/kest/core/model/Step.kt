@@ -122,7 +122,7 @@ data class RetryStep(
 val Int.times: RetryStep get() = RetryStep(retries = this)
 val Int.ms: Long get() = this.toLong()
 val Int.seconds: Long get() = this * 1000L
-infix fun RetryStep.`delayed by`(milliseconds: Long) = copy(delay = milliseconds)
+infix fun RetryStep.`by intervals of`(milliseconds: Long) = copy(delay = milliseconds)
 
 class StepResultFailure(
     val step: Step<*>,

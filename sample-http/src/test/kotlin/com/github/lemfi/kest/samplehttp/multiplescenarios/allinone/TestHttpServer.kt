@@ -3,7 +3,7 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.allinone
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.core.model.`delayed by`
+import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.executor.http.cli.`given http call`
@@ -277,7 +277,7 @@ class TestHttpServer {
 
             `given http call`<String>(
                 name = "Sometimes retrying makes it pass!",
-                retry = 100.times `delayed by` 10.ms
+                retry = 100.times `by intervals of` 10.ms
             ) {
                 url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
                 method = "GET"

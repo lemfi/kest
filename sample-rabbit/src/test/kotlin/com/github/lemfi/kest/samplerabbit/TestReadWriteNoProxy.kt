@@ -2,7 +2,7 @@ package com.github.lemfi.kest.samplerabbit
 
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
-import com.github.lemfi.kest.core.model.`delayed by`
+import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.core.properties.kestconfig
@@ -43,7 +43,7 @@ class TestReadWriteNoProxy {
 
         `given message from rabbitmq queue`<String>(
             name = "read message from Leia",
-            retry = 10.times `delayed by` 1.seconds
+            retry = 10.times `by intervals of` 1.seconds
         ) {
             queue = "obi-wan_kenobi"
             messageTransformer = { toString(Charsets.UTF_8) }
