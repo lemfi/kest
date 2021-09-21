@@ -107,7 +107,7 @@ td.summary {
     width: 200px;
     display: inline-block;
     height: 20px;
-    margin: -2px;
+    margin: -3px;
 }
 
 ul {
