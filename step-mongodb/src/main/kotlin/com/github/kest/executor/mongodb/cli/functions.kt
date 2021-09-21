@@ -40,7 +40,7 @@ fun ScenarioBuilder.`update mongo document`(
 fun ScenarioBuilder.`clean mongo database`(
     name: String? = null,
     retryStep: RetryStep? = null,
-    h: MongoDBCleanDatabaseExecutionBuilder.() -> Unit
+    h: MongoDBCleanDatabaseExecutionBuilder.() -> Unit = {}
 ) {
     val executionBuilder = MongoDBCleanDatabaseExecutionBuilder()
     StandaloneStep<Unit>(
