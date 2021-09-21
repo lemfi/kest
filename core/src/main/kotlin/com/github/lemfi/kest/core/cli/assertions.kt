@@ -14,7 +14,7 @@ fun AssertionsBuilder.eq(expected: Any?, observed: Any?, message: (() -> String)
 fun AssertionsBuilder.`true`(observed: Boolean?, message: (() -> String)? = null) {
 
     (observed ?: false).let { success ->
-        if (!success) fail(message?.invoke() ?: "Expected true, was $observed)", true, observed)
+        if (!success) fail(message?.invoke() ?: "Expected true, was $observed", true, observed)
     }
 }
 
