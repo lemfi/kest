@@ -2,7 +2,7 @@ package com.github.lemfi.kest.junit5.report
 
 import java.util.*
 
-data class Report(
+internal data class Report(
     val tests: MutableList<ATestReport> = mutableListOf(),
     var total: Long = 0,
     var nbSuccess: Long = 0,
@@ -264,7 +264,7 @@ ${if (failure.isNotBlank()) "<pre class=\"err\">$failure</pre>" else ""}
         }
 }
 
-sealed class ATestReport {
+internal sealed class ATestReport {
     abstract val id: String
     abstract val name: String
     abstract var status: TestStatus
@@ -272,11 +272,11 @@ sealed class ATestReport {
     abstract val parent: String?
 }
 
-enum class TestStatus {
+internal enum class TestStatus {
     SUCCESS, FAILED, SKIPPED
 }
 
-data class ContainerTestReport(
+internal data class ContainerTestReport(
     override val id: String,
     override val name: String,
     override var status: TestStatus = TestStatus.FAILED,
@@ -284,7 +284,7 @@ data class ContainerTestReport(
     override val parent: String? = null,
 ) : ATestReport()
 
-data class TestReport(
+internal data class TestReport(
     override val id: String,
     override val name: String,
     override var status: TestStatus = TestStatus.FAILED,

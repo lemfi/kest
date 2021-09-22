@@ -14,7 +14,7 @@ import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
 
-class WorkflowExecution<RESULT>(
+internal class WorkflowExecution<RESULT>(
     private val cadenceHost: String,
     private val cadencePort: Int,
     private val cadenceDomain: String,

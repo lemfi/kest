@@ -13,7 +13,7 @@ import java.io.PrintStream
 import java.util.*
 
 
-class TestListener : TestExecutionListener {
+internal class TestListener : TestExecutionListener {
 
     private val consoleSpy = ConsoleSpy()
     private val file = junit5RunnerProperty { report }?.let { File(it) }

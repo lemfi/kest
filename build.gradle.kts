@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.2.0"
+version = "0.2.1-SNAPSHOT"
 
 val kotlinVersion: String by extra { "1.5.30" }
 val coroutineVersion: String by extra { "1.5.2" }
@@ -47,7 +47,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.5.0")
+        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.5.30")
     }
 }
 

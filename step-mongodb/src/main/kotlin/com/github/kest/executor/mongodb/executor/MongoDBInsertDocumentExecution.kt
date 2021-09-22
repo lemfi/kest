@@ -5,7 +5,7 @@ import com.mongodb.client.MongoClients
 import org.bson.Document
 import org.slf4j.LoggerFactory
 
-data class MongoDBInsertDocumentExecution(
+internal data class MongoDBInsertDocumentExecution(
     val document: String,
     val collection: String,
     val connection: String,

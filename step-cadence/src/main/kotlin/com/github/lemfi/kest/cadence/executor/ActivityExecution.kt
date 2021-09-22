@@ -21,7 +21,7 @@ import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
 
-class ActivityExecution<RESULT>(
+internal class ActivityExecution<RESULT>(
     private val cadenceHost: String,
     private val cadencePort: Int,
     private val cadenceDomain: String,

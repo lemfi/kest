@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
-data class HttpExecution<T>(
+internal data class HttpExecution<T>(
     val url: String,
     val method: String,
     val returnType: Class<T>,

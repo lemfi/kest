@@ -5,7 +5,7 @@ import com.mongodb.client.MongoClients
 import org.bson.Document
 import org.slf4j.LoggerFactory
 
-data class MongoDBCleanDatabaseExecution(
+internal data class MongoDBCleanDatabaseExecution(
     val connection: String,
     val database: String,
 ) : Execution<Unit>() {

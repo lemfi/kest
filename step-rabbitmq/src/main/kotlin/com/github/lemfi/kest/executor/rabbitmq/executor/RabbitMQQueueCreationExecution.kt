@@ -6,7 +6,7 @@ import com.rabbitmq.client.ConnectionFactory
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 
-class RabbitMQQueueCreationExecution(
+internal class RabbitMQQueueCreationExecution(
     val queueAndBinding: QueueAndBinding,
     val connection: String,
     val vhost: String,

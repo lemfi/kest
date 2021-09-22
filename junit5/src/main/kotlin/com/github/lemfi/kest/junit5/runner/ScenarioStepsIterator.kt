@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("JUNIT-RUNNER-Kest")
 
-class ScenarioStepsIterator(private val scenario: IScenario) : Iterator<DynamicNode>, Iterable<DynamicNode> {
+internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator<DynamicNode>, Iterable<DynamicNode> {
 
     val steps = scenario.steps.iterator()
 

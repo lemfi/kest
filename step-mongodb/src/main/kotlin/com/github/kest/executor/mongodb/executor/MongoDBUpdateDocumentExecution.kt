@@ -5,7 +5,7 @@ import com.mongodb.client.MongoClients
 import org.bson.Document
 import org.slf4j.LoggerFactory
 
-data class MongoDBUpdateDocumentExecution(
+internal data class MongoDBUpdateDocumentExecution(
     val collection: String,
     val filter: List<Pair<String, Any?>>,
     val update: List<Pair<String, Any?>>,

@@ -7,7 +7,7 @@ import com.github.lemfi.kest.core.properties.autoconfigure
 import org.junit.jupiter.api.DynamicContainer
 import org.junit.jupiter.api.DynamicNode
 
-fun IScenario.toDynamicContainer(
+internal fun IScenario.toDynamicContainer(
     beforeEach: (() -> Scenario)? = null,
     afterEach: (() -> Scenario)? = null
 ): DynamicContainer {

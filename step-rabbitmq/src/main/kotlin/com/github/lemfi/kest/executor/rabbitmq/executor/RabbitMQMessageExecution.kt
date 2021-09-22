@@ -9,7 +9,7 @@ import java.net.URLEncoder
 import java.util.*
 
 
-data class RabbitMQMessageExecution(
+internal data class RabbitMQMessageExecution(
     val message: String,
     val connection: String,
     val vhost: String,
