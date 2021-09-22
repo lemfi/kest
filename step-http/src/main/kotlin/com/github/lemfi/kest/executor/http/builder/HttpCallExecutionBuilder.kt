@@ -4,6 +4,7 @@ import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.executor.http.executor.HttpExecution
 import com.github.lemfi.kest.executor.http.model.HttpResponse
+import com.github.lemfi.kest.executor.http.model.httpProperty
 
 class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResponse<T>> {
 
@@ -13,9 +14,9 @@ class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResp
     var contentType: String? = null
     val headers = mutableMapOf<String, String>()
     var followRedirect = false
-
+    var timeout: Long? = httpProperty { timeout }
 
     override fun toExecution(): Execution<HttpResponse<T>> {
-        return HttpExecution(url, method, cls, body, headers, contentType, followRedirect)
+        return HttpExecution(url, method, cls, body, headers, contentType, followRedirect, timeout)
     }
 }

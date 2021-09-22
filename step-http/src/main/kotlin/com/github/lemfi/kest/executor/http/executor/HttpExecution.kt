@@ -21,7 +21,8 @@ data class HttpExecution<T>(
     val body: Any? = null,
     val headers: MutableMap<String, String>,
     val contentType: String?,
-    val followRedirect: Boolean
+    val followRedirect: Boolean,
+    val timeout: Long?,
 ) : Execution<HttpResponse<T>>() {
 
     val accept = headers.getOrDefault("Accept", null)
@@ -69,7 +70,7 @@ data class HttpExecution<T>(
         return if (body is MultipartBody) {
             OkHttpClient.Builder()
                 .followRedirects(followRedirect)
-                .readTimeout(httpProperty { timeout }, TimeUnit.MILLISECONDS)
+                .readTimeout(timeout ?: 0, TimeUnit.MILLISECONDS)
                 .build().newCall(
                     Request.Builder()
                         .url(url)
@@ -97,7 +98,7 @@ data class HttpExecution<T>(
         } else {
             OkHttpClient.Builder()
                 .followRedirects(followRedirect)
-                .readTimeout(httpProperty { timeout }, TimeUnit.MILLISECONDS)
+                .readTimeout(timeout ?: 0, TimeUnit.MILLISECONDS)
                 .build().newCall(
                     Request.Builder()
                         .url(url)

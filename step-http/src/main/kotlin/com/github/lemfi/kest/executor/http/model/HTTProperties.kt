@@ -9,8 +9,7 @@ data class HTTPProperties(
 
 data class HttpProp(
     val timeout: Long = 0L,
-
-    )
+)
 
 inline fun <R> httpProperty(crossinline l: HttpProp.() -> R): R {
     val shortcut: HTTPProperties.() -> R = { http.l() }
