@@ -16,9 +16,6 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
     val steps = scenario.steps.iterator()
 
     override fun hasNext(): Boolean {
-        if (scenario is NestedScenario<*> && !steps.hasNext()) {
-            scenario.resolve()
-        }
         return steps.hasNext()
     }
 
@@ -28,9 +25,13 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
         return this
     }
 
-    @Suppress("unchecked_cast")
-    private fun NestedScenario<*>.resolve() =
-        (this as NestedScenario<Any>).parentStep.postExecution.setResult(result())
+    private fun resolveScenario() {
+        try {
+            if (!steps.hasNext() && scenario is NestedScenario<*>) scenario.resolve()
+        } catch (e: StepResultFailure) {
+            // fail silently, will fail later...
+        }
+    }
 
     fun Step<*>.toDynamicNode() =
         if (this is NestedScenarioStep<*>) {
@@ -44,6 +45,8 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
             } catch (e: StepResultFailure) {
                 logger.warn(e.message)
                 throw TestAbortedException(e.message)
+            } finally {
+                resolveScenario()
             }
         }
 }

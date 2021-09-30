@@ -45,6 +45,7 @@ sealed class IStepPostExecution<T, R>(
 ) {
 
     private var resSet = false
+    private var failed: Throwable? = null
     private var res: T? = null
 
     @Suppress("unchecked_cast")
@@ -53,14 +54,23 @@ sealed class IStepPostExecution<T, R>(
         val tryResolveResult: (() -> R) -> R = {
             try {
                 it()
-            } catch (e: StepResultFailure) {
-                throw e
             } catch (e: Throwable) {
-                throw StepResultFailure(step)
+                with(
+                    StepResultFailure(
+                        step = step,
+                        cause = e,
+                    )
+                ) {
+                    setFailed(this)
+                    throw this
+                }
             }
         }
 
-        if (resSet) tryResolveResult {
+        if (failed != null) {
+            throw failed!!
+        }
+        else if (resSet) tryResolveResult {
             transformer(res as T)
         }
         else if (pe != null) tryResolveResult {
@@ -80,11 +90,14 @@ sealed class IStepPostExecution<T, R>(
 
     fun setResult(t: T) {
         resSet = true
+        if (pe != null) pe.resSet = true
         res = t
     }
 
-    fun setFailed() {
+    fun setFailed(e: Throwable) {
+        failed = e
         resSet = true
+        pe?.setFailed(e)
     }
 
 }
@@ -126,5 +139,6 @@ infix fun RetryStep.`by intervals of`(milliseconds: Long) = copy(delay = millise
 
 class StepResultFailure(
     val step: Step<*>,
-    override val message: String? = """Could not get result from previous step "${step.name?.value ?: step}""""
-) : Throwable(message)
+    override val message: String? = """Could not get result from previous step "${step.name?.value ?: step}"""",
+    override val cause: Throwable? = null
+) : Throwable(message, cause)

@@ -11,10 +11,10 @@ class NestedScenarioStepExecution<T>(
 ) : Execution<T>() {
 
     override fun execute(): T =
+
         scenario()
-            .let {
-                it.run()
-                it.result()
-                    .apply { step.postExecution.setResult(this) }
+            .run {
+                run()
+                resolve()
             }
 }

@@ -20,4 +20,24 @@ class NestedScenario<T>(
     val parentStep: Step<T>,
     override val steps: MutableList<Step<*>>,
     val result: () -> T
-) : IScenario()
+) : IScenario() {
+
+    fun resolve() =
+        try {
+            result()
+                .apply {
+                    parentStep.postExecution.setResult(this)
+                }
+        } catch (e: Throwable) {
+            with(
+                StepResultFailure(
+                    step = parentStep,
+                    cause = e,
+                )
+            ) {
+                parentStep.postExecution.setFailed(this)
+                throw this
+            }
+        }
+
+}

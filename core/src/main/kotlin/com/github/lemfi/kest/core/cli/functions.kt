@@ -70,35 +70,43 @@ fun IScenario.run() {
 
 fun <T> Step<T>.run(): Step<T> {
 
-    val execution = execution()
-    retryableStepExecution(retry?.retries ?: 0, retry?.delay ?: 0L, this, execution)
-    return this
-}
+    val execution = try {
+        execution()
+    } catch (e: Throwable) {
+        postExecution.setFailed(e)
+        throw e
+    }
 
-private fun <T> retryableStepExecution(retry: Int, delay: Long, step: Step<T>, execution: Execution<T>) {
+    val assertion = AssertionsBuilder(scenarioName, name)
 
-    val assertion = AssertionsBuilder(step.scenarioName, step.name)
+    var tries = retry?.retries ?: 1
+    val delay = retry?.delay ?: 0L
 
-    try {
-        val res = execution.execute()
-        if (step.postExecution is StandaloneStepPostExecution<*, *, *>) {
-            @Suppress("unchecked_cast")
-            (step.postExecution as StandaloneStepPostExecution<T, *, *>).assertions.forEach { assert ->
-                assertion.assert(res)
+    while (tries > 0) {
+
+        try {
+            val res = execution.execute()
+            if (postExecution is StandaloneStepPostExecution<*, *, *>) {
+                @Suppress("unchecked_cast")
+                (postExecution as StandaloneStepPostExecution<T, *, *>).assertions.forEach { assert ->
+                    assertion.assert(res)
+                }
+            }
+            tries = 0
+            postExecution.setResult(res)
+        } catch (e: Throwable) {
+            tries --
+            if (tries > 0) {
+                Thread.sleep(delay)
+            } else if (e is AssertionFailedError) {
+                postExecution.setFailed(e)
+                throw e
+            } else {
+                postExecution.setFailed(e)
+                assertion.fail(e.message ?: "null", e)
             }
         }
-        step.postExecution.setResult(res)
-
-    } catch (e: Throwable) {
-        if (retry > 0) {
-            Thread.sleep(delay)
-            retryableStepExecution(retry - 1, delay, step, execution)
-        } else if (e is AssertionFailedError) {
-            step.postExecution.setFailed()
-            throw e
-        } else {
-            step.postExecution.setFailed()
-            assertion.fail(e.message ?: "null", e)
-        }
     }
+
+    return this
 }
