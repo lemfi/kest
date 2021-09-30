@@ -36,6 +36,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.10.2"
 }
 
+
 allprojects {
 
     apply(plugin = "org.jetbrains.dokka")
@@ -49,7 +50,13 @@ allprojects {
     dependencies {
         dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.5.30")
     }
+
+    tasks.withType(Sign::class.java) {
+        onlyIf { isRelease }
+    }
 }
+
+val isRelease = !(project.version as String).endsWith("SNAPSHOT")
 
 subprojects {
 
@@ -69,6 +76,9 @@ subprojects {
     compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
     compileTestKotlin.kotlinOptions.jvmTarget = "11"
 
+    tasks.withType<DokkaTask>() {
+        onlyIf { isRelease }
+    }
     tasks.withType<DokkaTask>().configureEach {
         dokkaSourceSets {
             named("main") {
@@ -103,6 +113,8 @@ subprojects {
         dependsOn("dokkaJavadoc")
         archiveClassifier.set("javadoc")
         from(buildDir.path + "/dokka/javadoc")
+
+        onlyIf { isRelease }
     }
 
     configure<PublishingExtension> {
@@ -150,10 +162,10 @@ subprojects {
         }
     }
 
-}
+    tasks.register<DefaultTask>("install") {
+        group = "Publishing"
+        description = "Publishes Maven publication '${project.name}' to the local Maven repository"
 
-tasks.register<DefaultTask>("install") {
-    subprojects.forEach { project -> dependsOn("${project.name}:publishToMavenLocal") }
-    group = "Publishing"
-    description = "Publishes Maven publication '${project.name}' to the local Maven repository"
+        dependsOn("publishToMavenLocal")
+    }
 }
