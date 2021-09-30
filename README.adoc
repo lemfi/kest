@@ -64,8 +64,6 @@ scenario {
 
     `given http call`<String> {
 
-        name { "say hello to server!" }
-
         url = "http://myapi/hello"
         method = "POST"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
@@ -195,8 +193,6 @@ Why do not extract steps to external functions, it will also make them reusable:
 
 fun ScenarioBuilder.`say hello`(who: String) {
     `given http call`<String> {
-
-        name { "$who says hello to server" }
 
         url = "http://localhost:8080/hello"
         method = "POST"

@@ -9,6 +9,5 @@ Step : name: String
 Step : assertions: ()->Unit
 
 Execution : execute: ()->T
-Execution : description: String
 
 @enduml
