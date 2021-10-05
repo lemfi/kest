@@ -5,7 +5,9 @@ import com.sksamuel.hoplite.ConfigLoader
 import com.sksamuel.hoplite.ConfigResult
 import com.sksamuel.hoplite.fp.invalid
 import org.slf4j.LoggerFactory
+import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+import kotlin.reflect.jvm.internal.impl.resolve.constants.KClassValue
 
 val kestconfig: MutableMap<Class<*>, Any> = mutableMapOf()
 
@@ -32,6 +34,12 @@ inline fun <reified E : Any, R> property(l: E.() -> R): R {
         }
     return conf.l()
 }
+
+inline fun <reified E : Any, R> property(
+    @Suppress("unused")
+    inferType: KClass<E>,
+    l: E.() -> R
+): R = property(l)
 
 data class AutoConfiguration(val autoconfigure: String)
 
