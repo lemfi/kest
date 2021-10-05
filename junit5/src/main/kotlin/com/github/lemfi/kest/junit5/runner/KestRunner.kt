@@ -1,6 +1,8 @@
 package com.github.lemfi.kest.junit5.runner
 
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
+import com.github.lemfi.kest.core.cli.nestedScenario
+import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.properties.autoconfigure
@@ -16,13 +18,26 @@ internal fun IScenario.toDynamicContainer(
         object : Iterable<DynamicNode> {
             override fun iterator(): Iterator<DynamicNode> {
                 return iterator {
-                    beforeEach?.also { yieldAll(ScenarioStepsIterator(beforeEach()) as Iterator<DynamicNode>) }
+                    beforeEach?.also { yieldAll(createBeforeAfterScenario(beforeEach) as Iterator<DynamicNode>) }
                     yieldAll(ScenarioStepsIterator(this@toDynamicContainer) as Iterator<DynamicNode>)
-                    afterEach?.also { yieldAll(ScenarioStepsIterator(afterEach()) as Iterator<DynamicNode>) }
+                    afterEach?.also { yieldAll(createBeforeAfterScenario(afterEach) as Iterator<DynamicNode>) }
                 }
             }
         }
 
+    )
+}
+
+private fun createBeforeAfterScenario(scenarioBuilder: () -> Scenario): ScenarioStepsIterator {
+    val scenario = scenarioBuilder()
+
+    return ScenarioStepsIterator(
+        scenario {
+            name { "before or after" }
+            nestedScenario(scenario.name.value) {
+                this.steps.addAll(scenario.steps)
+            }
+        }
     )
 }
 
