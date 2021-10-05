@@ -1,6 +1,7 @@
 :gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+:title-logo-image: image:doc/logo.svg[]
 
-= Kest
+= Kest image:doc/tinylogo.svg[alt=Kest, 55]
 
 Kest is a framework written in Kotlin for testing your backends. +
 It uses JUnit5 to run scenarios.
@@ -392,8 +393,8 @@ data class Domain(
 
 [source,kotlin,title="Access configuration"]
 ----
-property<Properties> { myKey }
-property<Properties> { myValue }
-property<Properties> { domain.akey }
-property<Properties> { domain.anotherkey }
+property(Properties::class) { myKey }
+property(Properties::class) { myValue }
+property(Properties::class) { domain.akey }
+property(Properties::class) { domain.anotherkey }
 ----

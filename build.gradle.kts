@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.2.1"
+version = "0.2.2"
 
 val kotlinVersion: String by extra { "1.5.30" }
 val coroutineVersion: String by extra { "1.5.2" }
@@ -122,8 +122,10 @@ subprojects {
             create<MavenPublication>("mavenJava") {
                 from(components["java"])
 
-                artifact(tasks["sourcesJar"])
-                artifact(tasks["javadocJar"])
+                if (isRelease) {
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
+                }
 
                 pom {
                     name.set("Kest")
