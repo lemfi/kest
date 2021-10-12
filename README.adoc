@@ -14,11 +14,11 @@ Easy to use, easy to extend.
 
 [source,kotlin]
 ----
-    implementation("com.github.lemfi.kest:core:0.2.1")
-    implementation("com.github.lemfi.kest:junit5:0.2.1")
+    implementation("com.github.lemfi.kest:core:0.2.3")
+    implementation("com.github.lemfi.kest:junit5:0.2.3")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.2.1")
+    implementation("com.github.lemfi.kest:step-http:0.2.3")
 ----
 
 === Maven
@@ -29,13 +29,13 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>core</artifactId>
-        <version>0.2.1</version>
+        <version>0.2.3</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>junit5</artifactId>
-        <version>0.2.1</version>
+        <version>0.2.3</version>
         <scope>test</scope>
     </dependency>
 
@@ -43,7 +43,7 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
-        <version>0.2.1</version>
+        <version>0.2.3</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -348,9 +348,7 @@ image::{gitplant}/doc/diag/model.puml[]
 
 When a scenario is launched, all its steps are launched sequentially, if one step fails the scenario fails without running remaining steps. +
 When a step is launched its execution is played, then assertions are played against execution result. +
-A step returns an object
-. which is invokable: you may reuse its result in another step
-. which you may complete by your own assertions, they will be added to assertions already defined on step
+A step returns an object . which is invokable: you may reuse its result in another step . which you may complete by your own assertions, they will be added to assertions already defined on step
 
 == Available Steps
 
