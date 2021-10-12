@@ -8,6 +8,7 @@ import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
+import com.google.gson.reflect.TypeToken
 import com.uber.cadence.RegisterDomainRequest
 import com.uber.cadence.serviceclient.ClientOptions
 import com.uber.cadence.serviceclient.WorkflowServiceTChannel
@@ -20,7 +21,8 @@ inline fun <reified R> ScenarioBuilder.`given activity call`(
     retryStep: RetryStep? = null,
     noinline h: ActivityCallExecutionBuilder<R>.() -> Unit
 ): StepPostExecution<R> {
-    val executionBuilder = ActivityCallExecutionBuilder(R::class.java)
+
+    val executionBuilder = ActivityCallExecutionBuilder<R>(object : TypeToken<R>() {}.type)
 
     return StandaloneStep<R>(
         name = name?.let { StepName(it) } ?: StepName("cadence activity"),

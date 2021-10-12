@@ -5,9 +5,11 @@ import com.github.lemfi.kest.cadence.model.cadenceProperty
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.uber.cadence.context.ContextPropagator
+import java.lang.reflect.Type
 import kotlin.reflect.KFunction
 
-class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>) : ExecutionBuilder<RESULT> {
+class ActivityCallExecutionBuilder<RESULT>(private val type: Type) :
+    ExecutionBuilder<RESULT> {
 
     lateinit var domain: String
     lateinit var tasklist: String
@@ -31,7 +33,7 @@ class ActivityCallExecutionBuilder<RESULT>(private val cls: Class<RESULT>) : Exe
 
     override fun toExecution(): Execution<RESULT> {
         return ActivityExecution(
-            host, port, domain, tasklist, cls, activity, params, contextPropagators
+            host, port, domain, tasklist, activity, params, contextPropagators, type
         )
     }
 }

@@ -3,7 +3,6 @@ package com.github.lemfi.kest.cadence.executor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
 import com.google.gson.Gson
-import com.google.gson.internal.LinkedTreeMap
 import com.uber.cadence.activity.ActivityOptions
 import com.uber.cadence.client.WorkflowClient
 import com.uber.cadence.client.WorkflowClientOptions
@@ -17,6 +16,7 @@ import com.uber.cadence.worker.WorkerOptions
 import com.uber.cadence.workflow.Workflow
 import com.uber.cadence.workflow.WorkflowMethod
 import org.opentest4j.AssertionFailedError
+import java.lang.reflect.Type
 import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
@@ -27,11 +27,11 @@ internal class ActivityExecution<RESULT>(
     private val cadenceDomain: String,
     private val tasklist: String,
 
-    private val cls: Class<RESULT>,
-
     private val activity: KFunction<RESULT>,
     private val params: Array<out Any?>?,
     private val contextPropagators: List<ContextPropagator>?,
+
+    private val type: Type,
 
     ) : Execution<RESULT>() {
 
@@ -99,11 +99,7 @@ internal class ActivityExecution<RESULT>(
             ).let {
                 when {
                     it == null -> null as RESULT
-                    cls.isAssignableFrom(it::class.java) -> it as RESULT
-                    it is LinkedTreeMap<*, *> -> it.toString().let {
-                        Gson().fromJson(it, cls)
-                    }
-                    else -> throw IllegalArgumentException("blah")
+                    else -> Gson().fromJson(Gson().toJsonTree(it), type)
                 }
             }
 

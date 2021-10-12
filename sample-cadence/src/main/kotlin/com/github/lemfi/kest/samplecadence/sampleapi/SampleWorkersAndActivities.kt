@@ -34,7 +34,8 @@ fun startActivitiesAndWorkflows() {
         worker.registerActivitiesImplementations(
             HelloActivity(),
             StartConversationActivity(),
-            MayTheForceBeWithYouActivity()
+            MayTheForceBeWithYouActivity(),
+            RecruitPadawansActivity()
         )
         worker.registerWorkflowImplementationTypes(HelloWorldWorkflow::class.java)
     }
@@ -101,4 +102,19 @@ class HelloWorldWorkflow : IHelloWorldWorkflow {
         ${helloActivity.hello(hello)}
         ${talkActivity.talk(hello)}
     """.trimIndent()
+}
+
+data class Padawan(val name: String)
+
+interface IRecruitPadawansActivity {
+
+    fun recruitOne(who: String): Padawan
+    fun recruitThemAll(who: String): List<Padawan>
+}
+
+class RecruitPadawansActivity : IRecruitPadawansActivity {
+
+    override fun recruitOne(who: String) = Padawan("Ahsoka Tano")
+
+    override fun recruitThemAll(who: String) = listOf(Padawan("Ahsoka Tano"))
 }
