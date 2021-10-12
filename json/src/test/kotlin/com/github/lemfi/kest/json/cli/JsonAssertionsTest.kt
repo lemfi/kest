@@ -9,6 +9,10 @@ import com.github.lemfi.kest.json.model.JsonMap
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.opentest4j.AssertionFailedError
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.format.ResolverStyle.STRICT
+
 
 private fun assertionBuilder() = AssertionsBuilder(ScenarioName("json test"), null)
 
@@ -471,7 +475,7 @@ class JsonAssertionsTest {
     }
 
     @Test
-    fun `json array of nullable object in subtypez`() {
+    fun `json nullable array of nullable objects in subtypes - array null`() {
 
         `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
 
@@ -486,6 +490,211 @@ class JsonAssertionsTest {
                         {
                             "string": "hello",
                             "array": null
+                        }
+                """
+        )
+    }
+
+    @Test
+    fun `json nullable array of nullable objects in subtypes - objects null`() {
+
+        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "array": "[[{{descdata?}}]]?"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "array": [null, null]
+                        }
+                """
+        )
+    }
+
+    @Test
+    fun `json matcher of type function`() {
+
+        `add json matcher`("{{date}}") { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            data is String && try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "date": "{{date}}"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "date": "2021-01-12"
+                        }
+                """
+        )
+
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                """
+                    {
+                        "string": "{{string?}}",
+                        "date": "{{date}}"
+                   } 
+                """,
+                """
+                        {
+                            "string": "hello",
+                            "date": "hello"
+                        }
+                """
+            )
+        }
+    }
+
+    @Test
+    fun `json matcher of type function - nullable`() {
+
+        `add json matcher`("{{date}}") { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            data is String && try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "date": "{{date?}}"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "date": null
+                        }
+                """
+        )
+    }
+
+    @Test
+    fun `json matcher of type function - array`() {
+
+        `add json matcher`("{{date}}") { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            data is String && try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "date": "[[{{date}}]]"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "date": ["2012-09-13", "2001-08-24"]
+                        }
+                """
+        )
+
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                """
+                    {
+                        "string": "{{string?}}",
+                        "date": "{{date}}"
+                   } 
+                """,
+                """
+                        {
+                            "string": "hello",
+                            "date": ["2012-09-13", "bad format"]
+                        }
+                """
+            )
+        }
+    }
+
+    @Test
+    fun `json matcher of type function - nullable array`() {
+
+        `add json matcher`("{{date}}") { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            data is String && try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "date": "[[{{date}}]]?"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "date": null
+                        }
+                """
+        )
+    }
+
+    @Test
+    fun `json matcher of type function - nullable array of nullable elements`() {
+
+        `add json matcher`("{{date}}") { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            data is String && try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "date": "[[{{date?}}]]?"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "date": ["2014-07-23", null]
                         }
                 """
         )

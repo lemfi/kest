@@ -15,12 +15,25 @@ private val mapper = jacksonObjectMapper().apply {
     disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
 }
 
+private sealed class JsonMatcherKind
+private data class StringPatternJsonMatcherKind(val patterns: List<String>) : JsonMatcherKind()
+private data class ClassPatternJsonMatcherKind(val cls: KClass<*>) : JsonMatcherKind()
+private data class FunctionJsonMatcherKind(val validator: (Any) -> Boolean) : JsonMatcherKind()
+
 private data class StringPatternJsonMatcher(
     override val matcher: String,
     override val isList: Pair<Boolean, Boolean>,
     override val isNullable: Boolean,
     override val pattern: String,
     val clsDescriptor: List<String>
+) : JsonMatcher()
+
+private data class FunctionJsonMatcher(
+    override val matcher: String,
+    override val isList: Pair<Boolean, Boolean>,
+    override val isNullable: Boolean,
+    override val pattern: String,
+    val validator: (Any) -> Boolean,
 ) : JsonMatcher()
 
 private data class ClassPatternJsonMatcher(
@@ -31,10 +44,10 @@ private data class ClassPatternJsonMatcher(
     val cls: KClass<*>
 ) : JsonMatcher()
 
-private val matchers = mutableMapOf<String, Pair<KClass<*>?, List<String>?>>(
-    "{{string}}" to Pair(String::class, null),
-    "{{number}}" to Pair(Number::class, null),
-    "{{boolean}}" to Pair(Boolean::class, null)
+private val matchers = mutableMapOf<String, JsonMatcherKind>(
+    "{{string}}" to ClassPatternJsonMatcherKind(String::class),
+    "{{number}}" to ClassPatternJsonMatcherKind(Number::class),
+    "{{boolean}}" to ClassPatternJsonMatcherKind(Boolean::class),
 )
 
 /**
@@ -44,7 +57,7 @@ private val matchers = mutableMapOf<String, Pair<KClass<*>?, List<String>?>>(
  * @param value KClass representing of your matcher, jackson annotations can be used on that Class, for polyphormism for example
  */
 fun `add json matcher`(key: String, value: KClass<*>) {
-    matchers.put(key, value to null)
+    matchers[key] = ClassPatternJsonMatcherKind(value)
 }
 
 /**
@@ -58,7 +71,7 @@ fun `add json matcher`(key: String, value: KClass<*>) {
  *          }
  */
 fun `add json matcher`(key: String, pattern: String) {
-    matchers.put(key, null to listOf(pattern))
+    matchers[key] = StringPatternJsonMatcherKind(listOf(pattern))
 }
 
 /**
@@ -68,7 +81,17 @@ fun `add json matcher`(key: String, pattern: String) {
  * @param patterns a list of possible string description for matcher, to use for polymorphism
  */
 fun `add json matcher`(key: String, patterns: List<String>) {
-    matchers.put(key, null to patterns)
+    matchers[key] = StringPatternJsonMatcherKind(patterns)
+}
+
+/**
+ * Add a matcher
+ *
+ * @param key the key for your matcher, for example {{my_matcher}}
+ * @param validator a function that will validate content
+ */
+fun `add json matcher`(key: String, validator: (Any) -> Boolean) {
+    matchers[key] = FunctionJsonMatcherKind(validator)
 }
 
 private fun getMatcher(key: String): JsonMatcher? {
@@ -80,32 +103,28 @@ private fun getMatcher(key: String): JsonMatcher? {
         val keyWithoutList = keyWithoutSpaces.removePrefix("[[").removeSuffix("]]")
 
         val type =
-            keyWithoutList.removePrefix("{{").substringBefore("?").substringBefore("|").substringBefore("}}")
+            keyWithoutList.removePrefix("{{").substringBefore("?").substringBefore("}}")
         val nullable =
-            keyWithoutList.substringAfter(type).substringBefore("|").substringBefore("}}").equals("?")
-        val pattern =
-            keyWithoutList.substringAfter(type).let { if (nullable) keyWithoutList.substringAfter("?") else it }
-                .substringAfter("|").substringBefore("}}")
+            keyWithoutList.substringAfter(type).substringBefore("}}") == "?"
+        val pattern = "{{$type}}"
 
         matchers["{{$type}}"]?.toJsonMatcher(type, list to listNullable, nullable, pattern)
 
     }
 }
 
-private fun Pair<KClass<*>?, List<String>?>.toJsonMatcher(
+private fun JsonMatcherKind.toJsonMatcher(
     type: String,
     list: Pair<Boolean, Boolean>,
     nullable: Boolean,
     pattern: String
-): JsonMatcher {
-    return if (first != null) ClassPatternJsonMatcher(
-        type,
-        list,
-        nullable,
-        pattern,
-        first!!
-    ) else StringPatternJsonMatcher(type, list, nullable, pattern, second!!)
-}
+): JsonMatcher =
+
+    when (this) {
+        is ClassPatternJsonMatcherKind -> ClassPatternJsonMatcher(type, list, nullable, pattern, cls)
+        is StringPatternJsonMatcherKind -> StringPatternJsonMatcher(type, list, nullable, pattern, patterns)
+        is FunctionJsonMatcherKind -> FunctionJsonMatcher(type, list, nullable, pattern, validator)
+    }
 
 sealed class JsonMatcher {
 
@@ -260,38 +279,38 @@ private fun AssertionsBuilder.jsonMatches(expected: JsonMap, observed: JsonMap) 
         expected.keys,
         observed.keys
     )
-    expected.keys.forEach {
-        val expectedValue = expected[it]
+    expected.keys.forEach { key ->
+        val expectedValue = expected[key]
         when {
             isMap(expectedValue) -> jsonMatches(
-                mapper.writeValueAsString(expected[it]),
-                mapper.writeValueAsString(observed[it])
+                mapper.writeValueAsString(expected[key]),
+                mapper.writeValueAsString(observed[key])
             )
             isArray(expectedValue) ->
                 jsonMatches(
                     mapper.writeValueAsString(expectedValue).toJsonArray(fail()),
-                    mapper.writeValueAsString(observed[it]).toJsonArray(fail())
+                    mapper.writeValueAsString(observed[key]).toJsonArray(fail())
                 )
-            isNumber(expectedValue) || isBoolean(expected[it]) -> eq(expected[it], observed[it])
+            isNumber(expectedValue) || isBoolean(expected[key]) -> eq(expected[key], observed[key])
             isPattern(expectedValue) -> {
                 val matcher = getMatcher(expectedValue as String)
-                jsonMatches(matcher!!, observed[it])
+                jsonMatches(matcher!!, observed[key])
             }
             isString(expectedValue) -> {
 
-                if (observed[it]?.let { String::class.java.isAssignableFrom(it.javaClass) } == false) {
+                if (observed[key]?.let { String::class.java.isAssignableFrom(it.javaClass) } == false) {
                     fail(
-                        "expected ${String::class.java} got ${observed[it]?.javaClass}",
+                        "expected ${String::class.java} got ${observed[key]?.javaClass}",
                         String::class.java,
-                        observed[it]?.javaClass
+                        observed[key]?.javaClass
                     )
                 } else {
 
-                    val observedValue = observed[it]?.let { mapper.writeValueAsString(it) }
+                    val observedValue = observed[key]?.let { mapper.writeValueAsString(it) }
                     getMatcher(expectedValue as String)?.let { matcher ->
                         jsonMatches(matcher, observedValue)
 
-                    } ?: eq(expectedValue, observed[it])
+                    } ?: eq(expectedValue, observed[key])
                 }
             }
         }
@@ -305,9 +324,9 @@ private fun isArray(data: Any?) = data?.let { List::class.java.isAssignableFrom(
 private fun isBoolean(data: Any?) = data?.let { Boolean::class.java.isAssignableFrom(it.javaClass) } ?: false
 private fun isPattern(data: Any?) = data?.let {
     isString(data) && (data as String).let {
-        it.startsWith("[[") && it.endsWith("]]") || it.startsWith("{{") && it.endsWith(
-            "}}"
-        )
+
+        it.startsWith("[[") && (it.endsWith("]]") || it.endsWith("]]?"))
+                || it.startsWith("{{") && (it.endsWith("}}") || it.endsWith("}}?"))
     }
 } ?: false
 
@@ -315,6 +334,7 @@ private fun AssertionsBuilder.jsonMatches(matcher: JsonMatcher, observed: Any?) 
     when (matcher) {
         is ClassPatternJsonMatcher -> jsonMatches(matcher, observed)
         is StringPatternJsonMatcher -> jsonMatches(matcher, observed)
+        is FunctionJsonMatcher -> jsonMatches(matcher, observed)
     }
 }
 
@@ -333,22 +353,65 @@ private fun AssertionsBuilder.jsonMatches(matcher: StringPatternJsonMatcher, obs
     }
 }
 
+
+private fun AssertionsBuilder.jsonMatches(matcher: FunctionJsonMatcher, observed: Any?) {
+    val observedString = mapper.writeValueAsString(observed)
+    val (isList, listIsNullable) = matcher.isList
+
+    if (isList) {
+        if (!listIsNullable && observed == null) fail(
+            "expected none nullable value ${matcher.pattern}",
+            matcher.pattern,
+            null
+        )
+        else if (observed != null) {
+            mapper.readValue(observedString, List::class.java)
+                .let { elements ->
+                    elements.forEach { element ->
+                        if (!matcher.isNullable && element == null) fail(
+                            "expected none nullable value ${matcher.pattern}",
+                            matcher.pattern,
+                            null
+                        )
+                        else if (element != null && !matcher.validator(element)) fail(
+                            "$element does not validate pattern ${matcher.pattern}",
+                            matcher.pattern,
+                            element
+                        )
+                    }
+                }
+        }
+    } else {
+
+        if (!matcher.isNullable && observed == null) fail(
+            "expected none nullable value ${matcher.pattern}",
+            matcher.pattern,
+            null
+        )
+        else if (observed != null && !matcher.validator(observed)) fail(
+            "$observed does not validate pattern ${matcher.pattern}",
+            matcher.pattern,
+            observed
+        )
+    }
+}
+
 private fun AssertionsBuilder.jsonMatches(matcher: ClassPatternJsonMatcher, observed: Any?) {
     val observedString = mapper.writeValueAsString(observed)
     try {
         val (isList, isNullableList) = matcher.isList
         if (isList) {
-            if (!(isNullableList && observed == null)) mapper.readValue(observedString, List::class.java)
-                .let { elements ->
-                    elements.forEach { element ->
-                        if (matcher.cls == String::class && element?.let { matcher.cls.java.isAssignableFrom(it.javaClass) } == false) {
-                            fail("expected ${matcher.cls} got ${element.javaClass}", matcher.cls, element)
-                        } else {
-                            mapper.writeValueAsString(element).let { mapper.readValue(it, matcher.cls.java) }
+            if (!(isNullableList && observed == null))
+                mapper.readValue(observedString, List::class.java)
+                    .let { elements ->
+                        elements.forEach { element ->
+                            if (matcher.cls == String::class && element?.let { matcher.cls.java.isAssignableFrom(it.javaClass) } == false) {
+                                fail("expected ${matcher.cls} got ${element.javaClass}", matcher.cls, element)
+                            } else {
+                                mapper.writeValueAsString(element).let { mapper.readValue(it, matcher.cls.java) }
+                            }
                         }
                     }
-                }
-
         } else {
             if (!matcher.isNullable && observed == null) {
                 fail("expected none nullable value ${matcher.pattern}", matcher.pattern, null)
