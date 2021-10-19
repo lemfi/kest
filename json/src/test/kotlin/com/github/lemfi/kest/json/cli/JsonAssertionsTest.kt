@@ -6,6 +6,8 @@ import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.model.ScenarioName
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
+import com.github.lemfi.kest.json.model.KestArray
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.opentest4j.AssertionFailedError
@@ -45,74 +47,214 @@ class JsonAssertionsTest {
         )
     }
 
+
+    @Test
+    fun `json array with simple types that matches`() {
+
+        assertionBuilder().jsonMatches(
+            """
+                   [{
+                        "string": "{{string}}",
+                        "number": "{{number}}",
+                        "boolean": "{{boolean}}"
+                    }, {
+                        "astring": "hello",
+                        "anumber": 1,
+                        "aboolean": false
+                    }]
+                """,
+            """
+                [{
+                		"string": "hello",
+                		"number": 1,
+                		"boolean": true
+                	},
+                	{
+                		"astring": "hello",
+                		"anumber": 1,
+                		"aboolean": false
+                	}
+                ]
+            """
+        )
+    }
+
+    @Test
+    fun `json array missing one entry`() {
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                   [{
+                        "string": "{{string}}",
+                        "number": "{{number}}",
+                        "boolean": "{{boolean}}"
+                    }, {
+                        "astring": "hello",
+                        "anumber": 1,
+                        "aboolean": false
+                    }]
+                """,
+                """
+                [{
+                		"string": "hello",
+                		"number": 1,
+                		"boolean": true
+                	}
+                ]
+            """
+            )
+        }
+
+        Assertions.assertEquals(
+            """
+            +-------------------------------------------------------------------------------------------------+
+            | Scenario: json test                                                                             |
+            |                                                                                                 |
+            |                                                                                                 |
+            | missing entries for [{number=1, boolean=true, string=hello}], expected 2 entries, got 1 entries |
+            +-------------------------------------------------------------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+    }
+
+
+    @Test
+    fun `json object with sub object`() {
+
+        assertionBuilder().jsonMatches(
+            """
+                   {
+                        "string": {"key": "{{string}}"},
+                        "number": "{{number}}",
+                        "boolean": "{{boolean}}"
+                    }
+                """,
+            """
+                {
+                    "string": {"key": "hello"},
+                    "number": 1,
+                    "boolean": true
+                }
+                
+            """
+        )
+    }
+
+
     @Test
     fun `json object with arrays of simple types with errors`() {
 
-        assertThrows<AssertionFailedError> {
+        val exception1 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
                    {
                         "strings": "[[{{string}}]]"
-                   } 
+                   }
                 """,
                 """
                    {
                         "strings": ["hello", 1]
-                   } 
+                   }
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-------------------------------------+
+            | Scenario: json test                 |
+            |                                     |
+            |                                     |
+            | expected class kotlin.String, got 1 |
+            +-------------------------------------+
+        """.trimIndent(), exception1.message
+        )
 
-        assertThrows<AssertionFailedError> {
+
+        val exception2 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
                    {
                         "numbers": "[[{{number}}]]"
-                   } 
+                   }
                 """,
                 """
                    {
                         "numbers": [1, "world"],
-                   } 
+                   }
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +--------------------------------+
+            | Scenario: json test            |
+            |                                |
+            |                                |
+            | expected json object structure |
+            +--------------------------------+
+        """.trimIndent(), exception2.message
+        )
 
-        assertThrows<AssertionFailedError> {
+
+        val exception3 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
                    {
                         "booleans": "[[{{boolean}}]]"
-                   } 
+                   }
                 """,
                 """
                    {
                         "booleans": [true, "world", 1]
-                   } 
+                   }
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-----------------------------------------------------------+
+            | Scenario: json test                                       |
+            |                                                           |
+            |                                                           |
+            | expected object of type class kotlin.Boolean, got "world" |
+            +-----------------------------------------------------------+
+        """.trimIndent(), exception3.message
+        )
 
-        assertThrows<AssertionFailedError> {
+
+        val exception4 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
                    {
                         "some strings": ["hello", "world"]
-                   } 
+                   }
                 """,
                 """
                    {
                         "some strings": ["hello", "worlds"]
-                   } 
+                   }
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +--------------------------------+
+            | Scenario: json test            |
+            |                                |
+            |                                |
+            | expected "world", got "worlds" |
+            +--------------------------------+
+        """.trimIndent(), exception4.message
+        )
 
-        assertThrows<AssertionFailedError> {
+
+        val exception5 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -127,22 +269,43 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +----------------------+
+            | Scenario: json test  |
+            |                      |
+            |                      |
+            | expected 2, got true |
+            +----------------------+
+        """.trimIndent(), exception5.message
+        )
 
-        assertThrows<AssertionFailedError> {
+        val exception6 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
                    {
                         "some booleans": [true, false]
-                   } 
+                   }
                 """,
                 """
                    {
                         "some booleans": [true, 2]
-                   } 
+                   }
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-----------------------+
+            | Scenario: json test   |
+            |                       |
+            |                       |
+            | expected false, got 2 |
+            +-----------------------+
+        """.trimIndent(), exception6.message
+        )
+
     }
 
     @Test
@@ -176,7 +339,7 @@ class JsonAssertionsTest {
     fun `json object with not nullable string fails`() {
 
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -191,12 +354,92 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-----------------------------------------+
+            | Scenario: json test                     |
+            |                                         |
+            |                                         |
+            | expected none nullable value {{string}} |
+            +-----------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
+    }
+
+    @Test
+    fun `json array with not nullable pattern fails`() {
+
+        `add json matcher`("{{stringornumber}}", listOf("[[{{string}}]]", "[[{{number}}]]"))
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                   {{stringornumber}}
+                """,
+                """
+                   ["12", null] 
+                """
+            )
+        }
+        Assertions.assertEquals(
+            """
+            +-------------------------------------------------------+
+            | Scenario: json test                                   |
+            |                                                       |
+            |                                                       |
+            | expected object of type class kotlin.Number, got "12" |
+            +-------------------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
+    }
+
+    @Test
+    fun `json array with multiple possible patterns`() {
+
+        assertionBuilder().jsonMatches(
+            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            """
+                   ["12", "13"] 
+                """
+        )
+
+        assertionBuilder().jsonMatches(
+            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            """
+                   [12, 13] 
+                """
+        )
+
+    }
+
+    @Test
+    fun `json array with multiple possible patterns observed is JsonArray`() {
+
+        assertionBuilder().jsonMatches(
+            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            KestArray<String>().apply {
+                add("12")
+                add("13")
+            }
+        )
+
+        assertionBuilder().jsonMatches(
+            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            KestArray<Int>().apply {
+                add(12)
+                add(13)
+            }
+        )
+
     }
 
     @Test
     fun `json int does not match when string requested`() {
 
-        assertThrows<AssertionFailedError> {
+        val exception1 = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -211,6 +454,43 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +--------------------------------------+
+            | Scenario: json test                  |
+            |                                      |
+            |                                      |
+            | expected class kotlin.String, got 12 |
+            +--------------------------------------+
+        """.trimIndent(), exception1.message
+        )
+
+        val exception2 = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                   {
+                        "string": "hello"
+                   } 
+                """,
+                """
+                   {
+                        "string": 12
+                   } 
+                """
+            )
+        }
+        Assertions.assertEquals(
+            """
+            +--------------------------+
+            | Scenario: json test      |
+            |                          |
+            |                          |
+            | expected "hello", got 12 |
+            +--------------------------+
+        """.trimIndent(), exception2.message
+        )
+
     }
 
     @Test
@@ -234,7 +514,7 @@ class JsonAssertionsTest {
     fun `json object with not nullable number fails`() {
 
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -249,6 +529,17 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-----------------------------------------+
+            | Scenario: json test                     |
+            |                                         |
+            |                                         |
+            | expected none nullable value {{number}} |
+            +-----------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
@@ -272,7 +563,7 @@ class JsonAssertionsTest {
     fun `json object with not nullable boolean fails`() {
 
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -287,6 +578,17 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +------------------------------------------+
+            | Scenario: json test                      |
+            |                                          |
+            |                                          |
+            | expected none nullable value {{boolean}} |
+            +------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
@@ -310,7 +612,7 @@ class JsonAssertionsTest {
     fun `json object with number type not matching`() {
 
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -325,13 +627,24 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +------------------------------------------------------+
+            | Scenario: json test                                  |
+            |                                                      |
+            |                                                      |
+            | expected object of type class kotlin.Number, got "1" |
+            +------------------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
     fun `json object with boolean type not matching`() {
 
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -346,13 +659,24 @@ class JsonAssertionsTest {
                     """
             )
         }
+        Assertions.assertEquals(
+            """
+            +----------------------------------------------------------+
+            | Scenario: json test                                      |
+            |                                                          |
+            |                                                          |
+            | expected object of type class kotlin.Boolean, got "true" |
+            +----------------------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
     fun `json object with value not matching`() {
 
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -367,12 +691,23 @@ class JsonAssertionsTest {
                     """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-----------------------------+
+            | Scenario: json test         |
+            |                             |
+            |                             |
+            | expected "1234", got "5678" |
+            +-----------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
     fun `json object with key not matching`() {
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -387,6 +722,17 @@ class JsonAssertionsTest {
                     """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-----------------------------------------------+
+            | Scenario: json test                           |
+            |                                               |
+            |                                               |
+            | expected [data1] entries, got [data2] entries |
+            +-----------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
@@ -398,9 +744,9 @@ class JsonAssertionsTest {
                         "string": "{{string?}}",
                         "number": "{{number?}}",
                         "boolean": "{{boolean?}}",
-                        "a string": "hello",
-                        "a number": 1,
-                        "a boolean": false
+                        "astring": "hello",
+                        "anumber": 1,
+                        "aboolean": false
                    }]] 
                 """,
             """
@@ -409,17 +755,17 @@ class JsonAssertionsTest {
                             "string": "hello",
                             "number": 1,
                             "boolean": true,
-                            "a string": "hello",
-                            "a number": 1,
-                            "a boolean": false
+                            "astring": "hello",
+                            "anumber": 1,
+                            "aboolean": false
                        },
                        {
                             "string": null,
                             "number": null,
                             "boolean": null,
-                            "a string": "hello",
-                            "a number": 1,
-                            "a boolean": false
+                            "astring": "hello",
+                            "anumber": 1,
+                            "aboolean": false
                        }
                    ] 
                 """
@@ -517,12 +863,59 @@ class JsonAssertionsTest {
     }
 
     @Test
+    fun `json array patterns error`() {
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                [[
+                {
+                    "string": "{{string?}}"
+                },
+                {
+                    "number": "{{number}}"
+                }
+               ]]
+                """,
+                """
+                [
+                    {
+                        "string": "hello"
+                    },
+                    {
+                        "string": "world"
+                    },
+                    {
+                        "number": 32
+                    },
+                    {
+                        "boolean": true
+                    }
+                ]
+                """
+            )
+        }
+        Assertions.assertEquals(
+            """
+            +-------------------------------------------------+
+            | Scenario: json test                             |
+            |                                                 |
+            |                                                 |
+            | expected [string] entries, got [number] entries |
+            +-------------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
+    }
+
+    @Test
     fun `json matcher of type function`() {
 
-        `add json matcher`("{{date}}") { data ->
+        `add json matcher`("{{date}}", String::class) { data ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
-            data is String && try {
+            try {
                 dateFormatter.parse(data)
                 true
             } catch (e: DateTimeParseException) {
@@ -532,20 +925,22 @@ class JsonAssertionsTest {
 
         assertionBuilder().jsonMatches(
             """
-                    {
-                        "string": "{{string?}}",
-                        "date": "{{date}}"
-                   } 
-                """,
+                        {
+                            "string": "{{string?}}",
+                            "date": "{{date}}",
+                            "date_array": "[[{{date}}]]"
+                       } 
+                    """,
             """
                         {
                             "string": "hello",
-                            "date": "2021-01-12"
+                            "date": "2021-01-12",
+                            "date_array": ["2021-01-12", "2021-01-13"]
                         }
-                """
+                    """
         )
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
             assertionBuilder().jsonMatches(
                 """
                     {
@@ -561,15 +956,26 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +--------------------------------------------+
+            | Scenario: json test                        |
+            |                                            |
+            |                                            |
+            | "hello" does not validate pattern {{date}} |
+            +--------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
     }
 
     @Test
     fun `json matcher of type function - nullable`() {
 
-        `add json matcher`("{{date}}") { data ->
+        `add json matcher`("{{date}}", String::class) { data ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
-            data is String && try {
+            try {
                 dateFormatter.parse(data)
                 true
             } catch (e: DateTimeParseException) {
@@ -594,12 +1000,56 @@ class JsonAssertionsTest {
     }
 
     @Test
-    fun `json matcher of type function - array`() {
+    fun `json matcher of type function - not nullable`() {
 
-        `add json matcher`("{{date}}") { data ->
+        `add json matcher`("{{date}}", String::class) { data ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
-            data is String && try {
+            try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                    {
+                        "string": "{{string?}}",
+                        "date": "{{date}}"
+                   } 
+                """,
+                """
+                        {
+                            "string": "hello",
+                            "date": null
+                        }
+                """
+            )
+        }
+        Assertions.assertEquals(
+            """
+            +---------------------------------------+
+            | Scenario: json test                   |
+            |                                       |
+            |                                       |
+            | expected none nullable value {{date}} |
+            +---------------------------------------+
+        """.trimIndent(), exception.message
+        )
+
+    }
+
+    @Test
+    fun `json matcher of type function - array`() {
+
+        `add json matcher`("{{date}}", String::class) { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            try {
                 dateFormatter.parse(data)
                 true
             } catch (e: DateTimeParseException) {
@@ -612,7 +1062,7 @@ class JsonAssertionsTest {
                     {
                         "string": "{{string?}}",
                         "date": "[[{{date}}]]"
-                   } 
+                   }
                 """,
             """
                         {
@@ -622,12 +1072,12 @@ class JsonAssertionsTest {
                 """
         )
 
-        assertThrows<AssertionFailedError> {
+        val exception = assertThrows<AssertionFailedError> {
             assertionBuilder().jsonMatches(
                 """
                     {
                         "string": "{{string?}}",
-                        "date": "{{date}}"
+                        "date": "[[{{date}}]]"
                    } 
                 """,
                 """
@@ -638,15 +1088,98 @@ class JsonAssertionsTest {
                 """
             )
         }
+        Assertions.assertEquals(
+            """
+            +-------------------------------------------------+
+            | Scenario: json test                             |
+            |                                                 |
+            |                                                 |
+            | "bad format" does not validate pattern {{date}} |
+            +-------------------------------------------------+
+        """.trimIndent(), exception.message
+        )
+    }
+
+    @Test
+    fun `json matcher of type function - array not nullable`() {
+
+        `add json matcher`("{{date}}", String::class) { data ->
+            val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+            try {
+                dateFormatter.parse(data)
+                true
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
+
+        val exception1 = assertThrows<AssertionFailedError> {
+
+
+            assertionBuilder().jsonMatches(
+                """
+                    {
+                        "string": "{{string?}}",
+                        "date": "[[{{date}}]]"
+                   }
+                """,
+                """
+                        {
+                            "string": "hello",
+                            "date": null
+                        }
+                """
+            )
+        }
+        Assertions.assertEquals(
+            """
+            +---------------------------------------+
+            | Scenario: json test                   |
+            |                                       |
+            |                                       |
+            | expected none nullable value {{date}} |
+            +---------------------------------------+
+        """.trimIndent(), exception1.message
+        )
+
+
+        val exception2 = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                    {
+                        "string": "{{string?}}",
+                        "date": "[[{{date}}]]"
+                   }
+                """,
+                """
+                        {
+                            "string": "hello",
+                            "date": ["2020-12-13", null]
+                        }
+                """
+            )
+        }
+        Assertions.assertEquals(
+            """
+            +---------------------------------------+
+            | Scenario: json test                   |
+            |                                       |
+            |                                       |
+            | expected none nullable value {{date}} |
+            +---------------------------------------+
+        """.trimIndent(), exception2.message
+        )
     }
 
     @Test
     fun `json matcher of type function - nullable array`() {
 
-        `add json matcher`("{{date}}") { data ->
+        `add json matcher`("{{date}}", String::class) { data ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
-            data is String && try {
+            try {
                 dateFormatter.parse(data)
                 true
             } catch (e: DateTimeParseException) {
@@ -673,10 +1206,10 @@ class JsonAssertionsTest {
     @Test
     fun `json matcher of type function - nullable array of nullable elements`() {
 
-        `add json matcher`("{{date}}") { data ->
+        `add json matcher`("{{date}}", String::class) { data ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
-            data is String && try {
+            try {
                 dateFormatter.parse(data)
                 true
             } catch (e: DateTimeParseException) {
@@ -779,6 +1312,27 @@ class JsonAssertionsTest {
     }
 
     @Test
+    fun `multiple possible patterns - observed is JsonMap`() {
+
+        assertionBuilder().jsonMatches(
+            listOf(
+                """
+                   {"hello": "world"}
+                """,
+
+                """
+                   {"string": "{{string}}", "number": "{{number}}", "boolean": "{{boolean}}"} 
+                """
+            ),
+            JsonMap().apply {
+                put("string", "hello")
+                put("number", 1)
+                put("boolean", false)
+            }
+        )
+    }
+
+    @Test
     fun `matcher registration - observed an array displayed as string`() {
 
         `add json matcher`("{{mydata}}", TestDataObject::class)
@@ -794,6 +1348,25 @@ class JsonAssertionsTest {
                     "boolean": false
                 }] 
             """
+        )
+    }
+
+    @Test
+    fun `matcher registration - observed an array displayed as JsonArray`() {
+
+        `add json matcher`("{{mydata}}", TestDataObject::class)
+
+        assertionBuilder().jsonMatches(
+            """
+                [[{{mydata}}]]
+            """,
+            JsonArray().apply {
+                add(JsonMap().apply {
+                    put("string", "hello")
+                    put("number", 1)
+                    put("boolean", false)
+                })
+            }
         )
     }
 
@@ -850,7 +1423,7 @@ class JsonAssertionsTest {
 
         assertionBuilder().jsonMatches(
             """
-                   {{mydata}} 
+                   [[{{mydata}}]] 
                 """,
             JsonArray().apply {
                 add(
@@ -871,7 +1444,7 @@ class JsonAssertionsTest {
 
         assertionBuilder().jsonMatches(
             """
-                   {{yolo}} 
+                   [[{{yolo}}]] 
                 """,
             JsonArray().apply {
                 add(
@@ -907,9 +1480,7 @@ class JsonAssertionsTest {
         )
 
         assertionBuilder().jsonMatches(
-            """
-                   {{yolo}} 
-                """,
+            """[[{{yolo}}]]""",
             JsonArray().apply {
                 add(
                     JsonMap().apply {

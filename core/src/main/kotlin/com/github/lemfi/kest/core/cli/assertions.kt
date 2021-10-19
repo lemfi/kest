@@ -26,36 +26,44 @@ fun AssertionsBuilder.`false`(observed: Boolean?, message: (() -> String)? = nul
     }
 }
 
-fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?) {
+fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?): Nothing = run {
+    val messages = message.lines()
     val scenario = "Scenario: ${scenarioName.value}"
     val step = if (stepName != null) "Step: ${stepName.value}" else ""
-    val max = listOf(scenario, step, message).maxByOrNull { it.length }!!
+    val max = listOf(scenario, step, *messages.toTypedArray()).maxByOrNull { it.length }!!
+
     throw AssertionFailedError(
         """
-        
         +${(0..max.length + 1).joinToString("") { "-" }}+
         | ${scenario.padEnd(max.length, ' ')} |
         | ${step.padEnd(max.length, ' ')} |
         |${(0..max.length + 1).joinToString("") { " " }}|
-        | ${message.padEnd(max.length, ' ')} |
+        ${messages.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
         +${(0..max.length + 1).joinToString("") { "-" }}+
     """.trimIndent(), expected, observed
     )
 }
 
-fun AssertionsBuilder.fail(message: String, cause: Throwable) {
-    val scenario = "Scenario: ${scenarioName.value}"
-    val step = if (stepName != null) "Step: ${stepName.value}" else ""
-    val max = listOf(scenario, step, message).maxByOrNull { it.length }!!
-    throw AssertionFailedError(
-        """
-        
+fun AssertionsBuilder.fail(cause: Throwable) {
+
+    if (cause is AssertionFailedError) {
+        throw cause
+    } else {
+
+        val messages = cause?.message?.lines() ?: listOf("null")
+        val scenario = "Scenario: ${scenarioName.value}"
+        val step = if (stepName != null) "Step: ${stepName.value}" else ""
+        val max = listOf(scenario, step, *messages.toTypedArray()).maxByOrNull { it.length }!!
+
+        throw AssertionFailedError(
+            """
         +${(0..max.length + 1).joinToString("") { "-" }}+
         | ${scenario.padEnd(max.length, ' ')} |
         | ${step.padEnd(max.length, ' ')} |
         |${(0..max.length + 1).joinToString("") { " " }}|
-        | ${message.padEnd(max.length, ' ')} |
+        ${messages.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
         +${(0..max.length + 1).joinToString("") { "-" }}+
     """.trimIndent(), cause
-    )
+        )
+    }
 }

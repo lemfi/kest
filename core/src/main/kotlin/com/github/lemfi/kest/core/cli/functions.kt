@@ -1,7 +1,21 @@
 package com.github.lemfi.kest.core.cli
 
-import com.github.lemfi.kest.core.builder.*
-import com.github.lemfi.kest.core.model.*
+import com.github.lemfi.kest.core.builder.AssertionsBuilder
+import com.github.lemfi.kest.core.builder.ExecutionBuilder
+import com.github.lemfi.kest.core.builder.NestedScenarioExecutionBuilder
+import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
+import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.core.model.IScenario
+import com.github.lemfi.kest.core.model.NestedScenarioStep
+import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
+import com.github.lemfi.kest.core.model.RetryStep
+import com.github.lemfi.kest.core.model.Scenario
+import com.github.lemfi.kest.core.model.StandaloneStep
+import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.Step
+import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.core.model.StepPostExecution
 import org.opentest4j.AssertionFailedError
 
 fun scenario(s: ScenarioBuilder.() -> Unit): Scenario {
@@ -95,7 +109,7 @@ fun <T> Step<T>.run(): Step<T> {
             tries = 0
             postExecution.setResult(res)
         } catch (e: Throwable) {
-            tries --
+            tries--
             if (tries > 0) {
                 Thread.sleep(delay)
             } else if (e is AssertionFailedError) {
@@ -103,7 +117,7 @@ fun <T> Step<T>.run(): Step<T> {
                 throw e
             } else {
                 postExecution.setFailed(e)
-                assertion.fail(e.message ?: "null", e)
+                assertion.fail(e)
             }
         }
     }
