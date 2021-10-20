@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.github.lemfi.kest.core.cli
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
@@ -35,7 +37,7 @@ fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: 
     }
 
     return StandaloneStep<T>(
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         name = name?.let { StepName(it) } ?: StepName("generic step"),
         retry = retry
     )
@@ -51,7 +53,7 @@ fun <T> ScenarioBuilder.nestedScenario(
 
     return NestedScenarioStep<T>(
         name = name?.let { StepName(it) },
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
@@ -68,7 +70,7 @@ fun ScenarioBuilder.nestedScenario(
 
     NestedScenarioStep<Any>(
         name = name?.let { StepName(it) },
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
@@ -103,7 +105,11 @@ fun <T> Step<T>.run(): Step<T> {
             if (postExecution is StandaloneStepPostExecution<*, *, *>) {
                 @Suppress("unchecked_cast")
                 (postExecution as StandaloneStepPostExecution<T, *, *>).assertions.forEach { assert ->
-                    assertion.assert(res)
+                    runCatching {
+                        assertion.assert(res)
+                    }.onFailure {
+                        assertion.fail(it)
+                    }
                 }
             }
             tries = 0
@@ -123,4 +129,40 @@ fun <T> Step<T>.run(): Step<T> {
     }
 
     return this
+}
+
+
+private fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?): Nothing = run {
+    throw AssertionFailedError(failureMessage(message, stepName), expected, observed)
+}
+
+private fun AssertionsBuilder.fail(cause: Throwable) {
+
+    if (cause is AssertionFailedError && cause.cause == null) {
+        fail(cause.message ?: "null", cause.expected, cause.actual)
+    }
+
+    val message = failureMessage(cause.message, stepName)
+
+    throw AssertionFailedError(message, cause)
+}
+
+private fun AssertionsBuilder.failureMessage(
+    message: String?,
+    stepName: StepName?
+): String {
+
+    val messages = message?.lines() ?: listOf("null")
+    val scenario = "Scenario: ${scenarioName.value}"
+    val step = if (stepName != null) "Step: ${stepName.value}" else ""
+    val max = listOf(scenario, step, *messages.toTypedArray()).maxByOrNull { it.length }!!
+
+    return """
+        +${(0..max.length + 1).joinToString("") { "-" }}+
+        | ${scenario.padEnd(max.length, ' ')} |
+        | ${step.padEnd(max.length, ' ')} |
+        |${(0..max.length + 1).joinToString("") { " " }}|
+        ${messages.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
+        +${(0..max.length + 1).joinToString("") { "-" }}+
+    """.trimIndent()
 }
