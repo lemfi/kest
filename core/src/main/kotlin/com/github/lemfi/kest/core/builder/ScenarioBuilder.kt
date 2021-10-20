@@ -1,14 +1,19 @@
 package com.github.lemfi.kest.core.builder
 
-import com.github.lemfi.kest.core.model.*
+import com.github.lemfi.kest.core.model.IScenario
+import com.github.lemfi.kest.core.model.NestedScenarioStep
+import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
+import com.github.lemfi.kest.core.model.ScenarioName
+import com.github.lemfi.kest.core.model.StandaloneScenario
+import com.github.lemfi.kest.core.model.StandaloneStep
+import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.Step
 
 sealed class ScenarioBuilder {
 
-    var name: ScenarioName? = null
-        private set(value) {
-            field = value
-        }
-        get() = field ?: throw IllegalAccessException("a scenario should have a name dude!")
+    var name: ScenarioName = ScenarioName("anonymous scenario")
+        private set
+        get() = field
 
     val steps = mutableListOf<Step<*>>()
 
@@ -43,6 +48,6 @@ sealed class ScenarioBuilder {
 class StandaloneScenarioBuilder : ScenarioBuilder() {
 
     override fun toScenario(): StandaloneScenario {
-        return StandaloneScenario(requireNotNull(name) { "a scenario should have a name dude!" }, steps)
+        return StandaloneScenario(name, steps)
     }
 }
