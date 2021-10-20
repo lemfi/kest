@@ -108,14 +108,8 @@ class JsonAssertionsTest {
         }
 
         Assertions.assertEquals(
-            """
-            +-------------------------------------------------------------------------------------------------+
-            | Scenario: json test                                                                             |
-            |                                                                                                 |
-            |                                                                                                 |
-            | missing entries for [{number=1, boolean=true, string=hello}], expected 2 entries, got 1 entries |
-            +-------------------------------------------------------------------------------------------------+
-        """.trimIndent(), exception.message
+            "missing entries for [{number=1, boolean=true, string=hello}], expected 2 entries, got 1 entries",
+            exception.message
         )
     }
 
@@ -161,16 +155,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-------------------------------------+
-            | Scenario: json test                 |
-            |                                     |
-            |                                     |
-            | expected class kotlin.String, got 1 |
-            +-------------------------------------+
-        """.trimIndent(), exception1.message
-        )
+        Assertions.assertEquals("expected class kotlin.String, got 1", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -188,16 +173,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +--------------------------------+
-            | Scenario: json test            |
-            |                                |
-            |                                |
-            | expected json object structure |
-            +--------------------------------+
-        """.trimIndent(), exception2.message
-        )
+        Assertions.assertEquals("expected json object structure", exception2.message)
 
 
         val exception3 = assertThrows<AssertionFailedError> {
@@ -215,16 +191,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-----------------------------------------------------------+
-            | Scenario: json test                                       |
-            |                                                           |
-            |                                                           |
-            | expected object of type class kotlin.Boolean, got "world" |
-            +-----------------------------------------------------------+
-        """.trimIndent(), exception3.message
-        )
+        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "world"""", exception3.message)
 
 
         val exception4 = assertThrows<AssertionFailedError> {
@@ -242,16 +209,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +--------------------------------+
-            | Scenario: json test            |
-            |                                |
-            |                                |
-            | expected "world", got "worlds" |
-            +--------------------------------+
-        """.trimIndent(), exception4.message
-        )
+        Assertions.assertEquals("""expected "world", got "worlds"""", exception4.message)
 
 
         val exception5 = assertThrows<AssertionFailedError> {
@@ -269,16 +227,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +----------------------+
-            | Scenario: json test  |
-            |                      |
-            |                      |
-            | expected 2, got true |
-            +----------------------+
-        """.trimIndent(), exception5.message
-        )
+        Assertions.assertEquals("expected 2, got true", exception5.message)
 
         val exception6 = assertThrows<AssertionFailedError> {
 
@@ -295,16 +244,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-----------------------+
-            | Scenario: json test   |
-            |                       |
-            |                       |
-            | expected false, got 2 |
-            +-----------------------+
-        """.trimIndent(), exception6.message
-        )
+        Assertions.assertEquals("expected false, got 2", exception6.message)
 
     }
 
@@ -354,16 +294,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-----------------------------------------+
-            | Scenario: json test                     |
-            |                                         |
-            |                                         |
-            | expected none nullable value {{string}} |
-            +-----------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("expected none nullable value {{string}}", exception.message)
 
     }
 
@@ -383,16 +314,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-------------------------------------------------------+
-            | Scenario: json test                                   |
-            |                                                       |
-            |                                                       |
-            | expected object of type class kotlin.Number, got "12" |
-            +-------------------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("""expected object of type class kotlin.Number, got "12"""", exception.message)
 
     }
 
@@ -454,16 +376,8 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +--------------------------------------+
-            | Scenario: json test                  |
-            |                                      |
-            |                                      |
-            | expected class kotlin.String, got 12 |
-            +--------------------------------------+
-        """.trimIndent(), exception1.message
-        )
+
+        Assertions.assertEquals("expected class kotlin.String, got 12", exception1.message)
 
         val exception2 = assertThrows<AssertionFailedError> {
 
@@ -480,16 +394,8 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +--------------------------+
-            | Scenario: json test      |
-            |                          |
-            |                          |
-            | expected "hello", got 12 |
-            +--------------------------+
-        """.trimIndent(), exception2.message
-        )
+
+        Assertions.assertEquals("""expected "hello", got 12""", exception2.message)
 
     }
 
@@ -529,16 +435,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-----------------------------------------+
-            | Scenario: json test                     |
-            |                                         |
-            |                                         |
-            | expected none nullable value {{number}} |
-            +-----------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("expected none nullable value {{number}}", exception.message)
 
     }
 
@@ -579,14 +476,7 @@ class JsonAssertionsTest {
             )
         }
         Assertions.assertEquals(
-            """
-            +------------------------------------------+
-            | Scenario: json test                      |
-            |                                          |
-            |                                          |
-            | expected none nullable value {{boolean}} |
-            +------------------------------------------+
-        """.trimIndent(), exception.message
+            "expected none nullable value {{boolean}}", exception.message
         )
 
     }
@@ -627,16 +517,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +------------------------------------------------------+
-            | Scenario: json test                                  |
-            |                                                      |
-            |                                                      |
-            | expected object of type class kotlin.Number, got "1" |
-            +------------------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("""expected object of type class kotlin.Number, got "1"""", exception.message)
 
     }
 
@@ -659,16 +540,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals(
-            """
-            +----------------------------------------------------------+
-            | Scenario: json test                                      |
-            |                                                          |
-            |                                                          |
-            | expected object of type class kotlin.Boolean, got "true" |
-            +----------------------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "true"""", exception.message)
 
     }
 
@@ -691,16 +563,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-----------------------------+
-            | Scenario: json test         |
-            |                             |
-            |                             |
-            | expected "1234", got "5678" |
-            +-----------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("""expected "1234", got "5678"""", exception.message)
 
     }
 
@@ -722,16 +585,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-----------------------------------------------+
-            | Scenario: json test                           |
-            |                                               |
-            |                                               |
-            | expected [data1] entries, got [data2] entries |
-            +-----------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("expected [data1] entries, got [data2] entries", exception.message)
 
     }
 
@@ -896,16 +750,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-------------------------------------------------+
-            | Scenario: json test                             |
-            |                                                 |
-            |                                                 |
-            | expected [string] entries, got [number] entries |
-            +-------------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("expected [string] entries, got [number] entries", exception.message)
 
     }
 
@@ -956,16 +801,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +--------------------------------------------+
-            | Scenario: json test                        |
-            |                                            |
-            |                                            |
-            | "hello" does not validate pattern {{date}} |
-            +--------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals(""""hello" does not validate pattern {{date}}""", exception.message)
 
     }
 
@@ -1030,16 +866,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +---------------------------------------+
-            | Scenario: json test                   |
-            |                                       |
-            |                                       |
-            | expected none nullable value {{date}} |
-            +---------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals("expected none nullable value {{date}}", exception.message)
 
     }
 
@@ -1088,16 +915,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +-------------------------------------------------+
-            | Scenario: json test                             |
-            |                                                 |
-            |                                                 |
-            | "bad format" does not validate pattern {{date}} |
-            +-------------------------------------------------+
-        """.trimIndent(), exception.message
-        )
+        Assertions.assertEquals(""""bad format" does not validate pattern {{date}}""", exception.message)
     }
 
     @Test
@@ -1132,16 +950,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +---------------------------------------+
-            | Scenario: json test                   |
-            |                                       |
-            |                                       |
-            | expected none nullable value {{date}} |
-            +---------------------------------------+
-        """.trimIndent(), exception1.message
-        )
+        Assertions.assertEquals("expected none nullable value {{date}}", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -1161,16 +970,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
-            """
-            +---------------------------------------+
-            | Scenario: json test                   |
-            |                                       |
-            |                                       |
-            | expected none nullable value {{date}} |
-            +---------------------------------------+
-        """.trimIndent(), exception2.message
-        )
+        Assertions.assertEquals("expected none nullable value {{date}}", exception2.message)
     }
 
     @Test
@@ -1612,9 +1412,9 @@ data class TestDataObject(
 sealed class Yolo
 
 class Yolo1(
-    val yolo1: String,
+    @Suppress("unused") val yolo1: String,
 ) : Yolo()
 
 class Yolo2(
-    val yolo2: String,
+    @Suppress("unused") val yolo2: String,
 ) : Yolo()
