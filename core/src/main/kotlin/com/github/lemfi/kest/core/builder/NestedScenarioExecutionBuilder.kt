@@ -24,6 +24,6 @@ class NestedScenarioExecutionBuilder<T>(name: String?) : ScenarioBuilder(), Exec
     }
 
     override fun toScenario(): NestedScenario<T> {
-        return NestedScenario(name!!, step, steps, result)
+        return NestedScenario(name, step, steps, result)
     }
 }

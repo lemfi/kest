@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.lemfi.kest.executor.rabbitmq.listener
 
 import com.rabbitmq.client.AMQP
@@ -127,7 +129,7 @@ private fun frameReader(
     val commands: MutableMap<Int, AMQCommand> = mutableMapOf()
 
     fun Frame.onCommandReady(l: AMQCommand.() -> Unit) {
-        val command = commands[channel] ?: AMQCommand().also { commands.put(channel, it) }
+        val command = commands[channel] ?: AMQCommand().also { commands[channel] = it }
         if (command.handleFrame(this)) {
             command.l()
             commands.remove(channel)

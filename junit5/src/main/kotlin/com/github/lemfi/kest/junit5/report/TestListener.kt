@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
-import java.util.*
+import java.util.Date
 
 
 internal class TestListener : TestExecutionListener {
@@ -18,7 +18,7 @@ internal class TestListener : TestExecutionListener {
     private val consoleSpy = ConsoleSpy()
     private val file = junit5RunnerProperty { report }?.let { File(it) }
 
-    lateinit var report: Report
+    private lateinit var report: Report
 
     override fun testPlanExecutionStarted(testPlan: TestPlan?) {
         if (file != null) {
@@ -141,7 +141,7 @@ private class ConsoleSpy {
         })
     }
 
-    fun getText() = spy.toString(Charsets.UTF_8)
+    fun getText(): String = spy.toString(Charsets.UTF_8)
 
     fun start() = spy
         .also {

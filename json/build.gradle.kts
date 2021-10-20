@@ -3,6 +3,7 @@ val jacksonVersion: String by project.rootProject.extra
 
 dependencies {
 
+    implementation("org.junit.jupiter:junit-jupiter:5.7.0")
     implementation(project(":core"))
 
     api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion") {

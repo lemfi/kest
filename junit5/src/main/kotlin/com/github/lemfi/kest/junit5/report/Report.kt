@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.junit5.report
 
-import java.util.*
+import java.util.UUID
 
 internal data class Report(
     val tests: MutableList<ATestReport> = mutableListOf(),
@@ -227,12 +227,12 @@ pre.err {
     """
 
     private fun buildTests(tests: List<ATestReport>) =
-        tests.map {
+        tests.joinToString("") {
             when (it) {
                 is ContainerTestReport -> it.buildTest()
                 is TestReport -> it.buildTest()
             }
-        }.joinToString("")
+        }
 
     private fun ContainerTestReport.buildTest(): String =
         UUID.randomUUID().toString().let { htmlId ->

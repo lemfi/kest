@@ -21,13 +21,13 @@ internal data class MongoDBCleanDatabaseExecution(
         MongoClients.create(connection)
             .getDatabase(database)
             .let { database ->
-                database.listCollectionNames().forEach {
+                database.listCollectionNames().forEach { collection ->
                     LoggerFactory.getLogger("MONGODB-Kest").info(
                         """
-                        |Clean collection: $it
+                        |Clean collection: $collection
                     """.trimMargin()
                     )
-                    database.getCollection(it).deleteMany(Document.parse("{}"))
+                    database.getCollection(collection).deleteMany(Document.parse("{}"))
                         .let {
                             LoggerFactory.getLogger("MONGODB-Kest").info(
                                 """

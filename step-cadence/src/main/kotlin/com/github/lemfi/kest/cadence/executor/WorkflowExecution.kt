@@ -36,8 +36,8 @@ internal class WorkflowExecution<RESULT>(
         activities
             ?.map { it.second }
             ?.toSet()
-            ?.let {
-                it.forEach { tasklist ->
+            ?.let { tasklists ->
+                tasklists.forEach { tasklist ->
                     WorkerFactory.newInstance(
                         WorkflowClient.newInstance(
                             WorkflowServiceTChannel(
@@ -62,12 +62,12 @@ internal class WorkflowExecution<RESULT>(
             }
 
 
-        val parameterTypes = workflow.parameters.subList(1, workflow.parameters.size).also {
+        val parameterTypes = workflow.parameters.subList(1, workflow.parameters.size).also { parameterTypes ->
             if ((params?.size
-                    ?: 0) != it.size
+                    ?: 0) != parameterTypes.size
             ) throw AssertionFailedError(
                 "Wrong number of parameter for activity, expected [${
-                    it.map { it.type }.joinToString(", ")
+                    parameterTypes.map { it.type }.joinToString(", ")
                 }] got ${params?.toList()}"
             )
         }.map { Class.forName(it.type.javaType.typeName) }.takeIf { it.isNotEmpty() }

@@ -2,11 +2,15 @@ package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
-import com.rabbitmq.client.*
+import com.rabbitmq.client.AMQP
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.ConnectionFactory
+import com.rabbitmq.client.DefaultConsumer
+import com.rabbitmq.client.Envelope
 import org.opentest4j.AssertionFailedError
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
-import java.util.*
+import java.util.UUID
 
 
 internal data class RabbitMQMessageExecution(
@@ -20,7 +24,7 @@ internal data class RabbitMQMessageExecution(
 
     private var messageConsumed = false
 
-    val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
+    private val encodedVhost: String = URLEncoder.encode(vhost, Charsets.UTF_8)
     override fun execute() {
 
         LoggerFactory.getLogger("RABBITMQ-Kest").info(

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.lemfi.kest.cadence.builder
 
 import com.github.lemfi.kest.cadence.executor.ActivityExecution
@@ -14,12 +16,14 @@ class ActivityCallExecutionBuilder<RESULT>(private val type: Type) :
     lateinit var domain: String
     lateinit var tasklist: String
 
-    lateinit private var activity: KFunction<RESULT>
+    private lateinit var activity: KFunction<RESULT>
     private var params: Array<out Any?>? = null
     private var contextPropagators: List<ContextPropagator>? = null
 
-
+    @Suppress("MemberVisibilityCanBePrivate")
     var host = cadenceProperty { host }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var port = cadenceProperty { port }
 
     fun activity(activity: KFunction<RESULT>, vararg parameters: Any?) {

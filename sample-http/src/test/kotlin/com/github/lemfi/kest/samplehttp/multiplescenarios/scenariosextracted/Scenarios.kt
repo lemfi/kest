@@ -1,3 +1,5 @@
+@file:Suppress("ObjectPropertyName")
+
 package com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted
 
 import com.github.lemfi.kest.core.cli.`assert that`

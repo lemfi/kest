@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName", "unused")
+
 package com.github.lemfi.kest.executor.rabbitmq.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
@@ -17,7 +19,7 @@ fun ScenarioBuilder.`publish rabbitmq message`(
     val executionBuilder = RabbitMQMessageExecutionBuilder()
     StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("publish message to rabbitmq"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -34,7 +36,7 @@ inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
     }
     return StandaloneStep<T>(
         name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -56,7 +58,7 @@ fun ScenarioBuilder.`create rabbitmq queue`(
     val executionBuilder = RabbitMQQueueCreationExecutionBuilder()
     StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }

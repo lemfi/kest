@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName", "unused")
+
 package com.github.kest.executor.mongodb.cli
 
 import com.github.kest.executor.mongodb.builder.MongoDBCleanDatabaseExecutionBuilder
@@ -16,7 +18,7 @@ fun ScenarioBuilder.`insert mongo document`(
     val executionBuilder = MongoDBInsertDocumentExecutionBuilder()
     StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("insert mongo document"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     )
         .addToScenario(executionBuilder, h)
@@ -31,7 +33,7 @@ fun ScenarioBuilder.`update mongo document`(
 
     StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("update mongo document"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
 }
@@ -45,7 +47,7 @@ fun ScenarioBuilder.`clean mongo database`(
     val executionBuilder = MongoDBCleanDatabaseExecutionBuilder()
     StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("clean database"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     )
         .addToScenario(executionBuilder, h)

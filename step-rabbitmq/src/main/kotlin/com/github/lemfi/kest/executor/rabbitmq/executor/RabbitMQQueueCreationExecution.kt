@@ -7,12 +7,12 @@ import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 
 internal class RabbitMQQueueCreationExecution(
-    val queueAndBinding: QueueAndBinding,
-    val connection: String,
-    val vhost: String,
+    private val queueAndBinding: QueueAndBinding,
+    private val connection: String,
+    private val vhost: String,
 ) : Execution<Unit>() {
 
-    val encodedVhost = URLEncoder.encode(vhost, Charsets.UTF_8)
+    private val encodedVhost: String = URLEncoder.encode(vhost, Charsets.UTF_8)
 
     override fun execute() {
 

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.github.lemfi.kest.cadence.cli
 
 import com.github.lemfi.kest.cadence.builder.ActivityCallExecutionBuilder
@@ -26,7 +28,7 @@ inline fun <reified R> ScenarioBuilder.`given activity call`(
 
     return StandaloneStep<R>(
         name = name?.let { StepName(it) } ?: StepName("cadence activity"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
 }
@@ -39,7 +41,7 @@ fun <R> ScenarioBuilder.`given workflow`(
     val executionBuilder = WorkflowExecutionBuilder<R>()
     return StandaloneStep<R>(
         name = name?.let { StepName(it) } ?: StepName("cadence workflow"),
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
 

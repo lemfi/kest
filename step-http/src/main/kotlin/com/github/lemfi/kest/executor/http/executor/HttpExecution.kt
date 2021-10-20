@@ -1,8 +1,14 @@
+@file:Suppress("unused")
+
 package com.github.lemfi.kest.executor.http.executor
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.executor.http.model.*
+import com.github.lemfi.kest.executor.http.model.DeserializeException
+import com.github.lemfi.kest.executor.http.model.FilePart
+import com.github.lemfi.kest.executor.http.model.HttpResponse
+import com.github.lemfi.kest.executor.http.model.MultipartBody
+import com.github.lemfi.kest.executor.http.model.ParameterPart
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -25,7 +31,7 @@ internal data class HttpExecution<T>(
     val timeout: Long?,
 ) : Execution<HttpResponse<T>>() {
 
-    val accept = headers.getOrDefault("Accept", null)
+    private val accept = headers.getOrDefault("Accept", null)
 
     companion object {
         private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Pair<Any?, String?>>()
@@ -47,10 +53,10 @@ internal data class HttpExecution<T>(
             }
 
         fun addMapper(contentType: String, mapper: InputStream?.(cls: Class<*>) -> Pair<Any?, String?>) {
-            mappers.put(contentType, mapper)
+            mappers[contentType] = mapper
         }
 
-        fun getMapper(contentType: String) = (mappers.get(contentType.substringBefore(";").trim())
+        fun getMapper(contentType: String) = (mappers[contentType.substringBefore(";").trim()]
             ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
     }
 
@@ -103,7 +109,7 @@ internal data class HttpExecution<T>(
                     Request.Builder()
                         .url(url)
                         .apply {
-                            contentType?.also { headers.put("Content-Type", it) }
+                            contentType?.also { headers["Content-Type"] = it }
                             headers.forEach { addHeader(it.key, it.value) }
                         }
                         .method(method, body?.toString()?.toRequestBody(contentType?.toMediaTypeOrNull()))
@@ -124,9 +130,9 @@ internal data class HttpExecution<T>(
                         body = body.first as T,
                         status = code,
                         headers = headers
-                            .let { headers -> headers.map { it.first } }.toSet()
-                            .map { key -> key to headers(key) }
-                            .toMap()
+                            .let { headers -> headers.map { it.first } }
+                            .toSet()
+                            .associateWith { key -> headers(key) }
                     ).also { content = body.second }
                 }
         } catch (e: DeserializeException) {
@@ -135,8 +141,8 @@ internal data class HttpExecution<T>(
         } finally {
             LoggerFactory.getLogger("HTTP-kest").info(
                 """ | Response
-                | ${code}
-                | ${headers.map { "${it.first}: ${it.second}" }.joinToString("\n")}
+                | $code
+                | ${headers.joinToString("\n") { "${it.first}: ${it.second}" }}
                 | 
                 | $content
                 |

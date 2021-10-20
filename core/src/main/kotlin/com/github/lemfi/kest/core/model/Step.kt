@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName", "unused")
+
 package com.github.lemfi.kest.core.model
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
@@ -69,8 +71,7 @@ sealed class IStepPostExecution<T, R>(
 
         if (failed != null) {
             throw failed!!
-        }
-        else if (resSet) tryResolveResult {
+        } else if (resSet) tryResolveResult {
             transformer(res as T)
         }
         else if (pe != null) tryResolveResult {

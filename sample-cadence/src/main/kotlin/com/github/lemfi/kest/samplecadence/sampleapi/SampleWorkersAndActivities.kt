@@ -87,12 +87,12 @@ class StartConversationActivity : IStartConversationActivity {
 
 class HelloWorldWorkflow : IHelloWorldWorkflow {
 
-    val helloActivity = Workflow.newActivityStub(
+    private val helloActivity: IHelloActivity = Workflow.newActivityStub(
         IHelloActivity::class.java, ActivityOptions.Builder()
             .setScheduleToCloseTimeout(Duration.ofMinutes(1))
             .build()
     )
-    val talkActivity = Workflow.newActivityStub(
+    private val talkActivity: IStartConversationActivity = Workflow.newActivityStub(
         IStartConversationActivity::class.java, ActivityOptions.Builder()
             .setScheduleToCloseTimeout(Duration.ofMinutes(1))
             .build()

@@ -6,7 +6,7 @@ import com.github.lemfi.kest.executor.http.executor.HttpExecution
 import com.github.lemfi.kest.executor.http.model.HttpResponse
 import com.github.lemfi.kest.executor.http.model.httpProperty
 
-class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResponse<T>> {
+class HttpCallExecutionBuilder<T>(private val cls: Class<T>) : ExecutionBuilder<HttpResponse<T>> {
 
     lateinit var url: String
     var method: String = "GET"
@@ -14,6 +14,8 @@ class HttpCallExecutionBuilder<T>(val cls: Class<T>) : ExecutionBuilder<HttpResp
     var contentType: String? = null
     val headers = mutableMapOf<String, String>()
     var followRedirect = false
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var timeout: Long? = httpProperty { timeout }
 
     override fun toExecution(): Execution<HttpResponse<T>> {

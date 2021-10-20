@@ -58,10 +58,10 @@ internal class ActivityExecution<RESULT>(
 
             }.start()
 
-        val parameterTypes = activity.parameters.subList(1, activity.parameters.size).also {
-            if ((params?.size ?: 0) != it.size) throw AssertionFailedError(
+        val parameterTypes = activity.parameters.subList(1, activity.parameters.size).also { parameterTypes ->
+            if ((params?.size ?: 0) != parameterTypes.size) throw AssertionFailedError(
                 "Wrong number of parameter for activity, expected [${
-                    it.map { it.type }.joinToString(", ")
+                    parameterTypes.map { it.type }.joinToString(", ")
                 }] got ${params?.toList()}"
             )
         }
@@ -97,8 +97,8 @@ internal class ActivityExecution<RESULT>(
                         )
                     })
             ).let {
-                when {
-                    it == null -> null as RESULT
+                when (it) {
+                    null -> null as RESULT
                     else -> Gson().fromJson(Gson().toJsonTree(it), type)
                 }
             }
@@ -140,7 +140,7 @@ class Workflow : IWorkflow {
         }
     }
 
-    fun <T> getActivity(cls: Class<T>, tasklist: String): T {
+    private fun <T> getActivity(cls: Class<T>, tasklist: String): T {
 
         return Workflow.newActivityStub(
             cls,

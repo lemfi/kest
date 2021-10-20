@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName", "unused")
+
 package com.github.lemfi.kest.executor.rabbitmq.builder
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
@@ -13,7 +15,10 @@ class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
 
     private lateinit var queue: QueueAndBinding
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var connection = rabbitMQProperty { connection }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var vhost = rabbitMQProperty { vhost }
 
     override fun toExecution(): Execution<Unit> {

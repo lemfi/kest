@@ -13,7 +13,6 @@ sealed class ScenarioBuilder {
 
     var name: ScenarioName = ScenarioName("anonymous scenario")
         private set
-        get() = field
 
     val steps = mutableListOf<Step<*>>()
 

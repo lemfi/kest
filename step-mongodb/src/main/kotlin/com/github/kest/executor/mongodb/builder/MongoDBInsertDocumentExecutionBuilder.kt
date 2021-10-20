@@ -7,10 +7,16 @@ import com.github.lemfi.kest.core.model.Execution
 
 class MongoDBInsertDocumentExecutionBuilder : ExecutionBuilder<Unit> {
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var document: String
+
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var collection: String
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var connection = mongoDBProperty { connection }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var database = mongoDBProperty { database }
 
     override fun toExecution(): Execution<Unit> {

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.lemfi.kest.core.properties
 
 import com.sksamuel.hoplite.ConfigFailure
@@ -7,7 +9,6 @@ import com.sksamuel.hoplite.fp.invalid
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
-import kotlin.reflect.jvm.internal.impl.resolve.constants.KClassValue
 
 val kestconfig: MutableMap<Class<*>, Any> = mutableMapOf()
 
@@ -36,7 +37,7 @@ inline fun <reified E : Any, R> property(l: E.() -> R): R {
 }
 
 inline fun <reified E : Any, R> property(
-    @Suppress("unused")
+    @Suppress("unused", "unused_parameter")
     inferType: KClass<E>,
     l: E.() -> R
 ): R = property(l)

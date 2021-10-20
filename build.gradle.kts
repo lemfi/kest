@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.2.3"
+version = "0.2.4-SNAPSHOT"
 
 val kotlinVersion: String by extra { "1.5.30" }
 val coroutineVersion: String by extra { "1.5.2" }
@@ -48,7 +48,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.5.30")
+        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.5.31")
     }
 
     tasks.withType(Sign::class.java) {
@@ -76,7 +76,7 @@ subprojects {
     compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
     compileTestKotlin.kotlinOptions.jvmTarget = "11"
 
-    tasks.withType<DokkaTask>() {
+    tasks.withType<DokkaTask> {
         onlyIf { isRelease }
     }
     tasks.withType<DokkaTask>().configureEach {

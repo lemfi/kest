@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.github.lemfi.kest.junit5.runner
 
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder

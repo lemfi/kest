@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.lemfi.kest.cadence.builder
 
 import com.github.lemfi.kest.cadence.executor.WorkflowExecution
@@ -18,7 +20,10 @@ class WorkflowExecutionBuilder<RESULT> : ExecutionBuilder<RESULT> {
 
     private var activities: List<Pair<Any, String>>? = null
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var host = cadenceProperty { host }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var port = cadenceProperty { port }
 
 

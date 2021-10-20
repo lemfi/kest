@@ -17,7 +17,7 @@ class StandaloneScenario(
 
 class NestedScenario<T>(
     override val name: ScenarioName,
-    val parentStep: Step<T>,
+    private val parentStep: Step<T>,
     override val steps: MutableList<Step<*>>,
     val result: () -> T
 ) : IScenario() {

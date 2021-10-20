@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.lemfi.kest.executor.http.model
 
 import com.github.lemfi.kest.executor.http.builder.FilePartBuilder

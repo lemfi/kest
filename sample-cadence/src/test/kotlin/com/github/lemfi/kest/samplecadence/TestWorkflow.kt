@@ -31,12 +31,13 @@ class TestWorkflow {
             tasklist = "SAMPLE_CADENCE"
 
             workflow(IHelloWorldWorkflow::hello, Hello("Darth Vader"))
+
         } `assert that` {
             eq(
                 """
-                Hello Darth Vader!
-                How are you doing Darth Vader?
-            """.trimIndent(), it
+                        Hello Darth Vader!
+                        How are you doing Darth Vader?
+                    """.trimIndent(), it
             )
         }
     }

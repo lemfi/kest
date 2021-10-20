@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.github.lemfi.kest.executor.http.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
@@ -16,7 +18,7 @@ inline fun <reified T> ScenarioBuilder.`given http call`(
     val executionBuilder = HttpCallExecutionBuilder(T::class.java)
 
     return StandaloneStep<HttpResponse<T>>(
-        scenarioName = this.name!!,
+        scenarioName = this.name,
         name = name?.let { StepName(it) } ?: StepName("HTTP call"),
         retry = retry
     ).addToScenario(executionBuilder, h)

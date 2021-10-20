@@ -9,9 +9,14 @@ class RabbitMQQueueReaderExecutionBuilder<T> : ExecutionBuilder<T> {
 
     lateinit var queue: String
     lateinit var messageTransformer: ByteArray.() -> T
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var deleteQueue = false
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var connection = rabbitMQProperty { connection }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var vhost = rabbitMQProperty { vhost }
 
     override fun toExecution(): Execution<T> {

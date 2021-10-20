@@ -9,7 +9,7 @@ import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.SocketException
 import java.net.URLDecoder
-import java.util.*
+import java.util.UUID
 
 private var server: ServerSocket? = null
 
@@ -217,7 +217,7 @@ private fun OutputStream.handleListHello() {
                     HTTP/1.1 200 OK
                     Content-Type: application/json
 
-                    [${helloPeople.map { """"$it"""" }.joinToString(", ")}]
+                    [${helloPeople.joinToString(", ") { """"$it"""" }}]
                 """.trimIndent()
         )
     }

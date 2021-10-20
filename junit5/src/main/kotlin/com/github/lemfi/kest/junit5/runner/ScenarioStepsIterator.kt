@@ -2,7 +2,11 @@ package com.github.lemfi.kest.junit5.runner
 
 import com.github.lemfi.kest.core.cli.run
 import com.github.lemfi.kest.core.executor.NestedScenarioStepExecution
-import com.github.lemfi.kest.core.model.*
+import com.github.lemfi.kest.core.model.IScenario
+import com.github.lemfi.kest.core.model.NestedScenario
+import com.github.lemfi.kest.core.model.NestedScenarioStep
+import com.github.lemfi.kest.core.model.Step
+import com.github.lemfi.kest.core.model.StepResultFailure
 import org.junit.jupiter.api.DynamicContainer
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest
@@ -13,7 +17,7 @@ private val logger = LoggerFactory.getLogger("JUNIT-RUNNER-Kest")
 
 internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator<DynamicNode>, Iterable<DynamicNode> {
 
-    val steps = scenario.steps.iterator()
+    private val steps = scenario.steps.iterator()
 
     override fun hasNext(): Boolean {
         return steps.hasNext()
@@ -33,7 +37,7 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
         }
     }
 
-    fun Step<*>.toDynamicNode() =
+    private fun Step<*>.toDynamicNode(): DynamicNode =
         if (this is NestedScenarioStep<*>) {
             DynamicContainer.dynamicContainer(
                 name?.value ?: "anonymous step",

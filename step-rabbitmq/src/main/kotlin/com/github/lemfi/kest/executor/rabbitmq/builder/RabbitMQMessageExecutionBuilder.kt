@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.github.lemfi.kest.executor.rabbitmq.builder
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
@@ -13,7 +15,10 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
 
     private lateinit var message: RabbitMQMessage
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var connection = rabbitMQProperty { connection }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var vhost = rabbitMQProperty { vhost }
 
 

@@ -7,7 +7,10 @@ import com.github.lemfi.kest.core.model.Execution
 
 class MongoDBCleanDatabaseExecutionBuilder : ExecutionBuilder<Unit> {
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var connection = mongoDBProperty { connection }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var database = mongoDBProperty { database }
 
 

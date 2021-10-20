@@ -6,12 +6,16 @@ import java.io.File
 
 class FilePartBuilder {
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var filename: String
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var name: String
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var contentType: String
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var file: File
 
     fun build(): FilePart {
@@ -21,8 +25,10 @@ class FilePartBuilder {
 
 class ParameterPartBuilder {
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var name: String
 
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var value: String
 
     fun build(): ParameterPart {
