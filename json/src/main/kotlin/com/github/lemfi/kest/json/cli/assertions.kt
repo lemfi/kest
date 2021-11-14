@@ -152,13 +152,16 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: Stri
     exp.keys.forEach { key ->
         val expectedValue = exp[key]
         val observedValue = obs[key]
+
         if (isPattern(expectedValue))
             jsonMatches(expectedValue as String, observedValue.toNullableJsonString())
-        else {
+        else if (isObject(expectedValue) || isArray(expectedValue)) {
             jsonMatches(
                 expectedValue.toJsonString(),
                 observedValue.toNullableJsonString()
             )
+        } else {
+            expectedValue eq observedValue
         }
     }
 }
@@ -183,6 +186,8 @@ private fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: Strin
 }
 
 private fun isString(data: Any?) = data?.let { String::class.java.isAssignableFrom(it.javaClass) } ?: false
+private fun isObject(data: Any?) = data?.let { it is Map<*, *> } ?: false
+private fun isArray(data: Any?) = data?.let { it is List<*> } ?: false
 private fun isPattern(data: Any?) = data?.let {
     isString(data) && (data as String).let {
         val observed = it.trimIndent().trim()

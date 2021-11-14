@@ -158,11 +158,13 @@ private fun AssertionsBuilder.failureMessage(
     val max = listOf(scenario, step, *messages.toTypedArray()).maxByOrNull { it.length }!!
 
     return """
+        
         +${(0..max.length + 1).joinToString("") { "-" }}+
         | ${scenario.padEnd(max.length, ' ')} |
         | ${step.padEnd(max.length, ' ')} |
         |${(0..max.length + 1).joinToString("") { " " }}|
         ${messages.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
         +${(0..max.length + 1).joinToString("") { "-" }}+
+        
     """.trimIndent()
 }

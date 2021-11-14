@@ -21,6 +21,42 @@ private fun assertionBuilder() = AssertionsBuilder(ScenarioName("json test"), nu
 class JsonAssertionsTest {
 
     @Test
+    fun `array containing object with nullable values`() {
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "data": [{
+                            "hello": "world",
+                            "bye": null
+                        }]
+                    }
+                    """,
+            """{
+                        "data": [{
+                            "hello": "world",
+                            "bye": null
+                        }]
+                    }"""
+        )
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "data": [{
+                            "hello": "world",
+                            "bye": "{{string?}}"
+                        }]
+                    }
+                    """,
+            """{
+                        "data": [{
+                            "hello": "world",
+                            "bye": null
+                        }]
+                    }"""
+        )
+    }
+
+    @Test
     fun `json object with simple types that matches`() {
 
         assertionBuilder().jsonMatches(
@@ -395,7 +431,7 @@ class JsonAssertionsTest {
             )
         }
 
-        Assertions.assertEquals("""expected "hello", got 12""", exception2.message)
+        Assertions.assertEquals("""Expected hello, got 12""", exception2.message)
 
     }
 
@@ -563,7 +599,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("""expected "1234", got "5678"""", exception.message)
+        Assertions.assertEquals("""Expected 1234, got 5678""", exception.message)
 
     }
 
