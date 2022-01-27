@@ -1,6 +1,6 @@
-val opentest4jVersion: String by project.rootProject.extra
-val hopliteVersion: String by project.rootProject.extra
-val slf4jVersion: String by project.rootProject.extra
+val opentest4jVersion: String by project
+val hopliteVersion: String by project
+val slf4jVersion: String by project
 
 dependencies {
 
