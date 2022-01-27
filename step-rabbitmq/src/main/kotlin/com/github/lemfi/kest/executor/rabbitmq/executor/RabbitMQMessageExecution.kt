@@ -1,16 +1,13 @@
 package com.github.lemfi.kest.executor.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
+import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQPublicationProperties
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQSnifferProp
-import com.rabbitmq.client.AMQP
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.ConnectionFactory
-import com.rabbitmq.client.DefaultConsumer
-import com.rabbitmq.client.Envelope
+import com.rabbitmq.client.*
 import org.opentest4j.AssertionFailedError
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
-import java.util.UUID
+import java.util.*
 
 
 internal data class RabbitMQMessageExecution(
@@ -19,6 +16,8 @@ internal data class RabbitMQMessageExecution(
     val vhost: String,
     val exchange: String,
     val routingKey: String,
+    val headers: Map<String, Any>,
+    val properties: RabbitMQPublicationProperties?,
     val rabbitMQSnifferProp: RabbitMQSnifferProp,
 ) : Execution<Unit>() {
 
@@ -39,7 +38,7 @@ internal data class RabbitMQMessageExecution(
                 .trimMargin()
         )
 
-        val listeningQueue = "kest-${UUID.randomUUID()}"
+        val listeningQueue = if (rabbitMQSnifferProp.active) "kest-${UUID.randomUUID()}" else null
 
         ConnectionFactory().also {
 
@@ -54,18 +53,30 @@ internal data class RabbitMQMessageExecution(
 
     }
 
-    private fun Channel.publish(replyTo: String): Channel {
+    private fun Channel.publish(replyTo: String?): Channel {
 
         basicPublish(
             exchange, routingKey, AMQP.BasicProperties().builder()
-                .replyTo(replyTo)
+                .apply {
+                    if (replyTo != null) replyTo(replyTo)
+                }.apply {
+                    if (properties != null) {
+                        properties.contentType?.also { contentType(it) }
+                        properties.deliveryMode?.also { deliveryMode(it) }
+                        properties.contentEncoding?.also { contentEncoding(it) }
+                        properties.priority?.also { priority(it) }
+                        properties.replyTo?.also { replyTo(it) }
+                        properties.correlationId?.also { correlationId(it) }
+                    }
+                }
+                .headers(headers)
                 .build(), message.toByteArray(Charsets.UTF_8)
         )
 
         return this
     }
 
-    private fun Channel.wait(listeningQueue: String) {
+    private fun Channel.wait(listeningQueue: String?) {
         if (rabbitMQSnifferProp.active) {
 
             basicConsume(listeningQueue, false,
