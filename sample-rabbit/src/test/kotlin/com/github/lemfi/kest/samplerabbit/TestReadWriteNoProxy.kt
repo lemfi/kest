@@ -30,7 +30,7 @@ class TestReadWriteNoProxy {
     @TestFactory
     fun `Leia asks for help`() = `play scenario` {
 
-        name { "Hello World is written to my queue" }
+        name { "Leia asks for help via RabbitMQ" }
 
         `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
             `create queue` { "obi-wan_kenobi" }
