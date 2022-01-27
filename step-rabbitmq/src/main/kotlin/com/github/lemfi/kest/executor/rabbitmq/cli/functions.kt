@@ -9,6 +9,7 @@ import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQMessageExecutionBuilder
 import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQQueueCreationExecutionBuilder
+import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQQueueDeletionExecutionBuilder
 import com.github.lemfi.kest.executor.rabbitmq.builder.RabbitMQQueueReaderExecutionBuilder
 
 fun ScenarioBuilder.`publish rabbitmq message`(
@@ -58,6 +59,19 @@ fun ScenarioBuilder.`create rabbitmq queue`(
     val executionBuilder = RabbitMQQueueCreationExecutionBuilder()
     StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
+        scenarioName = this.name,
+        retry = retry
+    ).addToScenario(executionBuilder, builder)
+}
+
+fun ScenarioBuilder.`delete rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RabbitMQQueueDeletionExecutionBuilder.() -> Unit
+) {
+    val executionBuilder = RabbitMQQueueDeletionExecutionBuilder()
+    StandaloneStep<Unit>(
+        name = name?.let { StepName(it) } ?: StepName("delete rabbitmq queue"),
         scenarioName = this.name,
         retry = retry
     ).addToScenario(executionBuilder, builder)
