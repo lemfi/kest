@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.2.4"
+version = "0.2.5-SNAPSHOT"
 
 val kotlinVersion: String by extra { "1.5.30" }
 val coroutineVersion: String by extra { "1.5.2" }
@@ -16,6 +16,7 @@ val okhttpVersion: String by extra { "4.9.1" }
 val cadenceVersion: String by extra { "3.3.0" }
 val mongoVersion: String by extra { "4.3.0" }
 val rabbitmqVersion: String by extra { "5.13.1" }
+val jedisVersion: String by extra { "2.8.1" }
 
 buildscript {
     val kotlinVersion: String by extra { "1.5.30" }
@@ -23,7 +24,6 @@ buildscript {
 
     repositories {
         mavenCentral()
-        maven(url = "https://dl.bintray.com/kotlin/dokka")
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
@@ -33,7 +33,7 @@ buildscript {
 
 plugins {
     signing
-    id("org.jetbrains.dokka") version "1.4.10.2"
+    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 
@@ -43,8 +43,6 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven(url = "https://dl.bintray.com/kotlin/dokka")
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev")
         mavenCentral()
     }
     dependencies {
@@ -79,6 +77,7 @@ subprojects {
     tasks.withType<DokkaTask> {
         onlyIf { isRelease }
     }
+    
     tasks.withType<DokkaTask>().configureEach {
         dokkaSourceSets {
             named("main") {
@@ -90,6 +89,7 @@ subprojects {
             }
         }
     }
+
     dependencies {
         "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")

@@ -7,8 +7,10 @@ include(
     "step-rabbitmq",
     "step-mongodb",
     "step-cadence",
+    "step-redis",
     "sample-http",
     "sample-cadence",
-    "sample-rabbit"
+    "sample-rabbit",
+    "sample-redis",
 )
 
