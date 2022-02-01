@@ -35,7 +35,6 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
             requireNotNull(message.routingKey) { "please give a routing key for publishing a message" },
             message.headers,
             message.properties,
-            rabbitMQProperty { rabbitProxy },
         )
     }
 }

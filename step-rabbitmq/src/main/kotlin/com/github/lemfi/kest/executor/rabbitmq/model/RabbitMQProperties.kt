@@ -11,13 +11,6 @@ internal data class RabbitMQProp(
     val connection: String = "amqp://guest:guest@localhost:5672",
     val vhost: String = "/",
     val exchange: String = "",
-    val rabbitProxy: RabbitMQSnifferProp = RabbitMQSnifferProp(),
-)
-
-internal data class RabbitMQSnifferProp(
-    val active: Boolean = false,
-    val ackTimeout: Long = 10000,
-    val port: Int = 5673,
 )
 
 internal fun <R> rabbitMQProperty(l: RabbitMQProp.() -> R): R {

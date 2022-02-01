@@ -6,8 +6,8 @@ var connection: Connection? = null
 var channel: Channel? = null
 var consumer: String? = null
 
-fun startRabbitApplication(port: String = "5672") {
-    val connectionFactory = ConnectionFactory().also { it.setUri("amqp://guest:guest@localhost:$port/%2F") }
+fun startRabbitApplication() {
+    val connectionFactory = ConnectionFactory().also { it.setUri("amqp://guest:guest@localhost:5672/%2F") }
     connection = connectionFactory.newConnection("rabbit application")
     channel = connection!!.createChannel()
     channel!!.queueDeclare("R2D2", true, true, false, emptyMap())

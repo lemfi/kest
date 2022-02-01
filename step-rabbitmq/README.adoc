@@ -128,19 +128,3 @@ rabbitmq:
     publish { """ { "hello": "world" } """ } `to exchange` "" `with routing key` "universe"
 }
 ----
-
-=== Message consumed listener
-
-Waiting for a certain time and assume that message will have be processed by backend can be a source of problems: +
-too short, message wouldn't be consumed, too long, running scenarios might take too much time.
-
-Kest provides a way to make step synchronous with message consumption on backend side. +
-It comes with a proxy server that listens for events on RabbitMQ. +
-You just have to connect your backend to this proxy server instead of RabbitMQ, and job is done: your steps are synchronous with messages consumption on backend.
-
-[source,yaml,title="Configuration for Rabbit Proxy Server"]
-----
-rabbitmq:
-  rabbitProxy:
-    active: true
-----

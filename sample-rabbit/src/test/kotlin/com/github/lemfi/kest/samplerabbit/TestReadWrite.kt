@@ -5,7 +5,6 @@ import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
-import com.github.lemfi.kest.core.properties.kestconfig
 import com.github.lemfi.kest.executor.rabbitmq.cli.`create rabbitmq queue`
 import com.github.lemfi.kest.executor.rabbitmq.cli.`given message from rabbitmq queue`
 import com.github.lemfi.kest.executor.rabbitmq.cli.`publish rabbitmq message`
@@ -14,12 +13,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestFactory
 
-class TestReadWriteNoProxy {
-
-    init {
-        kestconfig.clear()
-        System.setProperty("kest-conf", "/no-proxy.yml")
-    }
+class TestReadWrite {
 
     @BeforeEach
     fun beforeEach() = startRabbitApplication()

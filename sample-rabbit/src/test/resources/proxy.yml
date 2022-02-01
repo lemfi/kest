@@ -1,5 +1,0 @@
-autoconfigure: com.github.lemfi.kest.samplerabbit.KestConfiguration
-
-rabbitmq:
-  rabbitProxy:
-    active: true
