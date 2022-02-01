@@ -28,6 +28,15 @@ fun startRabbitApplication() {
                 "Au secours ${body.toString(Charsets.UTF_8)}, vous êtes notre seul espoir !".toByteArray(Charsets.UTF_8)
             )
 
+            Thread.sleep(1000)
+
+            channel.basicPublish(
+                "",
+                body.toString(Charsets.UTF_8),
+                AMQP.BasicProperties(),
+                "Au secours ${body.toString(Charsets.UTF_8)}, vous êtes notre seul espoir !".toByteArray(Charsets.UTF_8)
+            )
+
             channel.basicAck(deliveryTag, false)
         }
     })

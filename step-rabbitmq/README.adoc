@@ -48,7 +48,7 @@ rabbitmq:
 }
 ----
 
-== Read a message from rabbitMQ
+== Read messages from rabbitMQ
 
 This step comes as a parameterized function, the parameterized type is the expected return type for the message to read. +
 Default return type is `ByteArray`
@@ -59,9 +59,9 @@ Default return type is `ByteArray`
 * retry: String // optional, give a chance for step to fail several times before passing
 * builder: RabbitMQMessageExecutionBuilder.() -> Unit // mandatory, configure execution of step +
 builder parameters are:
-** description: () -> String? // optional, describe execution
 ** queue: String // queue from which read message
 ** messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
+** nbMessges: Int // optional number of messages to retrieve, defaults to 1
 ** deleteQueue: Boolean // Should queue be deleted after reading, defaults to false
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to / +
@@ -96,16 +96,34 @@ See link:../json/README.adoc[Kest JSON] documentation for more details.
 * retry: String // optional, give a chance for step to fail several times before passing
 * builder: RabbitMQMessageExecutionBuilder.() -> Unit // mandatory, configure execution of step +
 builder parameters are:
-** description: () -> String? // optional, describe execution
 ** message: RabbitMQMessage // mandatory, configuration of message to deliver
 *** message: String // mandatory, message to deliver
 *** exchange: String? // optional, exchange on which deliver message, defaults to ""
 *** routingKey: String // mandatory, routing key for message
+*** headers: Map<String, Any> // optional
+*** properties: RabbitMQPublicationProperties // optional
+**** contentType: String // optional
+**** contentEncoding: String // optional
+**** deliveryMode: Int // optional
+**** priority: Int // optional
+**** correlationId: String // optional
+**** replyTo: String // optional
+**** type: String // optional
+**** messageId: String // optional
+**** expiration: String // optional time in millis when message will expire
+**** timestamp: Date // optional
+**** userId: String // optional
+**** appId: String // optional
 +
 [source,kotlin]
 ----
-// RabbitMQMessage is built by a combination if three functions written as follows:
-publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key"
+// RabbitMQMessage may be built by a combination of functions written as follows:
+publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
+    "header" to "headerValue"
+) `with properties` {
+    messageId = "my id"
+    expiration = "10000"
+}
 ----
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to /

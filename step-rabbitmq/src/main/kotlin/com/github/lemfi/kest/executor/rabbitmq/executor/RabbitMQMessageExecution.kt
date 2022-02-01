@@ -53,9 +53,14 @@ internal data class RabbitMQMessageExecution(
                         properties.contentType?.also { contentType(it) }
                         properties.deliveryMode?.also { deliveryMode(it) }
                         properties.contentEncoding?.also { contentEncoding(it) }
-                        properties.priority?.also { priority(it) }
+                        properties.userId?.also { userId(it) }
+                        properties.appId?.also { appId(it) }
                         properties.replyTo?.also { replyTo(it) }
                         properties.correlationId?.also { correlationId(it) }
+                        properties.timestamp?.also { timestamp(it) }
+                        properties.expiration?.also { expiration(it) }
+                        properties.messageId?.also { messageId(it) }
+                        properties.type?.also { type(it) }
                     }
                 }
                 .headers(headers)

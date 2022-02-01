@@ -7,6 +7,7 @@ import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.executor.rabbitmq.executor.RabbitMQMessageExecution
 import com.github.lemfi.kest.executor.rabbitmq.model.RabbitMQPublicationProperties
 import com.github.lemfi.kest.executor.rabbitmq.model.rabbitMQProperty
+import java.util.Date
 
 class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
 
@@ -55,6 +56,25 @@ class RabbitMQPropertiesBuilder {
     var correlationId: String? = null
     var replyTo: String? = null
 
+    var type: String? = null
+    var messageId: String? = null
+    var expiration: String? = null
+    var timestamp: Date? = null
+    var userId: String? = null
+    var appId: String? = null
+
     fun build() =
-        RabbitMQPublicationProperties(contentType, contentEncoding, deliveryMode, priority, correlationId, replyTo)
+        RabbitMQPublicationProperties(
+            deliveryMode = deliveryMode,
+            type = type,
+            contentType = contentType,
+            contentEncoding = contentEncoding,
+            messageId = messageId,
+            correlationId = correlationId,
+            replyTo = replyTo,
+            expiration = expiration,
+            timestamp = timestamp,
+            userId = userId,
+            appId = appId
+        )
 }
