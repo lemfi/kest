@@ -1,4 +1,4 @@
-val junitVersion: String by project.rootProject.extra
+val junitVersion: String by project
 val slf4jVersion: String by project
 
 dependencies {

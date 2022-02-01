@@ -1,4 +1,4 @@
-val mongoVersion: String by project.rootProject.extra
+val mongoVersion: String by project
 
 dependencies {
 

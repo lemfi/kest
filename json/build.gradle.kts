@@ -1,9 +1,8 @@
-val junitVersion: String by project.rootProject.extra
-val jacksonVersion: String by project.rootProject.extra
+val junitVersion: String by project
+val jacksonVersion: String by project
 
 dependencies {
 
-    implementation("org.junit.jupiter:junit-jupiter:5.7.0")
     implementation(project(":core"))
 
     api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion") {

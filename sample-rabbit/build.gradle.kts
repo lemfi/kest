@@ -1,7 +1,7 @@
-val rabbitmqVersion: String by project.rootProject.extra
-val junitVersion: String by project.rootProject.extra
-val coroutineVersion: String by project.rootProject.extra
-val slf4jVersion: String by project.rootProject.extra
+val rabbitmqVersion: String by project
+val junitVersion: String by project
+val coroutineVersion: String by project
+val slf4jVersion: String by project
 
 dependencies {
 

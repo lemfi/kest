@@ -1,5 +1,5 @@
-val okhttpVersion: String by project.rootProject.extra
-val kotlinVersion: String by project.rootProject.extra
+val okhttpVersion: String by project
+val kotlinVersion: String by project
 
 dependencies {
 

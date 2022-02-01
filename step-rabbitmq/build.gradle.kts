@@ -1,5 +1,5 @@
-val coroutineVersion: String by project.rootProject.extra
-val rabbitmqVersion: String by project.rootProject.extra
+val coroutineVersion: String by project
+val rabbitmqVersion: String by project
 
 dependencies {
 

@@ -1,5 +1,5 @@
-val junitVersion: String by project.rootProject.extra
-val junitLauncherVersion: String by project.rootProject.extra
+val junitVersion: String by project
+val junitLauncherVersion: String by project
 
 dependencies {
 

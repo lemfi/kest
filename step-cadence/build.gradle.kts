@@ -1,6 +1,6 @@
-val kotlinVersion: String by project.rootProject.extra
-val jacksonVersion: String by project.rootProject.extra
-val cadenceVersion: String by project.rootProject.extra
+val kotlinVersion: String by project
+val jacksonVersion: String by project
+val cadenceVersion: String by project
 
 dependencies {
 

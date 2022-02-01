@@ -4,20 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "com.github.lemfi.kest"
 version = "0.3.0"
 
-val kotlinVersion: String by extra { "1.5.30" }
-val coroutineVersion: String by extra { "1.5.2" }
-val opentest4jVersion: String by extra { "1.2.0" }
-val hopliteVersion: String by extra { "1.4.7" }
-val slf4jVersion: String by extra { "1.7.32" }
-val junitLauncherVersion: String by extra { "1.8.0" }
-val junitVersion: String by extra { "5.8.0" }
-val jacksonVersion: String by extra { "2.12.5" }
-val okhttpVersion: String by extra { "4.9.1" }
-val cadenceVersion: String by extra { "3.3.0" }
-val mongoVersion: String by extra { "4.3.0" }
-val rabbitmqVersion: String by extra { "5.13.1" }
-val jedisVersion: String by extra { "2.8.1" }
-
 buildscript {
     val kotlinVersion: String by extra { "1.5.30" }
     val dokkaVersion: String by extra { "1.4.32" }
@@ -57,6 +43,8 @@ allprojects {
 val isRelease = !(project.version as String).endsWith("SNAPSHOT")
 
 subprojects {
+
+    val kotlinVersion: String by project
 
     group = parent!!.group
     version = parent!!.version

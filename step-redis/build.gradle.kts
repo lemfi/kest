@@ -1,4 +1,4 @@
-val jedisVersion: String by project.rootProject.extra
+val jedisVersion: String by project
 
 dependencies {
 
