@@ -16,9 +16,9 @@ fun ScenarioBuilder.`publish rabbitmq message`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQMessageExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = RabbitMQMessageExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("publish message to rabbitmq"),
         scenarioName = this.name,
         retry = retry
@@ -55,9 +55,9 @@ fun ScenarioBuilder.`create rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQQueueCreationExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = RabbitMQQueueCreationExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
         scenarioName = this.name,
         retry = retry
@@ -68,9 +68,9 @@ fun ScenarioBuilder.`delete rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQQueueDeletionExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = RabbitMQQueueDeletionExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("delete rabbitmq queue"),
         scenarioName = this.name,
         retry = retry

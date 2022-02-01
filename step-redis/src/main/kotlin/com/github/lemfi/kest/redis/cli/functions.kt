@@ -15,9 +15,9 @@ fun ScenarioBuilder.`redis delete key`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RedisDeleteExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = RedisDeleteExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("delete redis key"),
         scenarioName = this.name,
         retry = retry
@@ -41,9 +41,9 @@ fun ScenarioBuilder.`redis insert data`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RedisInsertExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = RedisInsertExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("insert data in redis"),
         scenarioName = this.name,
         retry = retry

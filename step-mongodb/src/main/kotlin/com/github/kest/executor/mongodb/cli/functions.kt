@@ -9,14 +9,15 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.core.model.StepPostExecution
 
 fun ScenarioBuilder.`insert mongo document`(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBInsertDocumentExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = MongoDBInsertDocumentExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("insert mongo document"),
         scenarioName = this.name,
         retry = retryStep
@@ -28,10 +29,10 @@ fun ScenarioBuilder.`update mongo document`(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBUpdateDocumentExecutionBuilder.() -> Unit
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = MongoDBUpdateDocumentExecutionBuilder()
 
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("update mongo document"),
         scenarioName = this.name,
         retry = retryStep
@@ -43,9 +44,9 @@ fun ScenarioBuilder.`clean mongo database`(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBCleanDatabaseExecutionBuilder.() -> Unit = {}
-) {
+): StepPostExecution<Unit> {
     val executionBuilder = MongoDBCleanDatabaseExecutionBuilder()
-    StandaloneStep<Unit>(
+    return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("clean database"),
         scenarioName = this.name,
         retry = retryStep
