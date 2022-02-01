@@ -70,7 +70,7 @@ sealed class IStepPostExecution<T, R>(
         }
 
         if (failed != null) {
-            throw failed!!
+            throw StepResultFailure(step = step, cause = failed!!)
         } else if (resSet) tryResolveResult {
             transformer(res as T)
         }
