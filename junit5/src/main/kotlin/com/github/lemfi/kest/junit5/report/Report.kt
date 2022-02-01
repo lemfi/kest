@@ -32,6 +32,8 @@ internal data class Report(
     <head>
         <title>Test execution ${if (nbFailures == 0L) "SUCCESSFUL" else "FAILED"}</title>
         
+        <meta charset="UTF-8">
+        
         <script type="text/javascript">
             function showHide(id) {
                 var elem = document.getElementById(id);
