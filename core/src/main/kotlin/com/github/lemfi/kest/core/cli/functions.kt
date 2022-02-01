@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "unused")
 
 package com.github.lemfi.kest.core.cli
 
@@ -27,6 +27,23 @@ fun scenario(s: ScenarioBuilder.() -> Unit): Scenario {
 infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(l: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
     addAssertion(l)
     return this
+}
+
+fun ScenarioBuilder.wait(time: Long, name: String? = null): StepPostExecution<Unit> {
+    val executionBuilder = object : ExecutionBuilder<Unit> {
+        override fun toExecution(): Execution<Unit> = object : Execution<Unit>() {
+            override fun execute() {
+                Thread.sleep(time)
+            }
+        }
+    }
+
+    return StandaloneStep<Unit>(
+        scenarioName = this.name,
+        name = name?.let { StepName(it) } ?: StepName("wait $time ms"),
+        retry = null
+    )
+        .addToScenario(executionBuilder) {}
 }
 
 fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: () -> T): StepPostExecution<T> {
