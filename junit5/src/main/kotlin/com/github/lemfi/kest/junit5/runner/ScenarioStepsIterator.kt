@@ -39,13 +39,27 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
 
     private fun Step<*>.toDynamicNode(): DynamicNode =
         if (this is NestedScenarioStep<*>) {
-            DynamicContainer.dynamicContainer(
-                name?.value ?: "anonymous step",
-                ScenarioStepsIterator((execution() as NestedScenarioStepExecution).scenario())
-            )
-        } else DynamicTest.dynamicTest(name?.value ?: "anonymous step") {
+            runCatching {
+                execution() as NestedScenarioStepExecution
+            }
+                .let {
+                    if (it.isFailure) {
+                        createDynamicTest(name?.value ?: "anonymous step") { throw it.exceptionOrNull()!! }
+                    } else {
+                        DynamicContainer.dynamicContainer(
+                            name?.value ?: "anonymous step",
+                            ScenarioStepsIterator(it.getOrNull()!!.scenario())
+                        )
+                    }
+                }
+
+        } else createDynamicTest(name?.value ?: "anonymous step") { run() }
+
+
+    private fun createDynamicTest(name: String, test: () -> Unit) =
+        DynamicTest.dynamicTest(name) {
             try {
-                run()
+                test()
             } catch (e: StepResultFailure) {
                 logger.warn(e.message)
                 throw TestAbortedException(e.message)

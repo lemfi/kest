@@ -91,16 +91,26 @@ sealed class IStepPostExecution<T, R>(
 
     fun setResult(t: T) {
         resSet = true
-        if (pe != null) pe.resSet = true
+        var parent: IStepPostExecution<*, *>? = pe
+        while (parent != null) {
+            parent.resSet = true
+            parent = parent.pe
+        }
         res = t
     }
 
     fun setFailed(e: Throwable) {
         failed = e
         resSet = true
-        pe?.setFailed(e)
+        var parent: IStepPostExecution<*, *>? = pe
+        while (parent != null) {
+            parent.setFailed(e)
+            parent = parent.pe
+        }
     }
 
+    fun isFailed() = resSet && failed != null
+    fun isSucess() = resSet && failed == null
 }
 
 class StandaloneStepPostExecution<I : Any?, T, R>(

@@ -81,18 +81,20 @@ fun <T> ScenarioBuilder.nestedScenario(
 fun ScenarioBuilder.nestedScenario(
     name: String? = null,
     retryStep: RetryStep? = null,
-    l: NestedScenarioExecutionBuilder<Any>.() -> Unit
-) {
-    val executionBuilder = NestedScenarioExecutionBuilder<Any>(name).apply { returns {} }
+    l: NestedScenarioExecutionBuilder<Unit>.() -> Unit
+): NestedScenarioStepPostExecution<Unit, Unit> {
+    val executionBuilder = NestedScenarioExecutionBuilder<Unit>(name)
+        .apply { returns {
+            steps.onEach { if (it.postExecution.isFailed()) it.postExecution() }
+        } }
 
-    NestedScenarioStep<Any>(
+    return NestedScenarioStep<Unit>(
         name = name?.let { StepName(it) },
         scenarioName = this.name,
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
         .addToScenario(executionBuilder, l)
-
 }
 
 @Suppress("unchecked_cast")
