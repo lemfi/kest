@@ -6,7 +6,7 @@ import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
-import com.github.lemfi.kest.executor.http.cli.`given http call`
+import com.github.lemfi.kest.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`

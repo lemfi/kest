@@ -5,10 +5,10 @@ import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
-import com.github.lemfi.kest.executor.rabbitmq.cli.`create rabbitmq queue`
-import com.github.lemfi.kest.executor.rabbitmq.cli.`given messages from rabbitmq queue`
-import com.github.lemfi.kest.executor.rabbitmq.cli.`publish rabbitmq message`
 import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.rabbitmq.cli.`create rabbitmq queue`
+import com.github.lemfi.kest.rabbitmq.cli.`given messages from rabbitmq queue`
+import com.github.lemfi.kest.rabbitmq.cli.`publish rabbitmq message`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestFactory

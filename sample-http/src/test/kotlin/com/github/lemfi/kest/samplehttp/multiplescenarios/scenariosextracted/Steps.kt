@@ -5,8 +5,8 @@ import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.model.StepPostExecution
-import com.github.lemfi.kest.executor.http.cli.`given http call`
-import com.github.lemfi.kest.executor.http.model.HttpResponse
+import com.github.lemfi.kest.http.cli.`given http call`
+import com.github.lemfi.kest.http.model.HttpResponse
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted.`get otp`
 
