@@ -5,8 +5,8 @@ group = "com.github.lemfi.kest"
 version = "0.4.0"
 
 buildscript {
-    val kotlinVersion: String by extra { "1.5.30" }
-    val dokkaVersion: String by extra { "1.4.32" }
+    val kotlinVersion: String by project
+    val dokkaVersion: String by project
 
     repositories {
         mavenCentral()
@@ -19,9 +19,9 @@ buildscript {
 
 plugins {
     signing
+    jacoco
     id("org.jetbrains.dokka") version "1.6.10"
 }
-
 
 allprojects {
 
@@ -53,6 +53,11 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
+    apply(plugin = "jacoco")
+
+    jacoco {
+        toolVersion = "0.8.7"
+    }
 
     val compileKotlin: KotlinCompile by tasks
     compileKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
@@ -158,4 +163,57 @@ subprojects {
 
         dependsOn("publishToMavenLocal")
     }
+
+    tasks.withType<Test> {
+        description = "Runs the unit and integration tests"
+        useJUnitPlatform()
+        finalizedBy(tasks.named("jacocoTestReport")) // report is always generated after tests run
+    }
+
 }
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.create<JacocoReport>("jacoco") {
+
+    dependsOn(subprojects
+        .filterNot { it.name.startsWith("sample") }
+        .map { it.tasks.withType<Test>() }
+    )
+
+    executionData(subprojects
+        .filterNot { it.name.startsWith("sample") }
+        .map { it.fileTree("build/jacoco/test.exec") })
+    sourceSets(*(subprojects
+        .filterNot { it.name.startsWith("sample") }
+        .map { it.the<SourceSetContainer>()["main"] as SourceSet }).toTypedArray()
+    )
+
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
+        csv.isEnabled = true
+    }
+
+    doLast {
+        File("build/reports/jacoco/jacoco/jacoco.csv")
+            .readText(java.nio.charset.Charset.defaultCharset())
+            .lines()
+            .drop(1)
+            .filterNot { it.isEmpty() }
+            .map { line ->
+                line
+                    .split(",")
+                    .drop(3)
+                    .take(2)
+                    .let {
+                        (it.first().toInt() + it.last().toInt()) to it.last().toInt()
+                    }
+            }
+            .reduce { (accAll, accCovered), (all, covered) -> (accAll + all) to (accCovered + covered) }
+            .apply { println("Coverage: ${second * 100 / first}%") }
+    }
+}
+
