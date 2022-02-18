@@ -77,16 +77,18 @@ fun <T> ScenarioBuilder.nestedScenario(
         .addToScenario(executionBuilder, l)
 }
 
-@JvmName("noResultStep")
+@JvmName("voidNestedScenario")
 fun ScenarioBuilder.nestedScenario(
     name: String? = null,
     retryStep: RetryStep? = null,
     l: NestedScenarioExecutionBuilder<Unit>.() -> Unit
 ): NestedScenarioStepPostExecution<Unit, Unit> {
     val executionBuilder = NestedScenarioExecutionBuilder<Unit>(name)
-        .apply { returns {
-            steps.onEach { if (it.postExecution.isFailed()) it.postExecution() }
-        } }
+        .apply {
+            returns {
+                steps.onEach { if (it.postExecution.isFailed()) it.postExecution() }
+            }
+        }
 
     return NestedScenarioStep<Unit>(
         name = name?.let { StepName(it) },
@@ -100,7 +102,7 @@ fun ScenarioBuilder.nestedScenario(
 @Suppress("unchecked_cast")
 fun IScenario.run() {
 
-    return steps.forEach { (it as Step<Any>).run() }
+    steps.forEach { (it as Step<Any>).run() }
 }
 
 fun <T> Step<T>.run(): Step<T> {
@@ -149,7 +151,6 @@ fun <T> Step<T>.run(): Step<T> {
 
     return this
 }
-
 
 private fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?): Nothing = run {
     throw AssertionFailedError(failureMessage(message, stepName), expected, observed)

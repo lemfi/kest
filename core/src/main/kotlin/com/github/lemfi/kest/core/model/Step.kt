@@ -73,11 +73,9 @@ sealed class IStepPostExecution<T, R>(
             throw StepResultFailure(step = step, cause = failed!!)
         } else if (resSet) tryResolveResult {
             transformer(res as T)
-        }
-        else if (pe != null) tryResolveResult {
+        } else if (pe != null) tryResolveResult {
             transformer(pe.result())
-        }
-        else throw StepResultFailure(
+        } else throw StepResultFailure(
             step,
             """
                 |Step "${step.name?.value ?: step}" was not played yet! 
@@ -110,7 +108,7 @@ sealed class IStepPostExecution<T, R>(
     }
 
     fun isFailed() = resSet && failed != null
-    fun isSucess() = resSet && failed == null
+    fun isSuccess() = resSet && failed == null
 }
 
 class StandaloneStepPostExecution<I : Any?, T, R>(
