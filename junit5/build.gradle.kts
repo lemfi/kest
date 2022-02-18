@@ -8,7 +8,6 @@ dependencies {
     implementation("org.junit.platform:junit-platform-launcher:$junitLauncherVersion")
 
     api("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    api("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     runtimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
