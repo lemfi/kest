@@ -60,6 +60,5 @@ fun `play scenario`(unwrap: Boolean = true, l: StandaloneScenarioBuilder.() -> U
     StandaloneScenarioBuilder().apply(l).toScenario()
         .let { `play scenario`(it, unwrap) }
 
-fun `play scenario`(scenario: Scenario, unwrap: Boolean = true) = autoconfigure().let {
-    if (unwrap) ScenarioStepsIterator(scenario) else scenario.toDynamicContainer()
-}
+fun `play scenario`(scenario: Scenario, unwrap: Boolean = true) = autoconfigure()
+    .let { if (unwrap) ScenarioStepsIterator(scenario) else scenario.toDynamicContainer() }
