@@ -21,6 +21,122 @@ private fun assertionBuilder() = AssertionsBuilder(ScenarioName("json test"), nu
 class JsonAssertionsTest {
 
     @Test
+    fun `check array content regardless of sorting`() {
+
+        assertionBuilder().jsonMatches("""[1, 2, 3]""", """[3, 2, 1]""", checkArraysOrder = false)
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": ["val1", "val2"],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": ["val2", "val1"],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkArraysOrder = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "world": "hello"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "world": "hello"
+                    },
+                     {
+                        "hello": "world"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkArraysOrder = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [1, 2, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "data": [3, 2, 1]
+                    },
+                     {
+                        "hello": "world"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkArraysOrder = false
+        )
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [1, 2, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "data": [3, 3, 3]
+                    },
+                     {
+                        "hello": "world"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkArraysOrder = false
+            )
+        }
+        Assertions.assertEquals("{data=[3, 3, 3]} not present in array", exception.message)
+    }
+
+    @Test
     fun `array containing object with nullable values`() {
         assertionBuilder().jsonMatches(
             """
