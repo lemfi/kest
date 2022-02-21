@@ -20,6 +20,19 @@ import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
+object KestHttp {
+
+    /**
+     * Register a content type transformer for HTTP calls
+     * @param contentType Content-Type for transformation
+     * @param transformer function to transform InputStream with given Content-Type into an Object
+     */
+    fun registerContentTypeTransformer(contentType: String, transformer: InputStream?.(cls: Class<*>) -> Any?) =
+        HttpExecution.addMapper(contentType) {
+            transformer(it) to (this?.run { readAllBytes().toString(Charsets.UTF_8).trim() } ?: "null")
+        }
+}
+
 internal data class HttpExecution<T>(
     val url: String,
     val method: String,
@@ -45,18 +58,21 @@ internal data class HttpExecution<T>(
                         } to data
                     } ?: (null to null)
                 }
-                put("text/plain") {
-                    this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
-                        data to data
-                    } ?: (null to null)
+                put("text") {
+                    readText()
                 }
             }
+
+        private fun InputStream?.readText() = this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
+            data to data
+        } ?: (null to null)
 
         fun addMapper(contentType: String, mapper: InputStream?.(cls: Class<*>) -> Pair<Any?, String?>) {
             mappers[contentType] = mapper
         }
 
         fun getMapper(contentType: String) = (mappers[contentType.substringBefore(";").trim()]
+            ?: mappers[contentType.substringBefore(";").trim().substringBefore("/")]
             ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
     }
 
