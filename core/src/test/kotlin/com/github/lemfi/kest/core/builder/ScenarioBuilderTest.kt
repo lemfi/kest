@@ -2,7 +2,6 @@ package com.github.lemfi.kest.core.builder
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.NestedScenarioStep
-import com.github.lemfi.kest.core.model.ScenarioName
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
 import org.junit.jupiter.api.Assertions
@@ -13,11 +12,9 @@ class ScenarioBuilderTest {
     @Test
     fun `name is set`() {
 
-        val scenarioBuilder: ScenarioBuilder = StandaloneScenarioBuilder()
+        val scenarioBuilder: ScenarioBuilder = StandaloneScenarioBuilder("hello world")
 
-        scenarioBuilder.name { "hello world" }
-
-        Assertions.assertEquals("hello world", scenarioBuilder.name.value)
+        Assertions.assertEquals("hello world", scenarioBuilder.scenarioName)
     }
 
     @Test
@@ -33,9 +30,9 @@ class ScenarioBuilderTest {
         }
 
         val myExecutionBuilder = MyExecutionBuilder()
-        val scenarioBuilder = StandaloneScenarioBuilder()
+        val scenarioBuilder = StandaloneScenarioBuilder("scenario name")
         val step = StandaloneStep<String>(
-            scenarioName = ScenarioName("scenario name"),
+            scenarioName = "scenario name",
             name = StepName("step name"),
             retry = null,
         )
@@ -67,9 +64,9 @@ class ScenarioBuilderTest {
         }
 
         val myExecutionBuilder = MyExecutionBuilder()
-        val scenarioBuilder = StandaloneScenarioBuilder()
+        val scenarioBuilder = StandaloneScenarioBuilder("scenario name")
         val step = NestedScenarioStep<String>(
-            scenarioName = ScenarioName("scenario name"),
+            scenarioName = "scenario name",
             name = StepName("step name"),
             retry = null,
         )

@@ -21,9 +21,7 @@ class TestWorkflow {
     fun afterEach() = stopActivitiesAndWorkflows()
 
     @TestFactory
-    fun `Darth Vader says hello!`() = `play scenario` {
-
-        name { "Darth Vader says hello!" }
+    fun `Darth Vader says hello!`() = `play scenario`(name = "Darth Vader says hello!") {
 
         `given workflow`<String>("Say Hello Workflow") {
 

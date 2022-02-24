@@ -15,7 +15,7 @@ internal fun IScenario.toDynamicContainer(
     beforeEach: (() -> Scenario)? = null,
     afterEach: (() -> Scenario)? = null
 ): DynamicContainer {
-    return DynamicContainer.dynamicContainer(name.value,
+    return DynamicContainer.dynamicContainer(name,
 
         object : Iterable<DynamicNode> {
             override fun iterator(): Iterator<DynamicNode> {
@@ -34,9 +34,8 @@ private fun createBeforeAfterScenario(scenarioBuilder: () -> Scenario): Scenario
     val scenario = scenarioBuilder()
 
     return ScenarioStepsIterator(
-        scenario {
-            name { "before or after" }
-            nestedScenario(scenario.name.value) {
+        scenario("before or after") {
+            nestedScenario(scenario.name) {
                 this.steps.addAll(scenario.steps)
             }
         }
@@ -56,8 +55,12 @@ fun `play scenarios`(
     }
 }
 
-fun `play scenario`(unwrap: Boolean = true, l: StandaloneScenarioBuilder.() -> Unit) =
-    StandaloneScenarioBuilder().apply(l).toScenario()
+fun `play scenario`(
+    name: String = "anonymous scenario",
+    unwrap: Boolean = true,
+    l: StandaloneScenarioBuilder.() -> Unit
+) =
+    StandaloneScenarioBuilder(name).apply(l).toScenario()
         .let { `play scenario`(it, unwrap) }
 
 fun `play scenario`(scenario: Scenario, unwrap: Boolean = true) = autoconfigure()

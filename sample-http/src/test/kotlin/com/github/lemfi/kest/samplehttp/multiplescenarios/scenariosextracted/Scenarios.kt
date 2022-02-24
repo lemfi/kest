@@ -10,9 +10,7 @@ import com.github.lemfi.kest.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
 
-val `api says hello and remembers it!` = scenario {
-
-    name { "api says hello and remembers it!" }
+val `api says hello and remembers it!` = scenario(name = "api says hello and remembers it!") {
 
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
@@ -20,9 +18,7 @@ val `api says hello and remembers it!` = scenario {
     `get greeted`("Darth Vader", "Han Solo")
 }
 
-val `api says goodbye and forgets people!` = scenario {
-
-    name { "api says goodbye and forgets people!" }
+val `api says goodbye and forgets people!` = scenario(name = "api says goodbye and forgets people!") {
 
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
@@ -44,9 +40,7 @@ val `api says goodbye and forgets people!` = scenario {
 }
 
 val `get and validate correct otp` =
-    scenario {
-
-        name { "get and validate correct otp" }
+    scenario(name = "get and validate correct otp") {
 
         val generatedOtps = generateOtps()
 
@@ -59,9 +53,7 @@ val `get and validate correct otp` =
 
     }
 
-val `get and validate wrong otp` = scenario {
-
-    name { "get and validate wrong otp" }
+val `get and validate wrong otp` = scenario(name = "get and validate wrong otp") {
 
     `given http call`<JsonMap>("get OTP") {
 

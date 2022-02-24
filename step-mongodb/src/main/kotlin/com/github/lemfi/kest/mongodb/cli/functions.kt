@@ -19,7 +19,7 @@ fun ScenarioBuilder.`insert mongo document`(
     val executionBuilder = MongoDBInsertDocumentExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("insert mongo document"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     )
         .addToScenario(executionBuilder, h)
@@ -34,7 +34,7 @@ fun ScenarioBuilder.`update mongo document`(
 
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("update mongo document"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
 }
@@ -48,7 +48,7 @@ fun ScenarioBuilder.`clean mongo database`(
     val executionBuilder = MongoDBCleanDatabaseExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("clean database"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     )
         .addToScenario(executionBuilder, h)

@@ -8,12 +8,10 @@ import com.github.lemfi.kest.redis.cli.`redis get key`
 import com.github.lemfi.kest.redis.cli.`redis insert data`
 import org.junit.jupiter.api.TestFactory
 
-class ResdiSample {
+class RedisSample {
 
     @TestFactory
-    fun `redis is a planet in a galaxy far far away`() = `play scenario` {
-
-        name { "Starwars characters" }
+    fun `redis is a planet in a galaxy far far away`() = `play scenario`(name = "Starwars characters", unwrap = false) {
 
         `redis insert data`(name = "declare Luke Skywalker") {
             insert { "Luke Skywalker" } `with key` "ls" `in namespace` "light"

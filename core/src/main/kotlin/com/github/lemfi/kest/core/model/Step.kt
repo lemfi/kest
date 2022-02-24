@@ -5,7 +5,7 @@ package com.github.lemfi.kest.core.model
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 
 sealed class Step<T> {
-    abstract val scenarioName: ScenarioName
+    abstract val scenarioName: String
     abstract val name: StepName?
     abstract var execution: () -> Execution<T>
     abstract val retry: RetryStep?
@@ -14,7 +14,7 @@ sealed class Step<T> {
 }
 
 class StandaloneStep<T>(
-    override val scenarioName: ScenarioName,
+    override val scenarioName: String,
     override val name: StepName?,
     override val retry: RetryStep?,
 ) : Step<T>() {
@@ -25,7 +25,7 @@ class StandaloneStep<T>(
 }
 
 class NestedScenarioStep<T>(
-    override val scenarioName: ScenarioName,
+    override val scenarioName: String,
     override val name: StepName?,
     override val retry: RetryStep?,
 ) : Step<T>() {

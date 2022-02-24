@@ -19,7 +19,7 @@ fun ScenarioBuilder.`redis delete key`(
     val executionBuilder = RedisDeleteExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("delete redis key"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -32,7 +32,7 @@ fun ScenarioBuilder.`redis get key`(
     val executionBuilder = RedisReadExecutionBuilder()
     return StandaloneStep<String?>(
         name = name?.let { StepName(it) } ?: StepName("get redis key"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -45,7 +45,7 @@ fun ScenarioBuilder.`redis insert data`(
     val executionBuilder = RedisInsertExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("insert data in redis"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }

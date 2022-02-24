@@ -23,9 +23,7 @@ class TestActivity {
     fun afterEach() = stopActivitiesAndWorkflows()
 
     @TestFactory
-    fun `Darth Vader needs the Force`() = `play scenario` {
-
-        name { "Darth Vader needs the Force" }
+    fun `Darth Vader needs the Force`() = `play scenario`(name = "Darth Vader needs the Force") {
 
         `given activity call`<String> {
             domain = "kest"
@@ -39,9 +37,7 @@ class TestActivity {
     }
 
     @TestFactory
-    fun `Darth Vader recruits a padawan`() = `play scenario` {
-
-        name { "Darth Vader recruits a padawan" }
+    fun `Darth Vader recruits a padawan`() = `play scenario`(name = "Darth Vader recruits a padawan") {
 
         `given activity call`<Padawan> {
             domain = "kest"
@@ -55,9 +51,7 @@ class TestActivity {
     }
 
     @TestFactory
-    fun `Darth Vader recruits all padawans`() = `play scenario` {
-
-        name { "Darth Vader recruits a padawan" }
+    fun `Darth Vader recruits all padawans`() = `play scenario`(name = "Darth Vader recruits a padawan") {
 
         `given activity call`<List<Padawan>> {
             domain = "kest"

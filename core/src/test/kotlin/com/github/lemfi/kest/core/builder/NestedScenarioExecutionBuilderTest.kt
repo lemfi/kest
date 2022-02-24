@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.core.builder
 
 import com.github.lemfi.kest.core.executor.NestedScenarioStepExecution
-import com.github.lemfi.kest.core.model.ScenarioName
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepResultFailure
@@ -21,7 +20,7 @@ class NestedScenarioExecutionBuilderTest {
                     step = StandaloneStep(
                         name = StepName("a step"),
                         retry = null,
-                        scenarioName = ScenarioName("a scenario name")
+                        scenarioName = "a scenario name"
                     )
                 }
                 .apply {
@@ -29,14 +28,14 @@ class NestedScenarioExecutionBuilderTest {
                         StandaloneStep<String>(
                             name = StepName("step 1 of nested scenario"),
                             retry = null,
-                            scenarioName = ScenarioName("a scenario name")
+                            scenarioName = "a scenario name"
                         )
                     )
                     steps.add(
                         StandaloneStep<String>(
                             name = StepName("step 2 of nested scenario"),
                             retry = null,
-                            scenarioName = ScenarioName("a scenario name")
+                            scenarioName = "a scenario name"
                         )
                     )
                 }
@@ -44,7 +43,7 @@ class NestedScenarioExecutionBuilderTest {
         val scenario = nestedScenarioExecutionBuilder.toScenario()
 
         Assertions.assertEquals(2, scenario.steps.size)
-        Assertions.assertEquals("hello world", scenario.name.value)
+        Assertions.assertEquals("hello world", scenario.name)
         Assertions.assertEquals("step 1 of nested scenario", scenario.steps[0].name!!.value)
         Assertions.assertEquals("step 2 of nested scenario", scenario.steps[1].name!!.value)
     }
@@ -54,7 +53,7 @@ class NestedScenarioExecutionBuilderTest {
         val step = StandaloneStep<String>(
             name = StepName("a step"),
             retry = null,
-            scenarioName = ScenarioName("a scenario name")
+            scenarioName = "a scenario name"
         )
 
         val nestedScenarioExecutionBuilder = NestedScenarioExecutionBuilder<String>("hello world")
@@ -82,13 +81,13 @@ class NestedScenarioExecutionBuilderTest {
                     step = StandaloneStep(
                         name = StepName("a step"),
                         retry = null,
-                        scenarioName = ScenarioName("a scenario name")
+                        scenarioName = "a scenario name"
                     )
                 }
 
         val scenario = nestedScenarioExecutionBuilder.toScenario()
 
-        Assertions.assertEquals("anonymous nested scenario", scenario.name.value)
+        Assertions.assertEquals("anonymous nested scenario", scenario.name)
     }
 
     @Test
@@ -99,7 +98,7 @@ class NestedScenarioExecutionBuilderTest {
                     step = StandaloneStep(
                         name = StepName("a step"),
                         retry = null,
-                        scenarioName = ScenarioName("a scenario name")
+                        scenarioName = "a scenario name"
                     )
                 }
 
@@ -122,7 +121,7 @@ class NestedScenarioExecutionBuilderTest {
                     step = StandaloneStep(
                         name = StepName("a step"),
                         retry = null,
-                        scenarioName = ScenarioName("a scenario name")
+                        scenarioName = "a scenario name"
                     )
                 }
 

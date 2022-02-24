@@ -1,7 +1,12 @@
 package com.github.lemfi.kest.samplehttp.scenariobyscenario
 
 import com.github.lemfi.kest.junit5.runner.`play scenario`
-import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.*
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`api says goodbye and forgets people!`
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`api says hello and remembers it!`
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`get and validate correct otp`
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`get and validate wrong otp`
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`get greeted`
+import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`say hello`
 import com.github.lemfi.kest.samplehttp.sampleapi.startSampleApi
 import com.github.lemfi.kest.samplehttp.sampleapi.stopSampleApi
 import org.junit.jupiter.api.AfterEach
@@ -33,14 +38,13 @@ class TestHttpServer {
     fun `get and validate wrong otp`() = `play scenario`(`get and validate wrong otp`)
 
     @TestFactory
-    fun `build scenario directly, not calling built-in scenario`() = `play scenario` {
+    fun `build scenario directly, not calling built-in scenario`() =
+        `play scenario`(name = "Darth Vader and Han Solo say hello!") {
 
-        name { "Darth Vader and Han Solo say hello!" }
+            `say hello`("Darth Vader")
+            `say hello`("Han Solo")
 
-        `say hello`("Darth Vader")
-        `say hello`("Han Solo")
-
-        `get greeted`("Darth Vader", "Han Solo")
-    }
+            `get greeted`("Darth Vader", "Han Solo")
+        }
 
 }

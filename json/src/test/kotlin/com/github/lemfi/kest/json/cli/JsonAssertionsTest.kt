@@ -3,7 +3,6 @@ package com.github.lemfi.kest.json.cli
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
-import com.github.lemfi.kest.core.model.ScenarioName
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.json.model.KestArray
@@ -16,7 +15,7 @@ import java.time.format.DateTimeParseException
 import java.time.format.ResolverStyle.STRICT
 
 
-private fun assertionBuilder() = AssertionsBuilder(ScenarioName("json test"), null)
+private fun assertionBuilder() = AssertionsBuilder("json test", null)
 
 class JsonAssertionsTest {
 

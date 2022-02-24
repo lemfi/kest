@@ -20,8 +20,8 @@ import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
 import org.opentest4j.AssertionFailedError
 
-fun scenario(s: ScenarioBuilder.() -> Unit): Scenario {
-    return StandaloneScenarioBuilder().apply(s).toScenario()
+fun scenario(name: String, s: ScenarioBuilder.() -> Unit): Scenario {
+    return StandaloneScenarioBuilder(name).apply(s).toScenario()
 }
 
 infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(l: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
@@ -39,7 +39,7 @@ fun ScenarioBuilder.wait(time: Long, name: String? = null): StepPostExecution<Un
     }
 
     return StandaloneStep<Unit>(
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         name = name?.let { StepName(it) } ?: StepName("wait $time ms"),
         retry = null
     )
@@ -54,7 +54,7 @@ fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: 
     }
 
     return StandaloneStep<T>(
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         name = name?.let { StepName(it) } ?: StepName("generic step"),
         retry = retry
     )
@@ -70,7 +70,7 @@ fun <T> ScenarioBuilder.nestedScenario(
 
     return NestedScenarioStep<T>(
         name = name?.let { StepName(it) },
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
@@ -92,7 +92,7 @@ fun ScenarioBuilder.nestedScenario(
 
     return NestedScenarioStep<Unit>(
         name = name?.let { StepName(it) },
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     )
         .apply { executionBuilder.step = this }
@@ -173,7 +173,7 @@ private fun AssertionsBuilder.failureMessage(
 ): String {
 
     val messages = message?.lines() ?: listOf("null")
-    val scenario = "Scenario: ${scenarioName.value}"
+    val scenario = "Scenario: $scenarioName"
     val step = if (stepName != null) "Step: ${stepName.value}" else ""
     val max = listOf(scenario, step, *messages.toTypedArray()).maxByOrNull { it.length }!!
 

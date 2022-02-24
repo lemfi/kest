@@ -21,7 +21,7 @@ fun ScenarioBuilder.`publish rabbitmq message`(
     val executionBuilder = RabbitMQMessageExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("publish message to rabbitmq"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -38,7 +38,7 @@ inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
     }
     return StandaloneStep<List<RabbitMQMessage<T>>>(
         name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -55,7 +55,7 @@ inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
     }
     return StandaloneStep<List<RabbitMQMessage<T>>>(
         name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).let { step ->
 
@@ -84,7 +84,7 @@ fun ScenarioBuilder.`create rabbitmq queue`(
     val executionBuilder = RabbitMQQueueCreationExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }
@@ -97,7 +97,7 @@ fun ScenarioBuilder.`delete rabbitmq queue`(
     val executionBuilder = RabbitMQQueueDeletionExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("delete rabbitmq queue"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
 }

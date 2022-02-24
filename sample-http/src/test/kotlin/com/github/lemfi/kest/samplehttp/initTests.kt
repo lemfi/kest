@@ -5,15 +5,14 @@ import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.samplehttp.sampleapi.startSampleApi
 import com.github.lemfi.kest.samplehttp.sampleapi.stopSampleApi
 
-fun startSampleApi() = scenario {
-    name { "start sample API" }
+fun startSampleApi() = scenario("start sample API") {
+
     step {
         startSampleApi()
     }
 }
 
-fun stopSampleApi() = scenario {
-    name { "stop sample API" }
+fun stopSampleApi() = scenario("stop sample API") {
     step {
         stopSampleApi()
     }

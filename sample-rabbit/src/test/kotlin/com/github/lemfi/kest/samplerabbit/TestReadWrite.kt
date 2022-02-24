@@ -22,9 +22,7 @@ class TestReadWrite {
     fun afterEach() = stopRabbitApplication()
 
     @TestFactory
-    fun `Leia asks for help`() = `play scenario` {
-
-        name { "Leia asks for help via RabbitMQ" }
+    fun `Leia asks for help`() = `play scenario`(name = "Leia asks for help via RabbitMQ") {
 
         `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
             `create queue` { "obi-wan_kenobi" }

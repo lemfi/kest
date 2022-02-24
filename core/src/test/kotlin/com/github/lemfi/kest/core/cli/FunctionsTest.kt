@@ -10,7 +10,6 @@ import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
 import com.github.lemfi.kest.core.model.Scenario
-import com.github.lemfi.kest.core.model.ScenarioName
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
 import com.github.lemfi.kest.core.model.Step
@@ -49,7 +48,7 @@ class FunctionsTest {
 
         every { anyConstructed<StandaloneScenarioBuilder>().toScenario() } returns scenario
 
-        val res = scenario(scenarioBuilder)
+        val res = scenario("a scenario name", scenarioBuilder)
 
         verify { scenarioBuilder(capture(slot)) }
 
@@ -127,7 +126,7 @@ class FunctionsTest {
         val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
 
         every { step.retry } returns null
-        every { step.scenarioName } returns ScenarioName("the scenario name")
+        every { step.scenarioName } returns "the scenario name"
         every { step.name } returns StepName("the step name")
         val execution = object : Execution<String>() {
             override fun execute(): String {
@@ -163,7 +162,7 @@ class FunctionsTest {
     fun `run a step may fail on assertions verifications`() {
         val step =
             StandaloneStep<String>(
-                scenarioName = ScenarioName("the scenario name"),
+                scenarioName = "the scenario name",
                 name = StepName("the step name"),
                 retry = null
             )
@@ -206,7 +205,7 @@ class FunctionsTest {
         val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
 
         every { step.retry } returns 2.times.`by intervals of`(10.ms)
-        every { step.scenarioName } returns ScenarioName("the scenario name")
+        every { step.scenarioName } returns "the scenario name"
         every { step.name } returns StepName("the step name")
         val execution = mockk<Execution<String>>()
         every { step.execution } returns { execution }
@@ -229,7 +228,7 @@ class FunctionsTest {
         val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
 
         every { step.retry } returns null
-        every { step.scenarioName } returns ScenarioName("the scenario name")
+        every { step.scenarioName } returns "the scenario name"
         every { step.name } returns StepName("the step name")
         val execution = mockk<Execution<String>>()
         every { step.execution } returns { execution }
@@ -249,7 +248,7 @@ class FunctionsTest {
     fun `wait step just waits`() {
 
         val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
-        every { scenarioBuilder.name } returns ScenarioName("a scenario name")
+        every { scenarioBuilder.scenarioName } returns "a name"
 
         val waitStep = slot<StandaloneStep<Unit>>()
         val waitExecutionBuilder = slot<ExecutionBuilder<Unit>>()
@@ -284,7 +283,7 @@ class FunctionsTest {
     fun `generic step just executes lambda`() {
 
         val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
-        every { scenarioBuilder.name } returns ScenarioName("a scenario name")
+        every { scenarioBuilder.scenarioName } returns "a name"
 
         val step = slot<StandaloneStep<Unit>>()
         val executionBuilder = slot<ExecutionBuilder<Unit>>()
@@ -318,7 +317,7 @@ class FunctionsTest {
     @Test
     fun `a step may be a scenario`() {
         val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
-        every { scenarioBuilder.name } returns ScenarioName("a scenario name")
+        every { scenarioBuilder.scenarioName } returns "a name"
 
         val step = slot<NestedScenarioStep<Unit>>()
         val executionBuilder = slot<NestedScenarioExecutionBuilder<Unit>>()
@@ -354,7 +353,7 @@ class FunctionsTest {
     @Test
     fun `a step may be a scenario that returns something`() {
         val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
-        every { scenarioBuilder.name } returns ScenarioName("a scenario name")
+        every { scenarioBuilder.scenarioName } returns "a name"
 
         val step = slot<NestedScenarioStep<String>>()
         val executionBuilder = slot<NestedScenarioExecutionBuilder<String>>()

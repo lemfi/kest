@@ -18,9 +18,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello`() = `play scenarios`(
-        scenario {
-
-            name { "api says hello and remembers it!" }
+        scenario(name = "api says hello and remembers it!") {
 
             `given http call`<String>("Darth Vader says hello") {
 
@@ -98,9 +96,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server goodbye`() = `play scenarios`(
-        scenario {
-
-            name { "api says goodbye and forgets people!" }
+        scenario(name = "api says goodbye and forgets people!") {
 
             `given http call`<String>("Darth Vader says hello") {
 
@@ -164,9 +160,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server error`() = `play scenarios`(
-        scenario {
-
-            name { "when wrong api is called an error is raised" }
+        scenario(name = "when wrong api is called an error is raised") {
 
             `given http call`<JsonMap>("PATCH method is not allowed") {
 
@@ -191,9 +185,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `otp flows`() = `play scenarios`(
-        scenario {
-
-            name { "get and validate correct otp" }
+        scenario(name = "get and validate correct otp") {
 
             val otp = `given http call`<JsonMap>("get an OTP") {
 
@@ -215,7 +207,8 @@ class TestHttpServer {
                 )
             }
 
-            `given http call`<JsonMap>("validate an OTP") {
+            `given http call`<JsonMap>("validate an OTP")
+            {
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
@@ -223,15 +216,14 @@ class TestHttpServer {
                 body = otp()
                 contentType = "text/plain"
 
-            } `assert that` { stepResult ->
+            } `assert that`
+                    { stepResult ->
 
-                eq(204, stepResult.status)
-            }
+                        eq(204, stepResult.status)
+                    }
 
         },
-        scenario {
-
-            name { "get and validate wrong otp" }
+        scenario(name = "get and validate wrong otp") {
 
             `given http call`<JsonMap>("get an OTP") {
 
@@ -272,8 +264,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `retryable steps`() = `play scenarios`(
-        scenario {
-            name { "a step should be retried as specified when not passing" }
+        scenario(name = "a step should be retried as specified when not passing") {
 
             `given http call`<String>(
                 name = "Sometimes retrying makes it pass!",
@@ -286,6 +277,7 @@ class TestHttpServer {
             }
 
         },
+        
         beforeEach = ::startSampleApi,
         afterEach = ::stopSampleApi,
     )

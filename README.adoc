@@ -59,9 +59,7 @@ Let's take following example:
 
 [source,kotlin]
 ----
-scenario {
-
-    name { "api says hello and remembers it!" }
+scenario(name = "api says hello and remembers it!") {
 
     `given http call`<String> {
 
@@ -229,9 +227,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello`() = `play scenarios`(
-            scenario {
-
-                name { "api says hello and remembers it!" }
+            scenario(name = "api says hello and remembers it!") {
 
                 `say hello`("Darth Vader")
                 `say hello`("Han Solo")
@@ -244,9 +240,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server goodbye`() = `play scenarios`(
-            scenario {
-
-                name { "api says goodbye and forgets people!" }
+            scenario(name = "api says goodbye and forgets people!") {
 
                 `say hello`("Darth Vader")
                 `say hello`("Han Solo")
@@ -278,9 +272,7 @@ And again, we can also extract scenarios
 [source,kotlin]
 ----
 
-val `api says hello and remembers it!` = scenario {
-
-    name { "api says hello and remembers it!" }
+val `api says hello and remembers it!` = scenario(name = "api says hello and remembers it!") {
 
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
@@ -288,9 +280,7 @@ val `api says hello and remembers it!` = scenario {
     `get greeted`("Darth Vader", "Han Solo")
 }
 
-val `api says goodbye and forgets people!` = scenario {
-
-            name { "api says goodbye and forgets people!" }
+val `api says goodbye and forgets people!` = scenario(name = "api says goodbye and forgets people!") {
 
             `say hello`("Darth Vader")
             `say hello`("Han Solo")

@@ -18,7 +18,7 @@ inline fun <reified T> ScenarioBuilder.`given http call`(
     val executionBuilder = HttpCallExecutionBuilder(T::class.java)
 
     return StandaloneStep<HttpResponse<T>>(
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         name = name?.let { StepName(it) } ?: StepName("HTTP call"),
         retry = retry
     ).addToScenario(executionBuilder, h)

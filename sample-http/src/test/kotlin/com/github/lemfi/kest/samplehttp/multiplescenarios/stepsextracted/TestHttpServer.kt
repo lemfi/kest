@@ -17,9 +17,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server hello`() = `play scenarios`(
-        scenario {
-
-            name { "api says hello and remembers it!" }
+        scenario(name = "api says hello and remembers it!") {
 
             `say hello`("Darth Vader")
             `say hello`("Han Solo")
@@ -32,9 +30,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server goodbye`() = `play scenarios`(
-        scenario {
-
-            name { "api says goodbye and forgets people!" }
+        scenario(name = "api says goodbye and forgets people!") {
 
             `say hello`("Darth Vader")
             `say hello`("Han Solo")
@@ -61,9 +57,7 @@ class TestHttpServer {
 
     @TestFactory
     fun `otp flows`() = `play scenarios`(
-        scenario {
-
-            name { "get and validate correct otp" }
+        scenario(name = "get and validate correct otp") {
 
             val generateOtps = `generate otps`()
 
@@ -76,9 +70,7 @@ class TestHttpServer {
                 }
             }
         },
-        scenario {
-
-            name { "get and validate wrong otp" }
+        scenario(name = "get and validate wrong otp") {
 
             `get otp`()
 

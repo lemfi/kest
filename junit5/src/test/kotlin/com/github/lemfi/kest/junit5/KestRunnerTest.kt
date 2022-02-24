@@ -19,8 +19,7 @@ class KestRunnerTest {
         lateinit var res1: StepPostExecution<String>
         lateinit var res2: StepPostExecution<String>
 
-        val scenario = scenario {
-            name { "my scenario" }
+        val scenario = scenario("my scenario") {
             res1 = step(name = "step 1") { "res" }
             res2 = step(name = "step 2") { "${res1()}!" }
         }
@@ -58,8 +57,7 @@ class KestRunnerTest {
         lateinit var res1: StepPostExecution<String>
         lateinit var res2: StepPostExecution<String>
 
-        val scenario = scenario {
-            name { "my scenario" }
+        val scenario = scenario("my scenario") {
             res1 = step(name = "step 1") { "res" }
             res2 = step(name = "step 2") { "${res1()}!" }
         }
@@ -95,8 +93,7 @@ class KestRunnerTest {
         lateinit var res1: StepPostExecution<String>
         lateinit var res2: StepPostExecution<String>
 
-        val testNode = `play scenario`(false) {
-            name { "my scenario" }
+        val testNode = `play scenario`("my scenario", false) {
             res1 = step(name = "step 1") { "res" }
             res2 = step(name = "step 2") { "${res1()}!" }
         } as DynamicContainer
@@ -132,8 +129,7 @@ class KestRunnerTest {
         lateinit var res1: StepPostExecution<String>
         lateinit var res2: StepPostExecution<String>
 
-        val testNode = `play scenario`(true) {
-            name { "my scenario" }
+        val testNode = `play scenario`("my scenario", true) {
             res1 = step(name = "step 1") { "res" }
             res2 = step(name = "step 2") { "${res1()}!" }
         } as ScenarioStepsIterator
@@ -168,13 +164,11 @@ class KestRunnerTest {
         lateinit var res3: StepPostExecution<String>
         lateinit var res4: StepPostExecution<String>
 
-        val scenario1 = scenario {
-            name { "my scenario 1" }
+        val scenario1 = scenario("my scenario 1") {
             res1 = step(name = "step 1") { "res1" }
             res2 = step(name = "step 2") { "${res1()}!" }
         }
-        val scenario2 = scenario {
-            name { "my scenario 2" }
+        val scenario2 = scenario("my scenario 2") {
             res3 = step(name = "step 3") { "res2" }
             res4 = step(name = "step 4") { "${res3()}!" }
         }
@@ -247,18 +241,15 @@ class KestRunnerTest {
         lateinit var res3: StepPostExecution<Int>
         lateinit var res4: StepPostExecution<Int>
 
-        val beforeEach = scenario {
-            name { "before each" }
+        val beforeEach = scenario("before each") {
             beforeRes1 = step(name = "before step 1") { ++number }
             beforeRes2 = step(name = "before step 2") { ++number }
         }
-        val scenario1 = scenario {
-            name { "my scenario 1" }
+        val scenario1 = scenario("my scenario 1") {
             res1 = step(name = "step 1") { ++number }
             res2 = step(name = "step 2") { ++number }
         }
-        val scenario2 = scenario {
-            name { "my scenario 2" }
+        val scenario2 = scenario("my scenario 2") {
             res3 = step(name = "step 3") { ++number }
             res4 = step(name = "step 4") { ++number }
         }
@@ -381,18 +372,15 @@ class KestRunnerTest {
         lateinit var res3: StepPostExecution<Int>
         lateinit var res4: StepPostExecution<Int>
 
-        val afterEach = scenario {
-            name { "after each" }
+        val afterEach = scenario("after each") {
             afterRes1 = step(name = "after step 1") { ++number }
             afterRes2 = step(name = "after step 2") { ++number }
         }
-        val scenario1 = scenario {
-            name { "my scenario 1" }
+        val scenario1 = scenario("my scenario 1") {
             res1 = step(name = "step 1") { ++number }
             res2 = step(name = "step 2") { ++number }
         }
-        val scenario2 = scenario {
-            name { "my scenario 2" }
+        val scenario2 = scenario("my scenario 2") {
             res3 = step(name = "step 3") { ++number }
             res4 = step(name = "step 4") { ++number }
         }

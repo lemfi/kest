@@ -28,7 +28,7 @@ inline fun <reified R> ScenarioBuilder.`given activity call`(
 
     return StandaloneStep<R>(
         name = name?.let { StepName(it) } ?: StepName("cadence activity"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
 }
@@ -41,7 +41,7 @@ fun <R> ScenarioBuilder.`given workflow`(
     val executionBuilder = WorkflowExecutionBuilder<R>()
     return StandaloneStep<R>(
         name = name?.let { StepName(it) } ?: StepName("cadence workflow"),
-        scenarioName = this.name,
+        scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
 

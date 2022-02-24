@@ -3,21 +3,24 @@ package com.github.lemfi.kest.core.builder
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
-import com.github.lemfi.kest.core.model.ScenarioName
 import com.github.lemfi.kest.core.model.StandaloneScenario
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
 import com.github.lemfi.kest.core.model.Step
 
-sealed class ScenarioBuilder {
+sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") {
 
-    var name: ScenarioName = ScenarioName("anonymous scenario")
-        private set
+    val scenarioName = name
 
     val steps = mutableListOf<Step<*>>()
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated(
+        message = "scenario name should be set on scenario creation function: scenario(name = \"the name\") { }",
+        level = DeprecationLevel.WARNING
+    )
     fun name(l: () -> String) {
-        name = ScenarioName(l())
+        name = l()
     }
 
     abstract fun toScenario(): IScenario
@@ -44,7 +47,7 @@ sealed class ScenarioBuilder {
         }
 }
 
-class StandaloneScenarioBuilder : ScenarioBuilder() {
+class StandaloneScenarioBuilder(name: String) : ScenarioBuilder(name) {
 
     override fun toScenario(): StandaloneScenario {
         return StandaloneScenario(name, steps)
