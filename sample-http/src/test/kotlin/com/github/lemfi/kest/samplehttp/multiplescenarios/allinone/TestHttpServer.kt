@@ -207,8 +207,7 @@ class TestHttpServer {
                 )
             }
 
-            `given http call`<JsonMap>("validate an OTP")
-            {
+            `given http call`<JsonMap>("validate an OTP") {
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
@@ -216,11 +215,10 @@ class TestHttpServer {
                 body = otp()
                 contentType = "text/plain"
 
-            } `assert that`
-                    { stepResult ->
+            } `assert that` { stepResult ->
 
-                        eq(204, stepResult.status)
-                    }
+                eq(204, stepResult.status)
+            }
 
         },
         scenario(name = "get and validate wrong otp") {
@@ -277,7 +275,7 @@ class TestHttpServer {
             }
 
         },
-        
+
         beforeEach = ::startSampleApi,
         afterEach = ::stopSampleApi,
     )
