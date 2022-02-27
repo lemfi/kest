@@ -87,6 +87,8 @@ sealed class IStepPostExecution<T, R>(
 
     operator fun invoke() = result()
 
+    val lazy: () -> R = { invoke() }
+
     fun setResult(t: T) {
         resSet = true
         var parent: IStepPostExecution<*, *>? = pe
