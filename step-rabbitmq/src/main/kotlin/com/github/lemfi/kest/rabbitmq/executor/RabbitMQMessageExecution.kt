@@ -27,10 +27,15 @@ internal data class RabbitMQMessageExecution(
             |Write message:
             |
             |vhost: $vhost 
+            |exchange: ${exchange.ifBlank { """default ("")""" }}
+            |routing key: $routingKey
+            |headers: 
+            |    ${headers.map { "${it.key}=${it.value}" }.joinToString("\n    ")}
+            |properties: 
+            |    ${properties ?: ""}
+            |
             |message: $message 
-            |on exchange: 
-            |          exchange: ${exchange.ifBlank { """default ("")""" }}
-            |          routing key: $routingKey"""
+            |"""
                 .trimMargin()
         )
 

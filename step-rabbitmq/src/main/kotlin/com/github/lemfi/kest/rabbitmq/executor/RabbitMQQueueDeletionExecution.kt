@@ -21,7 +21,7 @@ internal class RabbitMQQueueDeletionExecution(
                 |Queue deletion:
                 |
                 |vhost: $vhost
-                |name: ${queue} 
+                |name: $queue
                 """.trimMargin()
             )
 
