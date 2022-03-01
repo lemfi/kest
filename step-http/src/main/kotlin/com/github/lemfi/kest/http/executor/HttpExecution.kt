@@ -17,19 +17,33 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 object KestHttp {
 
     /**
-     * Register a content type transformer for HTTP calls
-     * @param contentType Content-Type for transformation
-     * @param transformer function to transform InputStream with given Content-Type into an Object
+     * Register a content type decoder for HTTP calls
+     * @param contentType Content-Type for decoder
+     * @param transformer function to decode InputStream with given Content-Type into an Object
      */
-    fun registerContentTypeTransformer(contentType: String, transformer: InputStream?.(cls: Class<*>) -> Any?) =
-        HttpExecution.addMapper(contentType) {
-            transformer(it) to (this?.run { readAllBytes().toString(Charsets.UTF_8).trim() } ?: "null")
+    fun registerContentTypeDecoder(contentType: String, transformer: InputStream?.(cls: Class<*>) -> Any?) =
+        HttpExecution.addMapper(contentType) { cls ->
+            this?.run {
+                ByteArrayInputStream(readAllBytes()).run {
+                    use { inputStream ->
+                        inputStream.transformer(cls) to inputStream.let {
+                            try {
+                                it.reset()
+                                it.readAllBytes().toString(Charsets.UTF_8).trim()
+                            } catch (e: Throwable) {
+                                ""
+                            }
+                        }
+                    }
+                }
+            } ?: (null to "null")
         }
 }
 
@@ -71,9 +85,9 @@ internal data class HttpExecution<T>(
             mappers[contentType] = mapper
         }
 
-        fun getMapper(contentType: String) = (mappers[contentType.substringBefore(";").trim()]
+        fun getMapper(contentType: String) = mappers[contentType.substringBefore(";").trim()]
             ?: mappers[contentType.substringBefore(";").trim().substringBefore("/")]
-            ?: throw IllegalArgumentException("""no mapper found for content type "$contentType", please register one by calling `HttpExecution.addMapper($contentType) { ... }"""))
+            ?: throw IllegalArgumentException("""no decoder found for content type "$contentType", please register one by calling `KestHttp.registerContentTypeDecoder("$contentType") { ... }""")
     }
 
     @Suppress("unchecked_cast")
@@ -115,7 +129,9 @@ internal data class HttpExecution<T>(
                             .setType("multipart/form-data".toMediaType())
                             .build())
                         .build()
-                ).execute().toHttpResponse()
+                )
+                .execute()
+                .toHttpResponse()
 
         } else {
             OkHttpClient.Builder()
