@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.5.0"
+version = "0.6.0"
 
 buildscript {
     val kotlinVersion: String by project
