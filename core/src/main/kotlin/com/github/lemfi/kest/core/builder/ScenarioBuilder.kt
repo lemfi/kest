@@ -47,7 +47,7 @@ sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") 
         }
 }
 
-class StandaloneScenarioBuilder(name: String) : ScenarioBuilder(name) {
+class StandaloneScenarioBuilder(name: String = "anonymous scenario") : ScenarioBuilder(name) {
 
     override fun toScenario(): StandaloneScenario {
         return StandaloneScenario(name, steps)

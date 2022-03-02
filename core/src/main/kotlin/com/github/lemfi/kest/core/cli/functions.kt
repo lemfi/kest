@@ -20,7 +20,7 @@ import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
 import org.opentest4j.AssertionFailedError
 
-fun scenario(name: String, s: ScenarioBuilder.() -> Unit): Scenario {
+fun scenario(name: String = "anonymous scenario", s: ScenarioBuilder.() -> Unit): Scenario {
     return StandaloneScenarioBuilder(name).apply(s).toScenario()
 }
 
