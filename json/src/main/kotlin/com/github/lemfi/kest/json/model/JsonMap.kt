@@ -2,7 +2,7 @@ package com.github.lemfi.kest.json.model
 
 import org.opentest4j.AssertionFailedError
 
-class JsonMap : HashMap<String, Any>() {
+class JsonMap : HashMap<String, Any?>() {
 
     /**
      * get a value from its path in json
@@ -10,7 +10,7 @@ class JsonMap : HashMap<String, Any>() {
      * For picking nth element of an array use &#91;n&#93; notation
      */
     @Suppress("unchecked_cast")
-    inline fun <reified T> getForPath(vararg keys: String): T? {
+    inline fun <reified T> getForPath(vararg keys: String): T {
         return keys.fold(this as Any?) { res, key ->
             if (key.contains("[")) {
                 key
@@ -25,8 +25,9 @@ class JsonMap : HashMap<String, Any>() {
             } else {
                 ((res as Map<String, Any?>)[key])
             }
-        }?.let {
-            if (it is T) it else throw AssertionFailedError("expected ${T::class}, was ${it::class} ($it)")
+        }.let {
+            if (it is T) it
+            else throw AssertionFailedError("expected ${T::class} for path \"${keys.joinToString(", ") { it }}\", was ${it?.let { it::class } ?: "null"} ($it)")
         }
     }
 

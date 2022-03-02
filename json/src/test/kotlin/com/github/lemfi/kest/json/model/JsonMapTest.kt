@@ -67,6 +67,7 @@ class JsonMapTest {
                 put("key32", "value32")
                 put("key33", listOf(true, false))
                 put("key34", listOf(listOf("a", "b"), listOf("c", "d")))
+                put("key35", null)
             })
             put("array", listOf(JsonMap().apply {
                 put("elem11", "val11")
@@ -80,18 +81,21 @@ class JsonMapTest {
 
         }
 
+        Assertions.assertNull(json.getForPath<String?>("key3", "key35"))
+
         Assertions.assertEquals(JsonMap().apply {
             put("key31", "value31")
             put("key32", "value32")
             put("key33", listOf(true, false))
             put("key34", listOf(listOf("a", "b"), listOf("c", "d")))
+            put("key35", null)
         }, json.getForPath<JsonMap>("key3"))
 
         val exception = assertThrows<AssertionFailedError> {
             json.getForPath<Number>("key")
         }
 
-        Assertions.assertEquals("expected class kotlin.Number, was class kotlin.String (value)", exception.message)
+        Assertions.assertEquals("expected class kotlin.Number for path \"key\", was class kotlin.String (value)", exception.message)
 
     }
 }
