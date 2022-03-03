@@ -178,15 +178,9 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: Stri
         val expectedValue = exp[key]
         val observedValue = obs[key]
 
-        if (isPattern(expectedValue))
-            jsonMatches(expectedValue as String, observedValue.toNullableJsonString(), checkArraysOrder)
-        else if (isObject(expectedValue) || isArray(expectedValue)) {
-            jsonMatches(
-                expectedValue.toJsonString(),
-                observedValue.toNullableJsonString(),
-                checkArraysOrder
-            )
-        } else {
+        if (isPattern(expectedValue) || isObject(expectedValue) || isArray(expectedValue))
+            jsonMatches(expectedValue.toJsonStringOrPattern(), observedValue.toNullableJsonString(), checkArraysOrder)
+        else {
             expectedValue eq observedValue
         }
     }
@@ -205,7 +199,7 @@ private fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: Strin
     if (checkArraysOrder) {
         observedArray.foldIndexed(null as Throwable?) { index, acc, observedValue ->
             acc ?: runCatching {
-                jsonMatches(expectedArray[index].toJsonString(), observedValue.toNullableJsonString(), true)
+                jsonMatches(expectedArray[index].toJsonStringOrPattern(), observedValue.toNullableJsonString(), true)
             }.exceptionOrNull()
         }
     } else {
@@ -213,7 +207,7 @@ private fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: Strin
             errorFound ?: expectedArray
                 .removeIf { expectedValue ->
                     runCatching {
-                        jsonMatches(expectedValue.toJsonString(), observedValue.toNullableJsonString(), false)
+                        jsonMatches(expectedValue.toJsonStringOrPattern(), observedValue.toNullableJsonString(), false)
                     }.exceptionOrNull() == null
                 }.let { removed ->
                     if (removed) null else IllegalArgumentException("$observedValue is not an expected element of array")
@@ -449,3 +443,5 @@ fun Any?.toJsonString(): String = mapper.writeValueAsString(this)
 fun Any?.toNullableJsonString() = this?.let { mapper.writeValueAsString(this) }
 
 private fun String?.isJsonString() = this?.startsWith("\"") ?: false
+
+private fun Any?.toJsonStringOrPattern(): String = if (isPattern(this)) toString() else toJsonString()

@@ -868,6 +868,73 @@ class JsonAssertionsTest {
     }
 
     @Test
+    fun `array pattern or array of patterns`() {
+
+        `add json matcher`("{{data}}", """{"data": "{{string}}"}""")
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "array": ["{{data}}", "{{data}}"]
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "array": [{"data": "hello"}, {"data": "world"}]
+                        }
+                """
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "array": ["{{data}}", {"data": "world"}]
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "array": [{"data": "hello"}, {"data": "world"}]
+                        }
+                """
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "array": [{"data": "world"}, "{{data}}"]
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "array": [{"data": "hello"}, {"data": "world"}]
+                        }
+                """,
+            checkArraysOrder = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+                    {
+                        "string": "{{string?}}",
+                        "array": "[[{{data}}]]"
+                   } 
+                """,
+            """
+                        {
+                            "string": "hello",
+                            "array": [{"data": "hello"}, {"data": "world"}]
+                        }
+                """
+        )
+    }
+
+    @Test
     fun `json array patterns error`() {
 
         val exception = assertThrows<AssertionFailedError> {
