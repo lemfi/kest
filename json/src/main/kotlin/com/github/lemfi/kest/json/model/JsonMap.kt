@@ -41,7 +41,7 @@ class JsonMap : HashMap<String, Any?>() {
     @Deprecated(
         message = "Consider using typed function",
         replaceWith = ReplaceWith("this.getForPath<Any?>(*keys)"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun getForPath(vararg keys: String): Any? = getForPath<Any?>(*keys)
 }
