@@ -216,7 +216,7 @@ private fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: Strin
                         jsonMatches(expectedValue.toJsonString(), observedValue.toNullableJsonString(), false)
                     }.exceptionOrNull() == null
                 }.let { removed ->
-                    if (removed) null else IllegalArgumentException("$observedValue not present in array")
+                    if (removed) null else IllegalArgumentException("$observedValue is not an expected element of array")
                 }
         }
     }

@@ -132,7 +132,7 @@ class JsonAssertionsTest {
         """.trimIndent(), checkArraysOrder = false
             )
         }
-        Assertions.assertEquals("{data=[3, 3, 3]} not present in array", exception.message)
+        Assertions.assertEquals("{data=[3, 3, 3]} is not an expected element of array", exception.message)
     }
 
     @Test
