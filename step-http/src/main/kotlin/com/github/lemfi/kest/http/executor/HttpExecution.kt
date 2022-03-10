@@ -2,6 +2,7 @@
 
 package com.github.lemfi.kest.http.executor
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.http.model.DeserializeException
@@ -28,7 +29,7 @@ object KestHttp {
      * @param contentType Content-Type for decoder
      * @param transformer function to decode InputStream with given Content-Type into an Object
      */
-    fun registerContentTypeDecoder(contentType: String, transformer: InputStream?.(cls: Class<*>) -> Any?) =
+    fun registerContentTypeDecoder(contentType: String, transformer: InputStream?.(cls: TypeReference<*>) -> Any?) =
         HttpExecution.addMapper(contentType) { cls ->
             this?.run {
                 ByteArrayInputStream(readAllBytes()).run {
@@ -50,7 +51,7 @@ object KestHttp {
 internal data class HttpExecution<T>(
     val url: String,
     val method: String,
-    val returnType: Class<T>,
+    val returnType: TypeReference<T>,
     val body: Any? = null,
     val headers: MutableMap<String, String>,
     val contentType: String?,
@@ -61,14 +62,14 @@ internal data class HttpExecution<T>(
     private val accept = headers.getOrDefault("Accept", null)
 
     companion object {
-        private val mappers = mutableMapOf<String, InputStream?.(cls: Class<*>) -> Pair<Any?, String?>>()
+        private val mappers = mutableMapOf<String, InputStream?.(cls: TypeReference<*>) -> Pair<Any?, String?>>()
             .apply {
                 put("application/json") {
                     this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
                         try {
                             jacksonObjectMapper().readValue(data, it)
                         } catch (e: Throwable) {
-                            throw DeserializeException(it, data, e)
+                            throw DeserializeException(it.type.javaClass, data, e)
                         } to data
                     } ?: (null to null)
                 }
@@ -81,7 +82,7 @@ internal data class HttpExecution<T>(
             data to data
         } ?: (null to null)
 
-        fun addMapper(contentType: String, mapper: InputStream?.(cls: Class<*>) -> Pair<Any?, String?>) {
+        fun addMapper(contentType: String, mapper: InputStream?.(cls: TypeReference<*>) -> Pair<Any?, String?>) {
             mappers[contentType] = mapper
         }
 

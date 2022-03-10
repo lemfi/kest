@@ -2,6 +2,7 @@
 
 package com.github.lemfi.kest.http.cli
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
@@ -15,7 +16,7 @@ inline fun <reified T> ScenarioBuilder.`given http call`(
     retry: RetryStep? = null,
     noinline h: HttpCallExecutionBuilder<T>.() -> Unit
 ): StepPostExecution<HttpResponse<T>> {
-    val executionBuilder = HttpCallExecutionBuilder(T::class.java)
+    val executionBuilder = HttpCallExecutionBuilder(object : TypeReference<T>(){})
 
     return StandaloneStep<HttpResponse<T>>(
         scenarioName = scenarioName,

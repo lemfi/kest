@@ -8,6 +8,7 @@ import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
+import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
 import com.github.lemfi.kest.samplehttp.startSampleApi
@@ -278,5 +279,62 @@ class TestHttpServer {
 
         beforeEach = ::startSampleApi,
         afterEach = ::stopSampleApi,
+    )
+
+    @TestFactory
+    fun inventory() = `play scenarios`(
+        scenario(name = "get inventory as JsonArray") {
+
+            `given http call`<JsonArray>("get inventory") {
+
+                url = "http://localhost:8080/inventory"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+            } `assert that` { stepResult ->
+
+                eq(200, stepResult.status)
+                jsonMatches(
+                    """
+                        [
+                            {
+                                "kind": "weapon",
+                                "name": "lightsaber"
+                            },
+                            {
+                                "kind": "vehicle",
+                                "name": "landspeeder"
+                            }
+                        ]
+                    """.trimIndent(), stepResult.body
+                )
+            }
+
+
+        },
+        scenario(name = "get inventory as List<Inventory>") {
+
+            `given http call`<List<Inventory>>("get inventory") {
+
+                url = "http://localhost:8080/inventory"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+            } `assert that` { stepResult ->
+
+                eq(200, stepResult.status)
+                eq(listOf(
+                    Inventory("weapon", "lightsaber"),
+                    Inventory("vehicle", "landspeeder"),
+                ), stepResult.body)
+            }
+        },
+        beforeEach = ::startSampleApi,
+        afterEach = ::stopSampleApi,
+    )
+
+    data class Inventory(
+        val kind: String,
+        val name: String
     )
 }

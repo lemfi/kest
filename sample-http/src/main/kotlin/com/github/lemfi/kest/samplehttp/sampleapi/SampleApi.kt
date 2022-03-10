@@ -58,7 +58,7 @@ fun startSampleApi() {
                     }
                     output.flush()
                     output.close()
-                } catch (e: SocketException) {
+                } catch (_: SocketException) {
                 }
             }
         }
@@ -83,6 +83,7 @@ private fun OutputStream.handleRequest(request: String, body: String?) {
         )["who"] as String
     )
     else if (method == "GET" && path == "/hello") handleListHello()
+    else if (method == "GET" && path == "/inventory") handleInventory()
     else if (method == "GET" && path == "/hello-redirect") handleRedirectHello()
     else if (method == "GET" && path == "/oh-if-you-retry-it-shall-pass") handleRetry()
     else if (method == "GET" && path == "/otp") handleOtp()
@@ -218,6 +219,29 @@ private fun OutputStream.handleListHello() {
                     Content-Type: application/json
 
                     [${helloPeople.joinToString(", ") { """"$it"""" }}]
+                """.trimIndent()
+        )
+    }
+}
+
+private fun OutputStream.handleInventory() {
+
+    PrintWriter(this, true).apply {
+        println(
+            """
+                    HTTP/1.1 200 OK
+                    Content-Type: application/json
+
+                    [
+                        {
+                            "kind": "weapon",
+                            "name": "lightsaber"
+                        },
+                        {
+                            "kind": "vehicle",
+                            "name": "landspeeder"
+                        }
+                    ]
                 """.trimIndent()
         )
     }

@@ -1,12 +1,13 @@
 package com.github.lemfi.kest.http.builder
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.http.executor.HttpExecution
 import com.github.lemfi.kest.http.model.HttpResponse
 import com.github.lemfi.kest.http.model.httpProperty
 
-class HttpCallExecutionBuilder<T>(private val cls: Class<T>) : ExecutionBuilder<HttpResponse<T>> {
+class HttpCallExecutionBuilder<T>(val typeReference: TypeReference<T>) : ExecutionBuilder<HttpResponse<T>> {
 
     lateinit var url: String
     var method: String = "GET"
@@ -19,6 +20,6 @@ class HttpCallExecutionBuilder<T>(private val cls: Class<T>) : ExecutionBuilder<
     var timeout: Long? = httpProperty { timeout }
 
     override fun toExecution(): Execution<HttpResponse<T>> {
-        return HttpExecution(url, method, cls, body, headers, contentType, followRedirect, timeout)
+        return HttpExecution(url, method, typeReference, body, headers, contentType, followRedirect, timeout)
     }
 }
