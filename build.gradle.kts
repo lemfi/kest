@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.6.1"
+version = "0.6.2"
 
 buildscript {
     val kotlinVersion: String by project
@@ -32,7 +32,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.5.31")
+        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.6.0")
     }
 
     tasks.withType(Sign::class.java) {
