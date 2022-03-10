@@ -10,7 +10,8 @@ import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQMessageExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueCreationExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueDeletionExecutionBuilder
-import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueReaderExecutionBuilder
+import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueMultipleMessagesReaderExecutionBuilder
+import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueSingleReaderExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessage
 
 fun ScenarioBuilder.`publish rabbitmq message`(
@@ -29,9 +30,9 @@ fun ScenarioBuilder.`publish rabbitmq message`(
 inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
-    noinline builder: RabbitMQQueueReaderExecutionBuilder<T>.() -> Unit
+    noinline builder: RabbitMQQueueMultipleMessagesReaderExecutionBuilder<T>.() -> Unit
 ): StepPostExecution<List<RabbitMQMessage<T>>> {
-    val executionBuilder = RabbitMQQueueReaderExecutionBuilder<T>().apply {
+    val executionBuilder = RabbitMQQueueMultipleMessagesReaderExecutionBuilder<T>().apply {
         if (T::class.java == ByteArray::class.java) {
             messageTransformer = { this as T }
         }
@@ -46,32 +47,25 @@ inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
 inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
-    noinline builder: RabbitMQQueueReaderExecutionBuilder<T>.() -> Unit
+    noinline builder: RabbitMQQueueSingleReaderExecutionBuilder<T>.() -> Unit
 ): StepPostExecution<RabbitMQMessage<T>> {
-    val executionBuilder = RabbitMQQueueReaderExecutionBuilder<T>().apply {
+    val executionBuilder = RabbitMQQueueSingleReaderExecutionBuilder<T>().apply {
         if (T::class.java == ByteArray::class.java) {
             messageTransformer = { this as T }
         }
     }
-    return StandaloneStep<List<RabbitMQMessage<T>>>(
+    return StandaloneStep<RabbitMQMessage<T>>(
         name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
-    ).let { step ->
-
-        step
-            .addToScenario(executionBuilder, builder)
-            .`map result to` { it.first() }
-
-        StepPostExecution(step, null) { t -> t }
-    }
+    ).addToScenario(executionBuilder, builder)
 }
 
 @JvmName("readRabbitMQMessageAsByteArray")
 fun ScenarioBuilder.`given messages from rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
-    h: RabbitMQQueueReaderExecutionBuilder<ByteArray>.() -> Unit
+    h: RabbitMQQueueMultipleMessagesReaderExecutionBuilder<ByteArray>.() -> Unit
 ): StepPostExecution<List<RabbitMQMessage<ByteArray>>> {
     return `given messages from rabbitmq queue`<ByteArray>(name, retry, h)
 }

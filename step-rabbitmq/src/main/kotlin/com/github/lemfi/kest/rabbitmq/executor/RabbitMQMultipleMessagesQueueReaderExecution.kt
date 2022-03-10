@@ -8,7 +8,7 @@ import org.opentest4j.AssertionFailedError
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 
-internal class RabbitMQQueueReaderExecution<T>(
+internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
     private val queueName: String,
     private val deleteQueue: Boolean,
     private val connection: String,
