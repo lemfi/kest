@@ -1,5 +1,7 @@
 package com.github.lemfi.kest.json.model
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -96,6 +98,39 @@ class JsonMapTest {
         }
 
         Assertions.assertEquals("expected class kotlin.Number for path \"key\", was class kotlin.String (value)", exception.message)
+
+    }
+
+    @Test
+    fun `nested elements can be read as JsonMap and JsonArray`() {
+
+        val json = jacksonObjectMapper().readValue("""
+            {
+                "hello": "world",
+                "object": {
+                    "hello": "world",
+                    "world": "hello" 
+                },
+                "array": [
+                    {
+                        "hello": "world",
+                        "world": "hello" 
+                    }
+                ]
+            }
+        """, object: TypeReference<JsonMap>() {})
+
+        Assertions.assertEquals(JsonMap().apply {
+            put("hello", "world")
+            put("world", "hello")
+        }, json.getForPath<JsonMap>("object"))
+
+        Assertions.assertEquals(JsonArray().apply {
+            add(JsonMap().apply {
+                put("hello", "world")
+                put("world", "hello")
+            })
+        }, json.getForPath<JsonArray>("array"))
 
     }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
-import com.github.lemfi.kest.json.model.KestArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -493,18 +492,12 @@ class JsonAssertionsTest {
 
         assertionBuilder().jsonMatches(
             listOf("[[{{string}}]]", "[[{{number}}]]"),
-            KestArray<String>().apply {
-                add("12")
-                add("13")
-            }
+            mutableListOf("12", "13")
         )
 
         assertionBuilder().jsonMatches(
             listOf("[[{{string}}]]", "[[{{number}}]]"),
-            KestArray<Int>().apply {
-                add(12)
-                add(13)
-            }
+            mutableListOf(12, 13)
         )
 
     }

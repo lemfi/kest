@@ -2,13 +2,13 @@
 
 package com.github.lemfi.kest.json.cli
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
-import com.github.lemfi.kest.json.model.KestArray
 import com.github.lemfi.kest.json.model.jsonProperty
 import org.opentest4j.AssertionFailedError
 import kotlin.reflect.KClass
@@ -96,7 +96,7 @@ fun AssertionsBuilder.jsonMatches(
  */
 fun AssertionsBuilder.jsonMatches(
     expectedPatterns: List<String>,
-    observed: KestArray<*>?,
+    observed: List<*>?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder }
 ) {
 
@@ -257,24 +257,23 @@ private fun AssertionsBuilder.jsonMatchesPattern(
         with(matcher) { matchElement(observed, checkArraysOrder) }
     }
 }
-
 private fun String?.toJsonMap(): JsonMap {
     return try {
         mapper.readValue(
             this.let { if (it?.endsWith("?") == true) it.substringBeforeLast("?") else it },
-            JsonMap::class.java
+            object: TypeReference<JsonMap>() {}
         )
     } catch (e: Throwable) {
         throw AssertionFailedError("expected json object structure", """{"...": "..."}, got $this""", this)
     }
 }
 
-private fun String?.toJsonArray(): KestArray<*> =
+private fun String?.toJsonArray(): List<*> =
     try {
-        mapper.readValue(this, JsonArray::class.java)
+        mapper.readValue(this, object : TypeReference<JsonArray>(){})
     } catch (e: Throwable) {
         try {
-            mapper.readValue(this, KestArray::class.java)
+            mapper.readValue(this, List::class.java)
         } catch (e: Throwable) {
             throw AssertionFailedError("expected json array structure", """[..., ...], got $this""", this)
         }

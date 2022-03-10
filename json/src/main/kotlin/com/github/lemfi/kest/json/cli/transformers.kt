@@ -1,5 +1,6 @@
 package com.github.lemfi.kest.json.cli
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.json.model.JsonMap
 
@@ -8,5 +9,5 @@ import com.github.lemfi.kest.json.model.JsonMap
  */
 @Suppress("unused")
 fun toJson(b: ByteArray): JsonMap {
-    return jacksonObjectMapper().readValue(b, JsonMap::class.java)
+    return jacksonObjectMapper().readValue(b, object: TypeReference<JsonMap>() {})
 }
