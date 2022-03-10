@@ -54,7 +54,7 @@ And the function to check that with Kest would be:
 
 [source,kotlin]
 ----
-jsonMatchesObject(
+jsonMatches(
 """
 {
   "string": "{{string}}",
@@ -73,6 +73,7 @@ jsonMatchesObject(
 === Defining your own matchers
 
 If you want to define your own matchers, two possibilities:
+
 ==== Define a class
 
 [source,kotlin]
@@ -88,14 +89,14 @@ Then call JsonMatcher.addMatcher function with the class and the pattern that wi
 
 [source,kotlin]
 ----
-JsonMatcher.addMatcher("{{sample}}", Sample::class)
+`add json matcher`("{{sample}}", Sample::class)
 ----
 
 To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatchesObject(
+jsonMatches(
 """
 {{sample}}}
 """,
@@ -130,11 +131,11 @@ Let's take this example:
 
 ----
 
-You can check wether your json matches one or the other of those matchers by passing a list to `jsonMatchesObject` function:
+You can check whether your json matches one or the other of those matchers by passing a list to `jsonMatches` function:
 
 [source,kotlin]
 ----
-jsonMatchesObject(
+jsonMatches(
                 listOf(
                 """{
                       "common":  "{{string}}",
@@ -157,4 +158,28 @@ jsonMatchesObject(
 
 == Lists
 
-As you can check objects patterns, you can check lists patterns: if you are expecting a list of objects instead of an object, then `jsonMatchesArray` is there for you.
+It works all the same for lists!
+
+== Tips
+
+For reading data easily from a JsonMap you may use function `JsonMap.getForPath(...)`
+For exemple for a JsonMap representing that Json:
+[source,json]
+----
+{
+    "star": "wars",
+    "characters": [
+        { "luke": "skywalker" },
+        { "han": "solo" },
+        { "R2": "D2" }
+    ]
+}
+----
+You may use it like that:
+[source,kotlin]
+----
+val jsonMap: JsonMap
+val name1 = jsonMap.getForPath<String>("characters[0]", "luke") // == "skywalker"
+val name2 = jsonMap.getForPath<String>("characters[1]", "han") // == "solo"
+val name3 = jsonMap.getForPath<String>("characters[2]", "R2") // == "D2"
+----
