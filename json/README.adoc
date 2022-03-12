@@ -13,9 +13,9 @@ It also comes with two Objects: `JsonMap` and `JsonArray`
 Kest provides several function to check whether a json content matches a Json pattern.
 To do so, Kest provides by default 3 matchers:
 
-- {{string}}
-- {{number}}
-- {{boolean}}
+* {\{string}}
+* {\{number}}
+* {\{boolean}}
 
 For example
 

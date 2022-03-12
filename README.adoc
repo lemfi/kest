@@ -137,46 +137,47 @@ class TestHttpServer {
 
     @TestFactory
     fun `http server says hello`() = `play scenarios`(
-            scenario { ... },
-            scenario { ... },
-            scenario { ... },
+            scenario { /*...*/ },
+            scenario { /*...*/ },
+            scenario { /*...*/ },
 
-            beforeEach = { scenario { ... }},
-            afterEach = { scenario { ... }}
+            beforeEach = { scenario { /*...*/ }},
+            afterEach = { scenario { /*...*/ }}
     )
 
 
     @TestFactory
     fun `http server says goodbye`() = `play scenarios`(
-            scenario { ... },
-            scenario { ... },
-            scenario { ... }
+            scenario { /*...*/ },
+            scenario { /*...*/ },
+            scenario { /*...*/ },
 
-            beforeEach = { scenario { ... }},
-            afterEach = { scenario { ... }}
+            beforeEach = { scenario { /*...*/ }},
+            afterEach = { scenario { /*...*/ }}
     )
 
+}
 
 class TestHttpServer {
 
     @BeforeEach
     fun beforeEach() {
-        ...
+        /*...*/
     }
 
     @AfterEach
     fun afterEach() {
-        ...
+        /*...*/
     }
 
     @TestFactory
     fun `http server says hello - scenario 1`() = `play scenario`(
-            scenario { ... }
+            scenario { /*...*/ }
     )
 
     @TestFactory
     fun `http server says hello - scenario 2`() = `play scenario`(
-            scenario { ... }
+            scenario { /*...*/ }
     )
 
 }
@@ -190,6 +191,7 @@ Why do not extract steps to external functions, it will also make them reusable:
 [source,kotlin]
 ----
 
+@Suppress("unused")
 fun ScenarioBuilder.`say hello`(who: String) {
     `given http call`<String> {
 
@@ -208,6 +210,7 @@ fun ScenarioBuilder.`say hello`(who: String) {
     }
 }
 
+@Suppress("unused")
 fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
     `given http call`<List<String>> {
 
