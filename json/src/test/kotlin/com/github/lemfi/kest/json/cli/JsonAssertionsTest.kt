@@ -131,7 +131,7 @@ class JsonAssertionsTest {
         """.trimIndent(), checkArraysOrder = false
             )
         }
-        Assertions.assertEquals("{data=[3, 3, 3]} is not an expected element of array", exception.message)
+        Assertions.assertEquals("""{data=[3, 3, 3]} is not an expected element of array at "array"""", exception.message)
     }
 
     @Test
@@ -258,7 +258,7 @@ class JsonAssertionsTest {
         }
 
         Assertions.assertEquals(
-            "missing entries for [{number=1, boolean=true, string=hello}], expected 2 entries, got 1 entries",
+            "missing entries for [{number=1, boolean=true, string=hello}], expected 2 entries, got 1 entries at ROOT",
             exception.message
         )
     }
@@ -305,7 +305,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected class kotlin.String, got 1", exception1.message)
+        Assertions.assertEquals("""expected class kotlin.String, got 1 at "strings[1]"""", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -323,7 +323,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected json object structure", exception2.message)
+        Assertions.assertEquals("expected json object structure at ROOT", exception2.message)
 
 
         val exception3 = assertThrows<AssertionFailedError> {
@@ -341,7 +341,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "world"""", exception3.message)
+        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "world" at "booleans[1]"""", exception3.message)
 
 
         val exception4 = assertThrows<AssertionFailedError> {
@@ -359,7 +359,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected "world", got "worlds"""", exception4.message)
+        Assertions.assertEquals("""expected "world", got "worlds" at "some strings[1]"""", exception4.message)
 
 
         val exception5 = assertThrows<AssertionFailedError> {
@@ -377,7 +377,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected 2, got true", exception5.message)
+        Assertions.assertEquals("""expected 2, got true at "some numbers[1]"""", exception5.message)
 
         val exception6 = assertThrows<AssertionFailedError> {
 
@@ -394,7 +394,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected false, got 2", exception6.message)
+        Assertions.assertEquals("""expected false, got 2 at "some booleans[1]"""", exception6.message)
 
     }
 
@@ -444,7 +444,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected none nullable value {{string}}", exception.message)
+        Assertions.assertEquals("""expected none nullable value {{string}} at "string"""", exception.message)
 
     }
 
@@ -464,7 +464,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Number, got "12"""", exception.message)
+        Assertions.assertEquals("""expected object of type class kotlin.Number, got "12" at "[0]"""", exception.message)
 
     }
 
@@ -521,7 +521,7 @@ class JsonAssertionsTest {
             )
         }
 
-        Assertions.assertEquals("expected class kotlin.String, got 12", exception1.message)
+        Assertions.assertEquals("""expected class kotlin.String, got 12 at "string"""", exception1.message)
 
         val exception2 = assertThrows<AssertionFailedError> {
 
@@ -539,7 +539,7 @@ class JsonAssertionsTest {
             )
         }
 
-        Assertions.assertEquals("""Expected hello, got 12""", exception2.message)
+        Assertions.assertEquals("""Expected hello, got 12 at "string"""", exception2.message)
 
     }
 
@@ -579,7 +579,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected none nullable value {{number}}", exception.message)
+        Assertions.assertEquals("""expected none nullable value {{number}} at "number"""", exception.message)
 
     }
 
@@ -620,7 +620,7 @@ class JsonAssertionsTest {
             )
         }
         Assertions.assertEquals(
-            "expected none nullable value {{boolean}}", exception.message
+            """expected none nullable value {{boolean}} at "boolean"""", exception.message
         )
 
     }
@@ -661,7 +661,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Number, got "1"""", exception.message)
+        Assertions.assertEquals("""expected object of type class kotlin.Number, got "1" at "number"""", exception.message)
 
     }
 
@@ -684,7 +684,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "true"""", exception.message)
+        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "true" at "boolean"""", exception.message)
 
     }
 
@@ -707,7 +707,108 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("""Expected 1234, got 5678""", exception.message)
+        Assertions.assertEquals("""Expected 1234, got 5678 at "data"""", exception.message)
+
+    }
+
+    @Test
+    fun `error path is correctly set on assertion failure message`() {
+
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                        {
+                            "level0": {
+                                "level01": {
+                                    "level012": [{
+                                            "level01230": {
+                                                "level012304": "level012304"
+                                            }
+                                        },
+                                        {
+                                            "level01231": {
+                                                "level012314": "level012314"
+                                            }
+                                        },
+                                        {
+                                            "level01233": {
+                                                "level012334": "level012324"
+                                            }
+                        
+                                        }
+                                    ]
+                                },
+                                "level11": {
+                                    "level112": [{
+                                            "level11230": {
+                                                "level112304": "level112304"
+                                            }
+                                        },
+                                        {
+                                            "level11231": {
+                                                "level112314": "level112314"
+                                            }
+                                        },
+                                        {
+                                            "level11233": {
+                                                "level112334": "level112324"
+                                            }
+                        
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    """,
+                """
+                       {
+                            "level0": {
+                                "level01": {
+                                    "level012": [{
+                                            "level01230": {
+                                                "level012304": "level012304"
+                                            }
+                                        },
+                                        {
+                                            "level01231": {
+                                                "level012314": "level012314"
+                                            }
+                                        },
+                                        {
+                                            "level01233": {
+                                                "level012334": "level012324"
+                                            }
+                        
+                                        }
+                                    ]
+                                },
+                                "level11": {
+                                    "level112": [{
+                                            "level11230": {
+                                                "level112304": "level112304"
+                                            }
+                                        },
+                                        {
+                                            "level11231": {
+                                                "level112314": "error here"
+                                            }
+                                        },
+                                        {
+                                            "level11233": {
+                                                "level112334": "level112324"
+                                            }
+                        
+                                        }
+                                    ]
+                                }
+                            }
+                        } 
+                    """
+            )
+        }
+        Assertions.assertEquals("""Expected level112314, got error here at "level0" > "level11" > "level112[1]" > "level11231" > "level112314"""", exception.message)
 
     }
 
@@ -729,7 +830,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("expected [data1] entries, got [data2] entries", exception.message)
+        Assertions.assertEquals("expected [data1] entries, got [data2] entries at ROOT", exception.message)
 
     }
 
@@ -930,7 +1031,7 @@ class JsonAssertionsTest {
     @Test
     fun `json array patterns error`() {
 
-        val exception = assertThrows<AssertionFailedError> {
+        val exception = assertThrows<IllegalStateException> {
 
             assertionBuilder().jsonMatches(
                 """
@@ -961,7 +1062,14 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected [string] entries, got [number] entries", exception.message)
+        Assertions.assertEquals("""wrong pattern [[
+ {
+     "string": "{{string?}}"
+ },
+ {
+     "number": "{{number}}"
+ }
+]]""", exception.message)
 
     }
 
@@ -1012,7 +1120,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(""""hello" does not validate pattern {{date}}""", exception.message)
+        Assertions.assertEquals(""""hello" does not validate pattern {{date}} at "date"""", exception.message)
 
     }
 
@@ -1077,7 +1185,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected none nullable value {{date}}", exception.message)
+        Assertions.assertEquals("""expected none nullable value {{date}} at "date"""", exception.message)
 
     }
 
@@ -1126,7 +1234,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(""""bad format" does not validate pattern {{date}}""", exception.message)
+        Assertions.assertEquals(""""bad format" does not validate pattern {{date}} at "date[1]"""", exception.message)
     }
 
     @Test
@@ -1161,7 +1269,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected none nullable value {{date}}", exception1.message)
+        Assertions.assertEquals("""expected none nullable value {{date}} at "date"""", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -1181,7 +1289,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected none nullable value {{date}}", exception2.message)
+        Assertions.assertEquals("""expected none nullable value {{date}} at "date[1]"""", exception2.message)
     }
 
     @Test
