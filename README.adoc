@@ -19,6 +19,14 @@ Easy to use, easy to extend.
 
     // include the steps you need among available ones
     implementation("com.github.lemfi.kest:step-http:0.6.2")
+    implementation("com.github.lemfi.kest:step-cadence:0.6.2")
+    implementation("com.github.lemfi.kest:step-mongodb:0.6.2")
+    implementation("com.github.lemfi.kest:step-rabbitmq:0.6.2")
+    implementation("com.github.lemfi.kest:step-redis:0.6.2")
+
+    // toolbox for Json Data
+    implementation("com.github.lemfi.kest:json:0.6.2")
+
 ----
 
 === Maven
@@ -43,6 +51,38 @@ Easy to use, easy to extend.
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
+        <version>0.6.2</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-rabbitmq</artifactId>
+        <version>0.6.2</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-cadence</artifactId>
+        <version>0.6.2</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-mongodb</artifactId>
+        <version>0.6.2</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-redis</artifactId>
+        <version>0.6.2</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- toolbox for Json Data -->
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-json</artifactId>
         <version>0.6.2</version>
         <scope>test</scope>
     </dependency>
@@ -350,6 +390,13 @@ A step returns an object . which is invokable: you may reuse its result in anoth
 * Mongo
 * Redis
 * Cadence
+
+== Json Toolbox
+
+A bunch of tools are available to work on Json data, `step-http` module exposes it by default.
+If not using `step-http` but still need those tools, add module json to your dependencies.
+
+link:json/README.adoc[Json Toolbox]
 
 == Configuration
 
