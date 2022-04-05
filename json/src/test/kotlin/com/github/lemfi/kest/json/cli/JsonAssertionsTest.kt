@@ -132,7 +132,82 @@ class JsonAssertionsTest {
         """.trimIndent(), checkArraysOrder = false
             )
         }
-        Assertions.assertEquals("""{data=[3, 3, 3]} is not an expected element of array at "array"""", exception.message)
+        Assertions.assertEquals(
+            """{data=[3, 3, 3]} is not an expected element of array at "array"""",
+            exception.message
+        )
+    }
+
+    @Test
+    fun `additional fields on observed json may be ignored - expected is a json object`() {
+        val expected = """
+                {
+                    "hello": "world"
+                }
+            """.trimIndent()
+        val observed = """
+                {
+                    "hello": "world",
+                    "how": "are you?"
+                }
+            """.trimIndent()
+
+        assertionBuilder().jsonMatches(expected = expected, observed = observed, ignoreUnknownProperties = true)
+
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                expected = expected,
+                observed = observed,
+                ignoreUnknownProperties = false
+            )
+        }
+    }
+
+    @Test
+    fun `additional fields on observed json may be ignored - expected is a string pattern`() {
+        `add json matcher`("{{data}}", """{"hello": "{{string}}"}""")
+
+        val expected = """{{data}}"""
+        val observed = """
+                {
+                    "hello": "world",
+                    "how": "are you?"
+                }
+            """.trimIndent()
+
+        assertionBuilder().jsonMatches(expected = expected, observed = observed, ignoreUnknownProperties = true)
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                expected = expected,
+                observed = observed,
+                ignoreUnknownProperties = false
+            )
+        }
+    }
+
+    @Test
+    fun `additional fields on observed json may be ignored - expected is a class pattern`() {
+        `add json matcher`("{{data}}", TestDataObject::class)
+
+        val expected = """{{data}}"""
+
+        val observed = """
+                {
+                    "string": "a string",
+                    "number": 2,
+                    "boolean": false,
+                    "hello": "world"
+                }
+            """.trimIndent()
+
+        assertionBuilder().jsonMatches(expected = expected, observed = observed, ignoreUnknownProperties = true)
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                expected = expected,
+                observed = observed,
+                ignoreUnknownProperties = false
+            )
+        }
     }
 
     @Test
@@ -342,7 +417,10 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "world" at "booleans[1]"""", exception3.message)
+        Assertions.assertEquals(
+            """expected object of type class kotlin.Boolean, got "world" at "booleans[1]"""",
+            exception3.message
+        )
 
 
         val exception4 = assertThrows<AssertionFailedError> {
@@ -662,7 +740,10 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Number, got "1" at "number"""", exception.message)
+        Assertions.assertEquals(
+            """expected object of type class kotlin.Number, got "1" at "number"""",
+            exception.message
+        )
 
     }
 
@@ -685,7 +766,10 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Boolean, got "true" at "boolean"""", exception.message)
+        Assertions.assertEquals(
+            """expected object of type class kotlin.Boolean, got "true" at "boolean"""",
+            exception.message
+        )
 
     }
 
@@ -714,7 +798,6 @@ class JsonAssertionsTest {
 
     @Test
     fun `error path is correctly set on assertion failure message`() {
-
 
         val exception = assertThrows<AssertionFailedError> {
 
@@ -809,7 +892,10 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("""Expected level112314, got error here at "level0" > "level11" > "level112[1]" > "level11231" > "level112314"""", exception.message)
+        Assertions.assertEquals(
+            """Expected level112314, got error here at "level0" > "level11" > "level112[1]" > "level11231" > "level112314"""",
+            exception.message
+        )
 
     }
 
@@ -1063,14 +1149,16 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""wrong pattern [[
+        Assertions.assertEquals(
+            """wrong pattern [[
  {
      "string": "{{string?}}"
  },
  {
      "number": "{{number}}"
  }
-]]""", exception.message)
+]]""", exception.message
+        )
 
     }
 
