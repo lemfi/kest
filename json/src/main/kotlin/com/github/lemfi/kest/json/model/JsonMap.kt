@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.json.model
 
-import org.opentest4j.AssertionFailedError
+import com.github.lemfi.kest.core.model.FilteredAssertionFailedError
 
 typealias JsonMap = HashMap<String, Any?>
 
@@ -27,7 +27,7 @@ inline fun <reified T> JsonMap.getForPath(vararg keys: String): T {
         }
     }.let {
         if (it is T) it
-        else throw AssertionFailedError("expected ${T::class} for path \"${keys.joinToString(", ") { it }}\", was ${it?.let { it::class } ?: "null"} ($it)")
+        else throw FilteredAssertionFailedError("expected ${T::class} for path \"${keys.joinToString(", ") { it }}\", was ${it?.let { it::class } ?: "null"} ($it)")
     }
 }
 

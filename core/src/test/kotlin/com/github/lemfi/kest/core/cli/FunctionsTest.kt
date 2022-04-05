@@ -83,7 +83,7 @@ class FunctionsTest {
     @Test
     fun `run scenario`() {
 
-        mockkStatic(Step<*>::run)
+        mockkStatic(Step<Any>::run)
 
         val scenario = mockk<IScenario>()
 
@@ -100,7 +100,7 @@ class FunctionsTest {
         verify(exactly = 1) { step1.run() }
         verify(exactly = 1) { step2.run() }
 
-        unmockkStatic(Step<*>::run)
+        unmockkStatic(Step<Any>::run)
     }
 
     @Test

@@ -152,19 +152,15 @@ fun <T> Step<T>.run(): Step<T> {
     return this
 }
 
-private fun AssertionsBuilder.fail(message: String, expected: Any?, observed: Any?): Nothing = run {
-    throw AssertionFailedError(failureMessage(message, stepName), expected, observed)
-}
-
 private fun AssertionsBuilder.fail(cause: Throwable) {
 
     if (cause is AssertionFailedError && cause.cause == null) {
-        fail(cause.message ?: "null", cause.expected, cause.actual)
+
+        throw AssertionFailedError(failureMessage(cause.message, stepName), cause.expected, cause.actual)
+            .apply { stackTrace = cause.stackTrace }
     }
-
-    val message = failureMessage(cause.message, stepName)
-
-    throw AssertionFailedError(message, cause)
+    throw AssertionFailedError(failureMessage(cause.message, stepName))
+            .apply { stackTrace = cause.stackTrace }
 }
 
 private fun AssertionsBuilder.failureMessage(

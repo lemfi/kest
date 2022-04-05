@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.cli.eq
+import com.github.lemfi.kest.core.model.FilteredAssertionFailedError
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.json.model.jsonProperty
-import org.opentest4j.AssertionFailedError
 import kotlin.reflect.KClass
 
 /**
@@ -188,7 +188,7 @@ private fun AssertionsBuilder.jsonMatches(
     } else if (expected.isArray()) {
         jsonMatchesArray(expected, observed, checkArraysOrder, path)
     } else if (expected != observed) {
-        throw AssertionFailedError("expected $expected, got $observed at ${path.path()}", expected, observed)
+        throw FilteredAssertionFailedError("expected $expected, got $observed at ${path.path()}", expected, observed)
     }
 }
 
@@ -199,7 +199,7 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: Stri
     val exp = expected.toJsonMap(path)
     val obs = observed.toJsonMap(path)
 
-    if (exp.keys != obs.keys) throw AssertionFailedError(
+    if (exp.keys != obs.keys) throw FilteredAssertionFailedError(
         "expected ${exp.keys} entries, got ${obs.keys} entries at ${path.path()}",
         exp.keys,
         obs.keys
@@ -212,7 +212,7 @@ private fun AssertionsBuilder.jsonMatchesObject(expected: String, observed: Stri
             jsonMatches(expectedValue.toJsonStringOrPattern(path), observedValue.toNullableJsonString(), checkArraysOrder, path.copyAdd(key))
         else {
             (observedValue?.equals(expectedValue) ?: (expectedValue == null)).let { success ->
-                if (!success) throw AssertionFailedError(
+                if (!success) throw FilteredAssertionFailedError(
                     "Expected $expectedValue, got $observedValue at ${path.copyAdd(key).path()}",
                     expectedValue,
                     observedValue
@@ -256,7 +256,7 @@ private fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: Strin
         }
     }
         ?.also {
-            throw AssertionFailedError(it.message, it)
+            throw FilteredAssertionFailedError(it.message, it)
         }
 
 }
@@ -298,7 +298,7 @@ private fun AssertionsBuilder.jsonMatchesPattern(
     if (isList) {
         if (observed == null) {
             if (!isNullableList)
-                throw AssertionFailedError(
+                throw FilteredAssertionFailedError(
                     "expected none nullable value ${matcher.pattern} at ${path.path()}",
                     matcher.pattern,
                     null
@@ -320,7 +320,7 @@ private fun String?.toJsonMap(path: List<String?>): JsonMap {
             object: TypeReference<JsonMap>() {}
         )
     } catch (e: Throwable) {
-        throw AssertionFailedError("expected json object structure at ${path.path()}", """{"...": "..."}, got $this""", this)
+        throw FilteredAssertionFailedError("expected json object structure at ${path.path()}", """{"...": "..."}, got $this""", this)
     }
 }
 
@@ -331,7 +331,7 @@ private fun String?.toJsonArray(path: List<String?>): List<*> =
         try {
             mapper.readValue(this, List::class.java)
         } catch (e: Throwable) {
-            throw AssertionFailedError("expected json array structure at ${path.path()}", """[..., ...], got $this""", this)
+            throw FilteredAssertionFailedError("expected json array structure at ${path.path()}", """[..., ...], got $this""", this)
         }
     }
 
@@ -373,13 +373,13 @@ private data class ClassPatternJsonMatcher(
 
     override fun AssertionsBuilder.matchElement(observed: String?, checkArraysOrder: Boolean, path: List<String?>) {
         if (observed == null) {
-            if (!isNullable) throw AssertionFailedError(
+            if (!isNullable) throw FilteredAssertionFailedError(
                 "expected none nullable value $pattern at ${path.path()}",
                 pattern,
                 null
             )
         } else {
-            if (cls == String::class && !observed.isJsonString()) throw AssertionFailedError(
+            if (cls == String::class && !observed.isJsonString()) throw FilteredAssertionFailedError(
                 "expected $cls, got $observed at ${path.path()}",
                 pattern,
                 observed
@@ -387,7 +387,7 @@ private data class ClassPatternJsonMatcher(
                 try {
                     mapper.readValue(observed, cls.java)
                 } catch (e: Throwable) {
-                    throw AssertionFailedError("expected object of type $cls, got $observed at ${path.path()}", cls, observed)
+                    throw FilteredAssertionFailedError("expected object of type $cls, got $observed at ${path.path()}", cls, observed)
                 }
             }
 
@@ -406,13 +406,13 @@ private data class FunctionJsonMatcher<T : Any>(
 
     override fun AssertionsBuilder.matchElement(observed: String?, checkArraysOrder: Boolean, path: List<String?>) {
         if (observed == null) {
-            if (!isNullable) throw AssertionFailedError(
+            if (!isNullable) throw FilteredAssertionFailedError(
                 "expected none nullable value $pattern at ${path.path()}",
                 pattern,
                 null
             )
         } else if (!validator(mapper.readValue(observed,cls.java))){
-            throw AssertionFailedError(
+            throw FilteredAssertionFailedError(
                 "$observed does not validate pattern $pattern at ${path.path()}",
                 pattern,
                 observed
@@ -444,7 +444,7 @@ private fun getMatcher(key: String, path: List<String?>): JsonMatcher {
             val pattern = "{{$type}}"
 
             matchers["{{$type}}"]?.toJsonMatcher(type, list to listNullable, nullable, pattern)
-                ?: throw AssertionFailedError("unknown matcher $key at ${path.path()}", "valid matcher", key)
+                ?: throw FilteredAssertionFailedError("unknown matcher $key at ${path.path()}", "valid matcher", key)
         } else {
             @Suppress("KotlinConstantConditions")
             StringPatternJsonMatcherKind(listOf(keyWithoutList)).toJsonMatcher(

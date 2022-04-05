@@ -2,12 +2,12 @@
 
 package com.github.lemfi.kest.core.cli
 
-import org.opentest4j.AssertionFailedError
+import com.github.lemfi.kest.core.model.FilteredAssertionFailedError
 
 fun eq(expected: Any?, observed: Any?, message: (() -> String)? = null) {
 
     (observed?.equals(expected) ?: (expected == null)).let { success ->
-        if (!success) throw AssertionFailedError(
+        if (!success) throw FilteredAssertionFailedError(
             message?.invoke() ?: "Expected $expected, got $observed",
             expected,
             observed
@@ -24,7 +24,7 @@ val Any?.`is false`: Unit get() = `is false`(this)
 fun `is true`(observed: Any?, message: (() -> String)? = null) {
 
     (observed ?: false).let { success ->
-        if (success !is Boolean || !success) throw AssertionFailedError(
+        if (success !is Boolean || !success) throw FilteredAssertionFailedError(
             message?.invoke() ?: "Expected true, was $observed",
             true,
             observed
@@ -36,7 +36,7 @@ fun `is true`(observed: Any?, message: (() -> String)? = null) {
 fun `is false`(observed: Any?, message: (() -> String)? = null) {
 
     (observed ?: true).let { failure ->
-        if (failure !is Boolean || failure) throw AssertionFailedError(
+        if (failure !is Boolean || failure) throw FilteredAssertionFailedError(
             message?.invoke() ?: "Expected false, was $observed",
             false,
             observed
