@@ -12,6 +12,7 @@ import org.opentest4j.AssertionFailedError
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.format.ResolverStyle.STRICT
+import kotlin.system.measureTimeMillis
 
 
 private fun assertionBuilder() = AssertionsBuilder("json test", null)
@@ -1707,6 +1708,27 @@ class JsonAssertionsTest {
                    } 
                 """
         )
+    }
+
+    @Test
+    fun `when check array order is disabled, check must go fast enough`() {
+        val data1 = """
+            {
+                "toto": [${
+            (1..1000).joinToString(",") {
+                """{
+                        "t": "$it"
+                    }"""
+            }
+        }
+                ]
+            }
+        """.trimIndent()
+
+        val time = measureTimeMillis {
+            assertionBuilder().jsonMatches(data1, data1, false)
+        }
+        Assertions.assertTrue(time < 1000)
     }
 }
 

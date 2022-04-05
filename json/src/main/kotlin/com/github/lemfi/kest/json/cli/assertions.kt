@@ -127,6 +127,7 @@ private fun AssertionsBuilder.jsonMatches(
     path: List<String?>,
 ) {
     expectedPatterns.fold(Throwable() as Throwable?) { acc, expected ->
+        @Suppress("KotlinConstantConditions")
         if (acc != null)
             runCatching {
                 jsonMatches(expected, observed, checkArraysOrder, path)
@@ -240,12 +241,17 @@ private fun AssertionsBuilder.jsonMatchesArray(expected: String, observed: Strin
     } else {
         observedArray.fold(null as Throwable?) { errorFound, observedValue ->
             errorFound ?: expectedArray
-                .removeIf { expectedValue ->
+                .firstOrNull { expectedValue ->
                     runCatching {
                         jsonMatches(expectedValue.toJsonStringOrPattern(path), observedValue.toNullableJsonString(), false, path)
                     }.exceptionOrNull() == null
-                }.let { removed ->
-                    if (removed) null else IllegalArgumentException("$observedValue is not an expected element of array at ${path.path()}")
+                }.let {
+                    if (it == null)
+                        IllegalArgumentException("$observedValue is not an expected element of array at ${path.path()}")
+                    else run {
+                        expectedArray.remove(it)
+                        null
+                    }
                 }
         }
     }
@@ -440,6 +446,7 @@ private fun getMatcher(key: String, path: List<String?>): JsonMatcher {
             matchers["{{$type}}"]?.toJsonMatcher(type, list to listNullable, nullable, pattern)
                 ?: throw AssertionFailedError("unknown matcher $key at ${path.path()}", "valid matcher", key)
         } else {
+            @Suppress("KotlinConstantConditions")
             StringPatternJsonMatcherKind(listOf(keyWithoutList)).toJsonMatcher(
                 keyWithoutList,
                 list to listNullable,
