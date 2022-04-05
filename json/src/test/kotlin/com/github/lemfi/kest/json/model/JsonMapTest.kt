@@ -125,6 +125,8 @@ class JsonMapTest {
             put("world", "hello")
         }, json.getForPath<JsonMap>("object"))
 
+        Assertions.assertEquals("world", json.getForPath<JsonMap>("object")["hello"])
+
         Assertions.assertEquals(JsonArray().apply {
             add(JsonMap().apply {
                 put("hello", "world")
