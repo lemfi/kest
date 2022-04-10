@@ -7,13 +7,13 @@ import com.github.lemfi.kest.samplehttp.sampleapi.stopSampleApi
 
 fun startSampleApi() = scenario("start sample API") {
 
-    step {
+    step("start sample API") {
         startSampleApi()
     }
 }
 
 fun stopSampleApi() = scenario("stop sample API") {
-    step {
+    step("stop sample API") {
         stopSampleApi()
     }
 }

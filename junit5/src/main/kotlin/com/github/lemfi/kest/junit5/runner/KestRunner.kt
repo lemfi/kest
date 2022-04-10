@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DynamicNode
 
 internal fun IScenario.toDynamicContainer(
     beforeEach: (() -> Scenario)? = null,
-    afterEach: (() -> Scenario)? = null
+    afterEach: (() -> Scenario)? = null,
 ): DynamicContainer {
     return DynamicContainer.dynamicContainer(name,
 
@@ -45,13 +45,21 @@ private fun createBeforeAfterScenario(scenarioBuilder: () -> Scenario): Scenario
 fun `play scenarios`(
     vararg scenario: Scenario,
     beforeEach: (() -> Scenario)? = null,
-    afterEach: (() -> Scenario)? = null
+    beforeAll: (() -> Scenario)? = null,
+    afterEach: (() -> Scenario)? = null,
+    afterAll: (() -> Scenario)? = null,
 ): List<DynamicNode> {
 
     autoconfigure()
 
     return mutableListOf<DynamicContainer>().apply {
+        beforeAll?.apply {
+            add(invoke().toDynamicContainer())
+        }
         addAll(scenario.map { it.toDynamicContainer(beforeEach, afterEach) })
+        afterAll?.apply {
+            add(invoke().toDynamicContainer())
+        }
     }
 }
 

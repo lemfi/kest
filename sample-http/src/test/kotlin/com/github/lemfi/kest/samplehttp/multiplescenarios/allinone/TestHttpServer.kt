@@ -91,8 +91,8 @@ class TestHttpServer {
                 eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
             }
         },
-        beforeEach = ::startSampleApi,
-        afterEach = ::stopSampleApi,
+        beforeAll = ::startSampleApi,
+        afterAll = ::stopSampleApi,
     )
 
     @TestFactory
@@ -155,8 +155,8 @@ class TestHttpServer {
                 eq(listOf("Han Solo"), stepResult.body)
             }
         },
-        beforeEach = ::startSampleApi,
-        afterEach = ::stopSampleApi,
+        beforeAll = ::startSampleApi,
+        afterAll = ::stopSampleApi,
     )
 
     @TestFactory
@@ -180,8 +180,8 @@ class TestHttpServer {
             }
 
         },
-        beforeEach = ::startSampleApi,
-        afterEach = ::stopSampleApi,
+        beforeAll = ::startSampleApi,
+        afterAll = ::stopSampleApi,
     )
 
     @TestFactory
@@ -257,8 +257,8 @@ class TestHttpServer {
             }
 
         },
-        beforeEach = ::startSampleApi,
-        afterEach = ::stopSampleApi,
+        beforeAll = ::startSampleApi,
+        afterAll = ::stopSampleApi
     )
 
     @TestFactory
@@ -323,14 +323,16 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 eq(200, stepResult.status)
-                eq(listOf(
-                    Inventory("weapon", "lightsaber"),
-                    Inventory("vehicle", "landspeeder"),
-                ), stepResult.body)
+                eq(
+                    listOf(
+                        Inventory("weapon", "lightsaber"),
+                        Inventory("vehicle", "landspeeder"),
+                    ), stepResult.body
+                )
             }
         },
-        beforeEach = ::startSampleApi,
-        afterEach = ::stopSampleApi,
+        beforeAll = ::startSampleApi,
+        afterAll = ::stopSampleApi,
     )
 
     data class Inventory(

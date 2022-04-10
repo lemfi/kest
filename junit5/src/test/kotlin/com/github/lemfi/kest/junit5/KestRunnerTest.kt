@@ -363,6 +363,105 @@ class KestRunnerTest {
     }
 
     @Test
+    fun `play multiple scenarios - beforeAll`() {
+        var number = 0
+        lateinit var beforeRes1: StepPostExecution<Int>
+        lateinit var beforeRes2: StepPostExecution<Int>
+        lateinit var res1: StepPostExecution<Int>
+        lateinit var res2: StepPostExecution<Int>
+        lateinit var res3: StepPostExecution<Int>
+        lateinit var res4: StepPostExecution<Int>
+
+        val beforeAll = scenario("before all") {
+            beforeRes1 = step(name = "before step 1") { ++number }
+            beforeRes2 = step(name = "before step 2") { ++number }
+        }
+        val scenario1 = scenario("my scenario 1") {
+            res1 = step(name = "step 1") { ++number }
+            res2 = step(name = "step 2") { ++number }
+        }
+        val scenario2 = scenario("my scenario 2") {
+            res3 = step(name = "step 3") { ++number }
+            res4 = step(name = "step 4") { ++number }
+        }
+
+        val testNodes = `play scenarios`(scenario1, scenario2, beforeAll = { beforeAll })
+
+        Assertions.assertEquals(3, testNodes.size)
+        val beforeAllSscenario = testNodes.first()
+        val testScenario1 = testNodes[1]
+        val testScenario2 = testNodes.last()
+
+        lateinit var step1: DynamicNode
+        lateinit var step2: DynamicNode
+        with((testScenario1 as DynamicContainer).children.iterator()) {
+            Assertions.assertTrue(hasNext())
+            step1 = next()
+            Assertions.assertTrue(hasNext())
+            step2 = next()
+            Assertions.assertFalse(hasNext())
+        }
+
+        Assertions.assertTrue(beforeAllSscenario is DynamicContainer)
+        Assertions.assertEquals("before all", beforeAllSscenario.displayName)
+        Assertions.assertEquals("step 1", step1.displayName)
+        Assertions.assertEquals("step 2", step2.displayName)
+
+        lateinit var beforeStepStep1: DynamicNode
+        lateinit var beforeStepStep2: DynamicNode
+        with((beforeAllSscenario as DynamicContainer).children.iterator()) {
+            Assertions.assertTrue(hasNext())
+            beforeStepStep1 = next()
+            Assertions.assertTrue(hasNext())
+            beforeStepStep2 = next()
+            Assertions.assertFalse(hasNext())
+        }
+
+        Assertions.assertEquals("before step 1", beforeStepStep1.displayName)
+        Assertions.assertEquals("before step 2", beforeStepStep2.displayName)
+
+        Assertions.assertTrue(beforeStepStep1 is DynamicTest)
+        (beforeStepStep1 as DynamicTest).executable.execute()
+
+        Assertions.assertTrue(beforeStepStep2 is DynamicTest)
+        (beforeStepStep2 as DynamicTest).executable.execute()
+
+        Assertions.assertEquals(1, beforeRes1())
+        Assertions.assertEquals(2, beforeRes2())
+
+        Assertions.assertTrue(step1 is DynamicTest)
+        (step1 as DynamicTest).executable.execute()
+
+        Assertions.assertTrue(step2 is DynamicTest)
+        (step2 as DynamicTest).executable.execute()
+
+        Assertions.assertEquals(3, res1())
+        Assertions.assertEquals(4, res2())
+
+        lateinit var step3: DynamicNode
+        lateinit var step4: DynamicNode
+        with((testScenario2 as DynamicContainer).children.iterator()) {
+            Assertions.assertTrue(hasNext())
+            step3 = next()
+            Assertions.assertTrue(hasNext())
+            step4 = next()
+            Assertions.assertFalse(hasNext())
+        }
+
+        Assertions.assertEquals("step 3", step3.displayName)
+        Assertions.assertEquals("step 4", step4.displayName)
+
+        Assertions.assertTrue(step3 is DynamicTest)
+        (step3 as DynamicTest).executable.execute()
+
+        Assertions.assertTrue(step4 is DynamicTest)
+        (step4 as DynamicTest).executable.execute()
+
+        Assertions.assertEquals(5, res3())
+        Assertions.assertEquals(6, res4())
+    }
+
+    @Test
     fun `play multiple scenarios - afterEach`() {
         var number = 0
         lateinit var afterRes1: StepPostExecution<Int>
@@ -491,5 +590,105 @@ class KestRunnerTest {
 
         Assertions.assertEquals(7, afterRes1())
         Assertions.assertEquals(8, afterRes2())
+    }
+
+    @Test
+    fun `play multiple scenarios - afterAll`() {
+        var number = 0
+        lateinit var afterRes1: StepPostExecution<Int>
+        lateinit var afterRes2: StepPostExecution<Int>
+        lateinit var res1: StepPostExecution<Int>
+        lateinit var res2: StepPostExecution<Int>
+        lateinit var res3: StepPostExecution<Int>
+        lateinit var res4: StepPostExecution<Int>
+
+        val afterAll = scenario("after all") {
+            afterRes1 = step(name = "after step 1") { ++number }
+            afterRes2 = step(name = "after step 2") { ++number }
+        }
+        val scenario1 = scenario("my scenario 1") {
+            res1 = step(name = "step 1") { ++number }
+            res2 = step(name = "step 2") { ++number }
+        }
+        val scenario2 = scenario("my scenario 2") {
+            res3 = step(name = "step 3") { ++number }
+            res4 = step(name = "step 4") { ++number }
+        }
+
+        val testNodes = `play scenarios`(scenario1, scenario2, afterAll = { afterAll })
+
+        Assertions.assertEquals(3, testNodes.size)
+        val testScenario1 = testNodes.first()
+        val testScenario2 = testNodes[1]
+        val afterAllScenario = testNodes.last()
+
+        lateinit var step1: DynamicNode
+        lateinit var step2: DynamicNode
+        with((testScenario1 as DynamicContainer).children.iterator()) {
+            Assertions.assertTrue(hasNext())
+            step1 = next()
+            Assertions.assertTrue(hasNext())
+            step2 = next()
+            Assertions.assertFalse(hasNext())
+        }
+
+        Assertions.assertEquals("step 1", step1.displayName)
+        Assertions.assertEquals("step 2", step2.displayName)
+
+        Assertions.assertTrue(step1 is DynamicTest)
+        (step1 as DynamicTest).executable.execute()
+
+        Assertions.assertTrue(step2 is DynamicTest)
+        (step2 as DynamicTest).executable.execute()
+
+        Assertions.assertEquals(1, res1())
+        Assertions.assertEquals(2, res2())
+
+        lateinit var step3: DynamicNode
+        lateinit var step4: DynamicNode
+        with((testScenario2 as DynamicContainer).children.iterator()) {
+            Assertions.assertTrue(hasNext())
+            step3 = next()
+            Assertions.assertTrue(hasNext())
+            step4 = next()
+            Assertions.assertFalse(hasNext())
+        }
+
+        Assertions.assertEquals("step 3", step3.displayName)
+        Assertions.assertEquals("step 4", step4.displayName)
+
+        Assertions.assertTrue(afterAllScenario is DynamicContainer)
+        Assertions.assertEquals("after all", afterAllScenario.displayName)
+
+        lateinit var afterStepStep1: DynamicNode
+        lateinit var afterStepStep2: DynamicNode
+        with((afterAllScenario as DynamicContainer).children.iterator()) {
+            Assertions.assertTrue(hasNext())
+            afterStepStep1 = next()
+            Assertions.assertTrue(hasNext())
+            afterStepStep2 = next()
+            Assertions.assertFalse(hasNext())
+        }
+
+        Assertions.assertEquals("after step 1", afterStepStep1.displayName)
+        Assertions.assertEquals("after step 2", afterStepStep2.displayName)
+
+        Assertions.assertTrue(step3 is DynamicTest)
+        (step3 as DynamicTest).executable.execute()
+
+        Assertions.assertTrue(step4 is DynamicTest)
+        (step4 as DynamicTest).executable.execute()
+
+        Assertions.assertEquals(3, res3())
+        Assertions.assertEquals(4, res4())
+
+        Assertions.assertTrue(afterStepStep1 is DynamicTest)
+        (afterStepStep1 as DynamicTest).executable.execute()
+
+        Assertions.assertTrue(afterStepStep2 is DynamicTest)
+        (afterStepStep2 as DynamicTest).executable.execute()
+
+        Assertions.assertEquals(5, afterRes1())
+        Assertions.assertEquals(6, afterRes2())
     }
 }
