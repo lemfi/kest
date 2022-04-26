@@ -2,10 +2,8 @@
 
 package com.github.lemfi.kest.core.properties
 
-import com.sksamuel.hoplite.ConfigFailure
 import com.sksamuel.hoplite.ConfigLoader
 import com.sksamuel.hoplite.ConfigResult
-import com.sksamuel.hoplite.fp.invalid
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -13,27 +11,25 @@ import kotlin.reflect.full.createInstance
 val kestconfig: MutableMap<Class<*>, Any> = mutableMapOf()
 
 inline fun <reified E : Any, R> property(l: E.() -> R): R {
-    val conf =
-        when (kestconfig[E::class.java]) {
-            null ->
-                listOf(
-                    System.getProperty("kest-conf", ""),
-                    System.getenv().getOrDefault("KEST_CONF", ""),
-                    "/kest.yml"
-                ).let { source ->
-                    var configuration: ConfigResult<E> = ConfigFailure.UnknownSource("").invalid()
-                    val sourcesIterator = source.iterator()
-                    while (configuration.isInvalid() && sourcesIterator.hasNext()) {
-                        configuration = ConfigLoader().loadConfig(sourcesIterator.next())
-                    }
-                    configuration.getUnsafe()
+    if (kestconfig[E::class.java] == null) {
+        listOf(
+            System.getProperty("kest-conf", ""),
+            System.getenv().getOrDefault("KEST_CONF", ""),
+            "/kest.yml"
+        )
+            .filterNot { it.isNullOrBlank() }
+            .first()
+            .let { source ->
+                val configuration: ConfigResult<E> = ConfigLoader().loadConfig(source)
+                runCatching { configuration.getUnsafe() }.getOrElse {
+                    ConfigFailureException(source, configuration.getInvalidUnsafe().description())
                 }
-                    .apply { kestconfig[E::class.java] = this }
-            else -> {
-                kestconfig[E::class.java] as E
             }
-        }
-    return conf.l()
+            .apply { kestconfig[E::class.java] = this }
+    }
+    return kestconfig[E::class.java]
+        .let { if (it is ConfigFailureException) throw it else it as E }
+        .l()
 }
 
 inline fun <reified E : Any, R> property(
@@ -60,3 +56,6 @@ fun autoconfigure() {
     }
 
 }
+
+class ConfigFailureException(source: String, message: String) :
+    Throwable("\nFail to load config source $source: \n$message")
