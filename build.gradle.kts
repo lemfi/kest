@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.6.3"
+version = "0.6.4"
 
 buildscript {
     val kotlinVersion: String by project
@@ -60,11 +60,11 @@ subprojects {
     }
 
     val compileKotlin: KotlinCompile by tasks
-    compileKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
+    compileKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
     compileKotlin.kotlinOptions.jvmTarget = "11"
 
     val compileTestKotlin: KotlinCompile by tasks
-    compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
+    compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
     compileTestKotlin.kotlinOptions.jvmTarget = "11"
 
     tasks.withType<DokkaTask> {
@@ -115,8 +115,8 @@ subprojects {
             create<MavenPublication>("mavenJava") {
                 from(components["java"])
 
+                artifact(tasks["sourcesJar"])
                 if (isRelease) {
-                    artifact(tasks["sourcesJar"])
                     artifact(tasks["javadocJar"])
                 }
 
