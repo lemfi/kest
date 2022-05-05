@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.github.lemfi.kest"
-version = "0.6.4"
+version = "0.6.5"
 
 buildscript {
     val kotlinVersion: String by project
@@ -146,12 +146,12 @@ subprojects {
         }
         repositories {
             maven {
-                val releaseUrl = uri(project.properties["PUBLISH_RELEASE"] as String)
-                val snapshotsUrl = uri(project.properties["PUBLISH_SNAPSHOT"] as String)
+                val releaseUrl = uri(project.properties.getOrDefault("PUBLISH_RELEASE", "NONE") as String)
+                val snapshotsUrl = uri(project.properties.getOrDefault("PUBLISH_SNAPSHOT", "NONE") as String)
                 url = if ((project.version as String).endsWith("SNAPSHOT")) snapshotsUrl else releaseUrl
                 credentials {
-                    username = project.properties["PUBLISH_USERNAME"] as String
-                    password = project.properties["PUBLISH_PASSWORD"] as String
+                    username = project.properties.getOrDefault("PUBLISH_USERNAME", "NONE") as String
+                    password = project.properties.getOrDefault("PUBLISH_PASSWORD", "NONE") as String
                 }
             }
         }
