@@ -160,7 +160,7 @@ private fun AssertionsBuilder.fail(cause: Throwable) {
             .apply { stackTrace = cause.stackTrace }
     }
     throw AssertionFailedError(failureMessage(cause.message, stepName))
-            .apply { stackTrace = cause.stackTrace }
+        .apply { stackTrace = cause.stackTrace }
 }
 
 private fun AssertionsBuilder.failureMessage(
@@ -168,16 +168,20 @@ private fun AssertionsBuilder.failureMessage(
     stepName: StepName?
 ): String {
 
-    val messages = message?.lines() ?: listOf("null")
-    val scenario = "Scenario: $scenarioName"
-    val step = if (stepName != null) "Step: ${stepName.value}" else ""
-    val max = listOf(scenario, step, *messages.toTypedArray()).maxByOrNull { it.length }!!
+    val messages = message?.lines()?.flatMap { it.chunked(80) } ?: listOf("null")
+    val scenario = "Scenario: $scenarioName".lines().flatMap { it.chunked(80) }
+    val step =
+        (if (stepName != null) "Step: ${stepName.value}".chunked(80) else emptyList()).let {
+            if (scenario.size > 1) listOf("", *it.toTypedArray()) else it
+        }
+    val max =
+        listOf(*scenario.toTypedArray(), *step.toTypedArray(), *messages.toTypedArray()).maxByOrNull { it.length }!!
 
     return """
         
         +${(0..max.length + 1).joinToString("") { "-" }}+
-        | ${scenario.padEnd(max.length, ' ')} |
-        | ${step.padEnd(max.length, ' ')} |
+        ${scenario.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
+        ${step.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
         |${(0..max.length + 1).joinToString("") { " " }}|
         ${messages.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
         +${(0..max.length + 1).joinToString("") { "-" }}+
