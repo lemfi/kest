@@ -304,8 +304,20 @@ pre.err {
 <dl class="${status.toCSS()}">
     <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$id')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
     <dd id="$id" class="hidden">
-${if (console.isNotBlank()) "<pre class=\"out\">$console</pre>" else ""}
-${if (failure.isNotBlank()) "<pre class=\"err\">$failure</pre>" else ""}
+${
+                if (console.isNotBlank()) "<pre class=\"out\">${
+                    console
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;")
+                }</pre>" else ""
+            }
+${
+                if (failure.isNotBlank()) "<pre class=\"err\">${
+                    failure
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;")
+                }</pre>" else ""
+            }
     </dd>
 </dl>
     """.trimIndent()
