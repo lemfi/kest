@@ -9,12 +9,14 @@ import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.SocketException
 import java.net.URLDecoder
+import java.nio.charset.Charset
 import java.util.UUID
 
 private var server: ServerSocket? = null
 
 private val helloPeople = mutableListOf<String>()
 private val otps = mutableListOf<String>()
+private var deathStarPlan: String? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 @Suppress("BlockingMethodInNonBlockingContext")
@@ -82,6 +84,10 @@ private fun OutputStream.handleRequest(request: String, body: String?) {
             Map::class.java
         )["who"] as String
     )
+    else if (method == "POST" && path == "/death-star-secret-plans") handleDeathStarSecretPlans(
+        body!!
+    )
+    else if (path == "/death-star-secret-plans") handleGetDeathStarSecretPlans()
     else if (method == "GET" && path == "/hello") handleListHello()
     else if (method == "GET" && path == "/inventory") handleInventory()
     else if (method == "GET" && path == "/hello-redirect") handleRedirectHello()
@@ -97,11 +103,47 @@ private fun OutputStream.handleRequest(request: String, body: String?) {
     else PrintWriter(this, true).apply {
         println(
             """
-                    HTTP/1.1 405 OK
+                    HTTP/1.1 405 Method Not Allowed
                     Content-Type: application/json
 
                     {"message": "method not allowed", "code": 1, "description": "method $method is not allowed for path $path"}"""
                 .trimIndent()
+        )
+    }
+}
+
+private fun OutputStream.handleDeathStarSecretPlans(body: String) {
+
+    val sep = body.lines().first()
+    val plan =
+        body.substringBefore("$sep--").split(sep).map { it.trim() }.filterNot { it.isBlank() }
+            .map { it.substringAfter("\n\r") }.first()
+
+    println(plan)
+    deathStarPlan = plan
+    PrintWriter(this, true).apply {
+        println(
+            """
+                    HTTP/1.1 201 Created
+                    Content-Type: text/plain
+
+                    May the Force be with you!"""
+                .trimIndent()
+        )
+    }
+}
+
+private fun OutputStream.handleGetDeathStarSecretPlans() {
+
+    PrintWriter(this, true).apply {
+        println(
+            """
+                    |HTTP/1.1 ${if (deathStarPlan != null) "200 OK" else "404 Not Found"}
+                    |Content-Type: text/plain
+                    |Content-Length: ${deathStarPlan?.toByteArray(Charset.defaultCharset())?.size ?: 24}
+                    |
+                    |${deathStarPlan ?: "Waiting for Rogue one..."}"""
+                .trimMargin()
         )
     }
 }
@@ -113,7 +155,7 @@ private fun OutputStream.handleSayHello(who: String) {
     PrintWriter(this, true).apply {
         println(
             """
-                    HTTP/1.1 201 OK
+                    HTTP/1.1 201 Created
                     Content-Type: text/plain
 
                     Hello $who!"""
@@ -130,7 +172,7 @@ private fun OutputStream.handleOtp() {
     PrintWriter(this, true).apply {
         println(
             """
-                    HTTP/1.1 201 OK
+                    HTTP/1.1 201 Created
                     Content-Type: application/json
 
                     {"otp": "$otp"}"""
@@ -143,7 +185,7 @@ private fun OutputStream.handleRedirectHello() {
     PrintWriter(this, true).apply {
         println(
             """
-                HTTP/1.1 302 OK
+                HTTP/1.1 302 Found
                 Location: http://localhost:8080/hello
 
                 """.trimIndent()
@@ -175,7 +217,7 @@ private fun OutputStream.handleValidateOtp(otp: String) {
         PrintWriter(this, true).apply {
             println(
                 """
-                            HTTP/1.1 204 OK
+                            HTTP/1.1 204 No Content
                             
                             """.trimIndent()
             )
@@ -184,7 +226,7 @@ private fun OutputStream.handleValidateOtp(otp: String) {
         PrintWriter(this, true).apply {
             println(
                 """
-                            HTTP/1.1 400 OK
+                            HTTP/1.1 400 Bad Request
                             Content-Type: application/json
                             
                             {"message": "method not allowed", "code": 1, "description": "otp $otp is invalid"}
@@ -201,7 +243,7 @@ private fun OutputStream.handleSayGoodbye(who: String) {
     PrintWriter(this, true).apply {
         println(
             """
-                    HTTP/1.1 201 OK
+                    HTTP/1.1 201 Created
                     Content-Type: text/plain
 
                     Goodbye $who!"""

@@ -7,6 +7,8 @@ import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.http.cli.`given http call`
+import com.github.lemfi.kest.http.model.fileDataPart
+import com.github.lemfi.kest.http.model.multipartBody
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
@@ -14,6 +16,7 @@ import com.github.lemfi.kest.junit5.runner.`play scenarios`
 import com.github.lemfi.kest.samplehttp.startSampleApi
 import com.github.lemfi.kest.samplehttp.stopSampleApi
 import org.junit.jupiter.api.TestFactory
+import java.nio.charset.Charset
 
 class TestHttpServer {
 
@@ -328,6 +331,141 @@ class TestHttpServer {
                         Inventory("weapon", "lightsaber"),
                         Inventory("vehicle", "landspeeder"),
                     ), stepResult.body
+                )
+            }
+        },
+        beforeAll = ::startSampleApi,
+        afterAll = ::stopSampleApi,
+    )
+
+
+    @TestFactory
+    fun deathStarPlans() = `play scenarios`(
+        scenario(name = "give Rebel Alliance Death Star plans") {
+
+            `given http call`<String>("death star plans are not available") {
+
+                url = "http://localhost:8080/death-star-secret-plans"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+            } `assert that` {
+                eq(404, it.status)
+                eq("Waiting for Rogue one...", it.body)
+            }
+
+            `given http call`<String>("give death star plans") {
+
+                url = "http://localhost:8080/death-star-secret-plans"
+                method = "POST"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+                body = multipartBody(
+                    fileDataPart {
+                        name = "death_star_plan"
+                        filename = "death_star_plan.txt"
+                        contentType = "text/plain"
+                        data = """
+                            █  ██████████████████████████████████████████████████████████
+                            █     █        █           █  █     █     █           █  █  █
+                            ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
+                            █     █        █  █  █        █  █  █  █           █        █
+                            █  █  ███████  █  ███████  ████  █  █████████████  ███████  █
+                            █  █  █  █  █           █     █  █  █  █     █  █  █        █
+                            ████  █  █  ████  ████  ████  █  ████  █  ████  ████  ████  █
+                            █        █  █     █        █     █        █  █  █     █     █
+                            ███████  █  █  █  ████  ████  ███████  ████  █  ███████  ████
+                            █  █        █  █  █  █  █        █           █        █     █
+                            █  ███████  █  ████  ██████████  ███████  ██████████  ████  █
+                            █        █     █  █     █     █  █  █           █     █     █
+                            ████  ███████  █  ████  █  ████  █  █  █  ████  █  ███████  █
+                            █     █     █  █     █     █  █     █  █  █     █           █
+                            █  █  ████  █  ████  █  ████  ████  ██████████  █  ███████  █
+                            █  █  █     █           █              █           █     █  █
+                            ████  █  █  ██████████  ████  ████  ██████████  ███████  █  █
+                            █     █  █     █     █  █        █     █        █           █
+                            █  █  █  ███████  █  █  ████  ████  █████████████  ███████  █
+                            █  █              █     █        █        █        █  █  █  █
+                            ████  █  ████  ██████████  ██████████  █  █  ████  █  █  ████
+                            █     █     █           █     █     █  █        █        █  █
+                            ███████  ████  █  ████████████████  ███████  █████████████  █
+                            █     █     █  █        █  █     █     █     █  █     █  █  █
+                            █  █  █  ███████  ███████  █  █  ████  ████  █  █  ████  █  █
+                            █  █           █     █     █  █        █                    █
+                            ██████████  ████  ███████  █  ███████  █  █  █  ██████████  █
+                            █     █  █  █  █  █     █     █           █  █        █  █  █
+                            █  ████  █  █  ███████  █  █  ████  ████  █  ███████  █  ████
+                            █                    █  █  █  █        █  █  █     █     █  █
+                            ████  ████  ███████  █  ███████  ████  ███████  ████  █  █  █
+                            █  █  █  █     █              █  █  █     █        █  █     █
+                            █  █  █  ████████████████  ████  █  █  █  █  ████  ████  █  █
+                            █  █              █  █  █     █  █     █  █  █  █     █  █  █
+                            █  █  █  ██████████  █  █  █  █  ███████  ████  ████  ████  █
+                            █     █  █  █     █        █  █  █     █  █  █     █        █
+                            ███████  █  █  ███████  ███████  █  ███████  ████  █  ████  █
+                            █  █        █     █     █  █  █  █           █  █        █  █
+                            █  ███████  █  █  █  ████  █  █  █  ████  █  █  █  ███████  █
+                            █              █  █           █     █     █     █     █     
+                            █████████████████████████████████████████████████████████████  
+
+                        """.trimIndent().toByteArray(Charset.defaultCharset())
+                    }
+                )
+            } `assert that` { stepResult ->
+
+                eq(201, stepResult.status)
+                eq("May the Force be with you!", stepResult.body)
+            }
+
+            `given http call`<String>("death star plans are available") {
+
+                url = "http://localhost:8080/death-star-secret-plans"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+            } `assert that` {
+                eq(200, it.status)
+                eq(
+                    """ 
+                        █  ██████████████████████████████████████████████████████████
+                        █     █        █           █  █     █     █           █  █  █
+                        ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
+                        █     █        █  █  █        █  █  █  █           █        █
+                        █  █  ███████  █  ███████  ████  █  █████████████  ███████  █
+                        █  █  █  █  █           █     █  █  █  █     █  █  █        █
+                        ████  █  █  ████  ████  ████  █  ████  █  ████  ████  ████  █
+                        █        █  █     █        █     █        █  █  █     █     █
+                        ███████  █  █  █  ████  ████  ███████  ████  █  ███████  ████
+                        █  █        █  █  █  █  █        █           █        █     █
+                        █  ███████  █  ████  ██████████  ███████  ██████████  ████  █
+                        █        █     █  █     █     █  █  █           █     █     █
+                        ████  ███████  █  ████  █  ████  █  █  █  ████  █  ███████  █
+                        █     █     █  █     █     █  █     █  █  █     █           █
+                        █  █  ████  █  ████  █  ████  ████  ██████████  █  ███████  █
+                        █  █  █     █           █              █           █     █  █
+                        ████  █  █  ██████████  ████  ████  ██████████  ███████  █  █
+                        █     █  █     █     █  █        █     █        █           █
+                        █  █  █  ███████  █  █  ████  ████  █████████████  ███████  █
+                        █  █              █     █        █        █        █  █  █  █
+                        ████  █  ████  ██████████  ██████████  █  █  ████  █  █  ████
+                        █     █     █           █     █     █  █        █        █  █
+                        ███████  ████  █  ████████████████  ███████  █████████████  █
+                        █     █     █  █        █  █     █     █     █  █     █  █  █
+                        █  █  █  ███████  ███████  █  █  ████  ████  █  █  ████  █  █
+                        █  █           █     █     █  █        █                    █
+                        ██████████  ████  ███████  █  ███████  █  █  █  ██████████  █
+                        █     █  █  █  █  █     █     █           █  █        █  █  █
+                        █  ████  █  █  ███████  █  █  ████  ████  █  ███████  █  ████
+                        █                    █  █  █  █        █  █  █     █     █  █
+                        ████  ████  ███████  █  ███████  ████  ███████  ████  █  █  █
+                        █  █  █  █     █              █  █  █     █        █  █     █
+                        █  █  █  ████████████████  ████  █  █  █  █  ████  ████  █  █
+                        █  █              █  █  █     █  █     █  █  █  █     █  █  █
+                        █  █  █  ██████████  █  █  █  █  ███████  ████  ████  ████  █
+                        █     █  █  █     █        █  █  █     █  █  █     █        █
+                        ███████  █  █  ███████  ███████  █  ███████  ████  █  ████  █
+                        █  █        █     █     █  █  █  █           █  █        █  █
+                        █  ███████  █  █  █  ████  █  █  █  ████  █  █  █  ███████  █
+                        █              █  █           █     █     █     █     █     
+                        █████████████████████████████████████████████████████████████  
+                        """.trimIndent().trim(), it.body
                 )
             }
         },

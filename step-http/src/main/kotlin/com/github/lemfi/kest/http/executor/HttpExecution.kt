@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.http.model.DeserializeException
+import com.github.lemfi.kest.http.model.FileDataPart
 import com.github.lemfi.kest.http.model.FilePart
 import com.github.lemfi.kest.http.model.HttpResponse
 import com.github.lemfi.kest.http.model.MultipartBody
@@ -124,6 +125,11 @@ internal data class HttpExecution<T>(
                                             it.file.asRequestBody(it.contentType?.toMediaTypeOrNull())
                                         )
                                         is ParameterPart -> addFormDataPart(it.name, it.value)
+                                        is FileDataPart -> addFormDataPart(
+                                            it.name,
+                                            it.filename,
+                                            it.data.toRequestBody(it.contentType?.toMediaTypeOrNull())
+                                        )
                                     }
                                 }
                             }
