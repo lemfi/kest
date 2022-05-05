@@ -2,21 +2,67 @@ package com.github.lemfi.kest.junit5.report
 
 import java.util.UUID
 
-internal data class Report(
-    val tests: MutableList<ATestReport> = mutableListOf(),
+data class Report(
+    val total: Long,
+    val nbSuccess: Long,
+    val nbFailures: Long,
+    val nbSkipped: Long,
+    val duration: Long,
+    val html: String,
+    val scenarios: List<ContainerTestReport>,
+)
+
+internal fun InternalReport.toReport() = Report(
+    total = total,
+    nbSuccess = nbSuccess,
+    nbFailures = nbFailures,
+    nbSkipped = nbSkipped,
+    duration = duration,
+    html = toHTML(),
+    scenarios = root().map { it.toTestReport() as ContainerTestReport }
+)
+
+internal data class InternalReport(
+    val tests: MutableList<AInternalTestReport> = mutableListOf(),
     var total: Long = 0,
     var nbSuccess: Long = 0,
     var nbFailures: Long = 0,
     var nbSkipped: Long = 0,
-    var duration: Long = 0
+    var duration: Long = 0,
 ) {
-    fun getTest(id: String): ATestReport? = tests.firstOrNull { it.id == id }
+    fun getTest(id: String): AInternalTestReport? = tests.firstOrNull { it.id == id }
 
     fun children(id: String) = tests.filter { it.parent == id }
 
-    private fun root() = tests.filter { it.parent == null }.let {
+    fun root() = tests.filter { it.parent == null }.let {
         if (it.size == 1) children(it.first().id) else it
     }
+
+    fun AInternalTestReport.toTestReport(): ATestReport =
+        when (this) {
+            is InternalContainerTestReport -> toTestReport()
+            is InternalTestReport -> toTestReport()
+        }
+
+    private fun InternalContainerTestReport.toTestReport(): ATestReport =
+        ContainerTestReport(
+            name = name,
+            status = status,
+            duration = duration,
+            steps = children(id).map {
+                it.toTestReport()
+            },
+        )
+
+    private fun InternalTestReport.toTestReport(): ATestReport =
+        TestReport(
+            name = name,
+            status = status,
+            duration = duration,
+            console = console,
+            failure = failure,
+        )
+
 
     private fun TestStatus.toCSS() =
         when (this) {
@@ -25,7 +71,7 @@ internal data class Report(
             TestStatus.SKIPPED -> "skipped"
         }
 
-    fun build() = """
+    fun toHTML() = """
 
 <!DOCTYPE html>
 <html lang="en">
@@ -228,15 +274,15 @@ pre.err {
         </table>
     """
 
-    private fun buildTests(tests: List<ATestReport>) =
+    private fun buildTests(tests: List<AInternalTestReport>) =
         tests.joinToString("") {
             when (it) {
-                is ContainerTestReport -> it.buildTest()
-                is TestReport -> it.buildTest()
+                is InternalContainerTestReport -> it.buildTest()
+                is InternalTestReport -> it.buildTest()
             }
         }
 
-    private fun ContainerTestReport.buildTest(): String =
+    private fun InternalContainerTestReport.buildTest(): String =
         UUID.randomUUID().toString().let { htmlId ->
             """
         <ul>
@@ -252,7 +298,7 @@ pre.err {
     """.trimIndent()
         }
 
-    private fun TestReport.buildTest() =
+    private fun InternalTestReport.buildTest() =
         UUID.randomUUID().toString().let { id ->
             """   
 <dl class="${status.toCSS()}">
@@ -266,7 +312,28 @@ ${if (failure.isNotBlank()) "<pre class=\"err\">$failure</pre>" else ""}
         }
 }
 
-internal sealed class ATestReport {
+sealed class ATestReport {
+    abstract val name: String
+    abstract val status: TestStatus
+    abstract val duration: Long
+}
+
+data class TestReport(
+    override val name: String,
+    override val status: TestStatus,
+    override val duration: Long,
+    val console: String,
+    val failure: String,
+) : ATestReport()
+
+data class ContainerTestReport(
+    override val name: String,
+    override val status: TestStatus,
+    override val duration: Long,
+    val steps: List<ATestReport>,
+) : ATestReport()
+
+internal sealed class AInternalTestReport {
     abstract val id: String
     abstract val name: String
     abstract var status: TestStatus
@@ -274,19 +341,19 @@ internal sealed class ATestReport {
     abstract val parent: String?
 }
 
-internal enum class TestStatus {
+enum class TestStatus {
     SUCCESS, FAILED, SKIPPED
 }
 
-internal data class ContainerTestReport(
+internal data class InternalContainerTestReport(
     override val id: String,
     override val name: String,
     override var status: TestStatus = TestStatus.FAILED,
     override var duration: Long = 0,
     override val parent: String? = null,
-) : ATestReport()
+) : AInternalTestReport()
 
-internal data class TestReport(
+internal data class InternalTestReport(
     override val id: String,
     override val name: String,
     override var status: TestStatus = TestStatus.FAILED,
@@ -294,4 +361,4 @@ internal data class TestReport(
     var console: String = "",
     var failure: String = "",
     override val parent: String? = null,
-) : ATestReport()
+) : AInternalTestReport()

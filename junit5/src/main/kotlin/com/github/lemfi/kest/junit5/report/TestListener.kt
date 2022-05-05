@@ -1,157 +1,158 @@
 package com.github.lemfi.kest.junit5.report
 
-import com.github.lemfi.kest.junit5.model.junit5RunnerProperty
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.reporting.ReportEntry
 import org.junit.platform.launcher.TestExecutionListener
 import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
 import java.util.Date
+import kotlin.concurrent.getOrSet
 
+@Suppress("unused")
+class KestTestListener(report: (Report) -> Unit) : TestExecutionListener {
 
-internal class TestListener : TestExecutionListener {
-
-    private val consoleSpy = ConsoleSpy()
-    private val file = junit5RunnerProperty { report }?.let { File(it) }
-
-    private lateinit var report: Report
+    private val listener: TestExecutionListener = object : AbstractTestListener(object : ReportWriter {
+        override fun writeReport(report: InternalReport) {
+            report(report.toReport())
+        }
+    }) {}
 
     override fun testPlanExecutionStarted(testPlan: TestPlan?) {
-        if (file != null) {
-            file.delete()
-            report = Report()
-            report.duration = Date().time
-        }
+        listener.testPlanExecutionStarted(testPlan)
     }
 
     override fun testPlanExecutionFinished(testPlan: TestPlan?) {
-        if (file != null) {
-            report.duration = Date().time - report.duration
-            file.parentFile.mkdirs()
-            file.createNewFile()
-            file.appendText(report.build())
-        }
+        listener.testPlanExecutionFinished(testPlan)
     }
 
-    override fun dynamicTestRegistered(testIdentifier: TestIdentifier) {
-        if (file != null) {
-            super.dynamicTestRegistered(testIdentifier)
-        }
+    override fun dynamicTestRegistered(testIdentifier: TestIdentifier?) {
+        listener.dynamicTestRegistered(testIdentifier)
     }
 
     override fun executionSkipped(testIdentifier: TestIdentifier?, reason: String?) {
-        if (file != null) {
-            super.executionSkipped(testIdentifier, reason)
-        }
+        listener.executionSkipped(testIdentifier, reason)
     }
 
-    override fun executionStarted(testIdentifier: TestIdentifier) {
-        if (file != null) {
-            val test = testIdentifier.toTestReport()
-            test.duration = Date().time
-            report.tests.add(test)
-            if (testIdentifier.isTest) consoleSpy.start()
-        }
+    override fun executionStarted(testIdentifier: TestIdentifier?) {
+        listener.executionStarted(testIdentifier)
     }
 
-    override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
-        if (file != null) {
-            consoleSpy.stop()
-
-            if (testIdentifier.isTest) {
-                report.total += 1
-                if (testExecutionResult.status == TestExecutionResult.Status.SUCCESSFUL) report.nbSuccess += 1
-                if (testExecutionResult.status == TestExecutionResult.Status.ABORTED) report.nbSkipped += 1
-                if (testExecutionResult.status == TestExecutionResult.Status.FAILED) report.nbFailures += 1
-            }
-            report.getTest(testIdentifier.uniqueId)?.let { test ->
-                if (test is TestReport) {
-                    test.console = consoleSpy.getText()
-                    if (testExecutionResult.status == TestExecutionResult.Status.FAILED)
-                        test.failure = testExecutionResult.throwable.orElseGet(null)?.stackTraceToString() ?: ""
-                }
-                test.duration = Date().time - test.duration
-                test.status = when (test) {
-                    is TestReport -> when (testExecutionResult.status) {
-                        TestExecutionResult.Status.SUCCESSFUL -> TestStatus.SUCCESS
-                        TestExecutionResult.Status.FAILED -> TestStatus.FAILED
-                        TestExecutionResult.Status.ABORTED, null -> TestStatus.SKIPPED
-                    }
-                    is ContainerTestReport ->
-                        if (report.children(test.id).any { it.status == TestStatus.FAILED }) TestStatus.FAILED
-                        else TestStatus.SUCCESS
-                }
-            }
-        }
+    override fun executionFinished(testIdentifier: TestIdentifier?, testExecutionResult: TestExecutionResult?) {
+        listener.executionFinished(testIdentifier, testExecutionResult)
     }
 
     override fun reportingEntryPublished(testIdentifier: TestIdentifier?, entry: ReportEntry?) {
-        if (file != null) {
-            super.reportingEntryPublished(testIdentifier, entry)
+        listener.reportingEntryPublished(testIdentifier, entry)
+    }
+}
+
+internal abstract class AbstractTestListener(private val reportWriter: ReportWriter) : TestExecutionListener {
+
+    private lateinit var report: InternalReport
+
+    override fun testPlanExecutionStarted(testPlan: TestPlan?) {
+        reportWriter.init()
+        report = InternalReport()
+        report.duration = Date().time
+    }
+
+    override fun testPlanExecutionFinished(testPlan: TestPlan?) {
+        report.duration = Date().time - report.duration
+        reportWriter.writeReport(report)
+    }
+
+    override fun executionStarted(testIdentifier: TestIdentifier) {
+        val test = testIdentifier.toTestReport()
+        test.duration = Date().time
+        report.tests.add(test)
+        if (testIdentifier.isTest) consoleSpy.start()
+    }
+
+    override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
+
+        if (testIdentifier.isTest) {
+            report.total += 1
+            if (testExecutionResult.status == TestExecutionResult.Status.SUCCESSFUL) report.nbSuccess += 1
+            if (testExecutionResult.status == TestExecutionResult.Status.ABORTED) report.nbSkipped += 1
+            if (testExecutionResult.status == TestExecutionResult.Status.FAILED) report.nbFailures += 1
+        }
+        report.getTest(testIdentifier.uniqueId)?.let { test ->
+            if (test is InternalTestReport) {
+                test.console = consoleSpy.getText()
+                if (testExecutionResult.status == TestExecutionResult.Status.FAILED)
+                    test.failure = testExecutionResult.throwable.orElseGet(null)?.stackTraceToString() ?: ""
+            }
+            test.duration = Date().time - test.duration
+            test.status = when (test) {
+                is InternalTestReport -> when (testExecutionResult.status) {
+                    TestExecutionResult.Status.SUCCESSFUL -> TestStatus.SUCCESS
+                    TestExecutionResult.Status.FAILED -> TestStatus.FAILED
+                    TestExecutionResult.Status.ABORTED, null -> TestStatus.SKIPPED
+                }
+                is InternalContainerTestReport ->
+                    if (report.children(test.id).any { it.status == TestStatus.FAILED }) TestStatus.FAILED
+                    else TestStatus.SUCCESS
+            }
         }
     }
 
     private fun TestIdentifier.toTestReport() =
         if (isTest)
-            TestReport(
+            InternalTestReport(
                 id = uniqueId,
                 name = displayName,
                 parent = parentId.orElseGet { null }
             )
-        else ContainerTestReport(
+        else InternalContainerTestReport(
             id = uniqueId,
             name = displayName,
             parent = parentId.orElseGet { null }
         )
-
 }
+
+internal class TestListener : AbstractTestListener(FileReportWriter())
+
+private val spy: ThreadLocal<ByteArrayOutputStream> = ThreadLocal<ByteArrayOutputStream>()
+
+private val consoleSpy = ConsoleSpy()
 
 private class ConsoleSpy {
 
-    private val out = System.out
-    private val err = System.err
-
-    private val spy = ByteArrayOutputStream()
-
-    private val printStream: (PrintStream, PrintStream) -> PrintStream = { spied, spy ->
+    private val printStream: (PrintStream) -> PrintStream = { spied ->
         PrintStream(object : OutputStream() {
             override fun flush() {
-                spy.flush()
+                spy.getOrDefault().flush()
                 spied.flush()
             }
 
             override fun write(b: Int) {
-                spy.write(b)
+                spy.getOrDefault().write(b)
                 spied.write(b)
             }
 
             override fun write(b: ByteArray) {
-                spy.write(b)
+                spy.getOrDefault().write(b)
                 spied.write(b)
             }
 
             override fun write(b: ByteArray, off: Int, len: Int) {
-                spy.write(b, off, len)
+                spy.getOrDefault().write(b, off, len)
                 spied.write(b, off, len)
             }
         })
     }
 
-    fun getText(): String = spy.toString(Charsets.UTF_8)
-
-    fun start() = spy
-        .also {
-            it.reset()
-            System.setOut(printStream(out, PrintStream(it)))
-            System.setErr(printStream(err, PrintStream(it)))
-        }
-
-    fun stop() {
-        System.setOut(out)
-        System.setErr(err)
+    init {
+        System.setOut(printStream(System.out))
+        System.setErr(printStream(System.err))
     }
+
+    fun getText(): String = spy.get().toString(Charsets.UTF_8)
+
+    fun start() = spy.set(ByteArrayOutputStream())
+
+    private fun ThreadLocal<ByteArrayOutputStream>.getOrDefault() = getOrSet { ByteArrayOutputStream() }
 }
