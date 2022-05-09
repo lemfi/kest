@@ -2,6 +2,7 @@ package com.github.lemfi.kest.rabbitmq.executor
 
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessage
+import com.rabbitmq.client.Channel
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.GetResponse
 import org.opentest4j.AssertionFailedError
@@ -19,6 +20,31 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
 
     private val encodedVhost: String = URLEncoder.encode(vhost, Charsets.UTF_8)
 
+    private val messagesToAcknowledge = mutableListOf<GetResponse>()
+
+    private var channel: Channel? = null
+
+    private fun channel() = channel ?: ConnectionFactory().also {
+
+        it.setUri("$connection/$encodedVhost")
+    }
+        .newConnection("kest connection")
+        .createChannel()
+        .apply { channel = this }
+
+    override fun onAssertionFailedError() {
+        messagesToAcknowledge.forEach {
+            channel().basicNack(it.envelope.deliveryTag, true, true)
+        }
+    }
+
+    override fun onAssertionSuccess() {
+        messagesToAcknowledge.forEach {
+            channel().basicAck(it.envelope.deliveryTag, true)
+        }
+    }
+
+
     override fun execute(): List<RabbitMQMessage<T>> {
 
         LoggerFactory.getLogger("RABBITMQ-Kest").info(
@@ -30,29 +56,19 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
                 .trimMargin()
         )
 
-        return ConnectionFactory().also {
-
-            it.setUri("$connection/$encodedVhost")
-        }
-            .newConnection("kest connection")
-            .createChannel().run {
+        return channel()
+            .run {
                 mutableListOf<GetResponse?>().apply {
                     (1..nbMessages).forEach { _ ->
                         add(basicGet(queueName, false))
                     }
                 }
-                    .let {
-                        if (it.contains(null)) {
-                            it.onEach { message ->
-                                if (message != null) basicNack(message.envelope.deliveryTag, true, true)
-                            }
-                            throw AssertionFailedError("No message to read")
-                        } else it
-                    }
                     .filterNotNull()
+                    .apply { messagesToAcknowledge.addAll(this) }
                     .map {
                         try {
-                            it.body?.l()
+                            it.body
+                                ?.l()
                                 ?.let { body ->
                                     RabbitMQMessage(
                                         message = body as T,
@@ -84,9 +100,8 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
                                     """.trimIndent()
                                         )
 
-                                        basicAck(it.envelope.deliveryTag, true)
                                     }
-                                } ?: throw AssertionFailedError("No message to read")
+                                } ?: throw AssertionFailedError("Failed to read message: null")
                         } catch (e: Throwable) {
                             basicNack(it.envelope.deliveryTag, true, true)
                             throw e
