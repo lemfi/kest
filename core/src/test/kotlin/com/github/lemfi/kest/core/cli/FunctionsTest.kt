@@ -30,6 +30,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.fail
 import org.opentest4j.AssertionFailedError
 import kotlin.system.measureTimeMillis
 
@@ -128,9 +129,20 @@ class FunctionsTest {
         every { step.retry } returns null
         every { step.scenarioName } returns "the scenario name"
         every { step.name } returns StepName("the step name")
+
+        var onAssertionFailedCalled = false
+
         val execution = object : Execution<String>() {
             override fun execute(): String {
                 throw IllegalAccessException("this step will fail on execution!")
+            }
+
+            override fun onAssertionSuccess() {
+                fail("When a step fails, onAssertionSuccess should not be called")
+            }
+
+            override fun onAssertionFailedError() {
+                onAssertionFailedCalled = true
             }
         }
         every { step.execution } returns { execution }
@@ -145,6 +157,7 @@ class FunctionsTest {
 
         Assertions.assertEquals(IllegalAccessException::class, failing.captured::class)
         Assertions.assertEquals("this step will fail on execution!", failing.captured.message)
+        Assertions.assertTrue(onAssertionFailedCalled)
 
         Assertions.assertEquals(
             """
@@ -171,11 +184,21 @@ class FunctionsTest {
                 assertions.add { `is true`(false) { "hahaha" } }
             }
 
+        var onAssertionFailedCalled = false
+
         step.apply {
             postExecution = standaloneStepPostExecution
             execution = {
                 object : Execution<String>() {
                     override fun execute(): String = "execution is successful"
+
+                    override fun onAssertionSuccess() {
+                        fail("When a step fails, onAssertionSuccess should not be called")
+                    }
+
+                    override fun onAssertionFailedError() {
+                        onAssertionFailedCalled = true
+                    }
                 }
             }
         }
@@ -185,6 +208,7 @@ class FunctionsTest {
         }
 
         Assertions.assertTrue(step.postExecution.isFailed())
+        Assertions.assertTrue(onAssertionFailedCalled)
 
         Assertions.assertEquals(
             """
@@ -207,7 +231,7 @@ class FunctionsTest {
         every { step.retry } returns 2.times.`by intervals of`(10.ms)
         every { step.scenarioName } returns "the scenario name"
         every { step.name } returns StepName("the step name")
-        val execution = mockk<Execution<String>>()
+        val execution = mockk<Execution<String>>(relaxUnitFun = true)
         every { step.execution } returns { execution }
         every { execution.execute() } throws IllegalAccessException("first call fails") andThen "success"
         every { step.postExecution } returns postExecution
@@ -217,6 +241,8 @@ class FunctionsTest {
 
         verify(exactly = 1) { postExecution.setResult("success") }
         verify(exactly = 2) { execution.execute() }
+        verify(exactly = 1) { execution.onAssertionFailedError() }
+        verify(exactly = 1) { execution.onAssertionSuccess() }
 
         Assertions.assertEquals(step, res)
     }
@@ -230,7 +256,7 @@ class FunctionsTest {
         every { step.retry } returns null
         every { step.scenarioName } returns "the scenario name"
         every { step.name } returns StepName("the step name")
-        val execution = mockk<Execution<String>>()
+        val execution = mockk<Execution<String>>(relaxUnitFun = true)
         every { step.execution } returns { execution }
         every { execution.execute() } returns "success"
         every { step.postExecution } returns postExecution
@@ -240,6 +266,8 @@ class FunctionsTest {
 
         verify(exactly = 1) { postExecution.setResult("success") }
         verify(exactly = 1) { execution.execute() }
+        verify(exactly = 0) { execution.onAssertionFailedError() }
+        verify(exactly = 1) { execution.onAssertionSuccess() }
 
         Assertions.assertEquals(step, res)
     }

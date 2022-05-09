@@ -134,8 +134,10 @@ fun <T> Step<T>.run(): Step<T> {
                 }
             }
             tries = 0
+            execution.onAssertionSuccess()
             postExecution.setResult(res)
         } catch (e: Throwable) {
+            execution.onAssertionFailedError()
             tries--
             if (tries > 0) {
                 Thread.sleep(delay)
