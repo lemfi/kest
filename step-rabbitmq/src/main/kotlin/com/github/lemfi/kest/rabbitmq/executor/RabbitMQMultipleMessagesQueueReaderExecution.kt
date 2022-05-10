@@ -5,7 +5,6 @@ import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessage
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.GetResponse
-import org.opentest4j.AssertionFailedError
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 
@@ -101,7 +100,7 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
                                         )
 
                                     }
-                                } ?: throw AssertionFailedError("Failed to read message: null")
+                                } ?: throw IllegalStateException("Failed to read message: null")
                         } catch (e: Throwable) {
                             basicNack(it.envelope.deliveryTag, true, true)
                             throw e

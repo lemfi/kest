@@ -15,7 +15,6 @@ import com.uber.cadence.worker.WorkerFactory
 import com.uber.cadence.worker.WorkerOptions
 import com.uber.cadence.workflow.Workflow
 import com.uber.cadence.workflow.WorkflowMethod
-import org.opentest4j.AssertionFailedError
 import java.lang.reflect.Type
 import java.time.Duration
 import kotlin.reflect.KFunction
@@ -59,7 +58,7 @@ internal class ActivityExecution<RESULT>(
             }.start()
 
         val parameterTypes = activity.parameters.subList(1, activity.parameters.size).also { parameterTypes ->
-            if ((params?.size ?: 0) != parameterTypes.size) throw AssertionFailedError(
+            if ((params?.size ?: 0) != parameterTypes.size) throw IllegalArgumentException(
                 "Wrong number of parameter for activity, expected [${
                     parameterTypes.map { it.type }.joinToString(", ")
                 }] got ${params?.toList()}"
