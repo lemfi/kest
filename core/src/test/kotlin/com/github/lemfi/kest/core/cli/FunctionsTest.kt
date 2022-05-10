@@ -15,6 +15,7 @@ import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
+import com.github.lemfi.kest.core.model.StepResultFailure
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
@@ -28,6 +29,7 @@ import io.mockk.unmockkConstructor
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
@@ -54,7 +56,7 @@ class FunctionsTest {
         verify { scenarioBuilder(capture(slot)) }
 
         Assertions.assertTrue(slot.captured is StandaloneScenarioBuilder)
-        Assertions.assertEquals(scenario, res)
+        assertEquals(scenario, res)
 
         unmockkConstructor(StandaloneScenarioBuilder::class)
 
@@ -77,8 +79,8 @@ class FunctionsTest {
             l.invoke(mockk(), "step res")
         }
 
-        Assertions.assertEquals("fail message", assertionsResult.message)
-        Assertions.assertEquals(stepResult, res)
+        assertEquals("fail message", assertionsResult.message)
+        assertEquals(stepResult, res)
     }
 
     @Test
@@ -118,7 +120,7 @@ class FunctionsTest {
 
         verify { postExecution.setFailed(exception) }
 
-        Assertions.assertEquals("this step will fail on execution build!", exception.message)
+        assertEquals("this step will fail on execution build!", exception.message)
     }
 
     @Test
@@ -155,11 +157,11 @@ class FunctionsTest {
         val failing = slot<Throwable>()
         verify(exactly = 1) { postExecution.setFailed(capture(failing)) }
 
-        Assertions.assertEquals(IllegalAccessException::class, failing.captured::class)
-        Assertions.assertEquals("this step will fail on execution!", failing.captured.message)
+        assertEquals(IllegalAccessException::class, failing.captured::class)
+        assertEquals("this step will fail on execution!", failing.captured.message)
         Assertions.assertTrue(onAssertionFailedCalled)
 
-        Assertions.assertEquals(
+        assertEquals(
             """
 +-----------------------------------+
 | Scenario: the scenario name       |
@@ -210,7 +212,7 @@ class FunctionsTest {
         Assertions.assertTrue(step.postExecution.isFailed())
         Assertions.assertTrue(onAssertionFailedCalled)
 
-        Assertions.assertEquals(
+        assertEquals(
             """
 +-----------------------------+
 | Scenario: the scenario name |
@@ -244,7 +246,38 @@ class FunctionsTest {
         verify(exactly = 1) { execution.onAssertionFailedError() }
         verify(exactly = 1) { execution.onAssertionSuccess() }
 
-        Assertions.assertEquals(step, res)
+        assertEquals(step, res)
+    }
+
+    @Test
+    fun `a step that depends on another one which failed is not retried`() {
+
+        val firstStep = mockk<Step<Unit>>(relaxUnitFun = true)
+        every { firstStep.scenarioName } returns "the scenario name"
+        every { firstStep.name } returns StepName("the first step name")
+        every { firstStep.postExecution } returns StepPostExecution(firstStep, null) {}
+
+        val step = mockk<Step<Unit>>(relaxUnitFun = true)
+        val postExecution = mockk<StepPostExecution<Unit>>(relaxUnitFun = true)
+
+        every { step.retry } returns 2.times.`by intervals of`(10.ms)
+        every { step.scenarioName } returns "the scenario name"
+        every { step.name } returns StepName("the step name")
+        var executionCalled = 0
+        val execution = object : Execution<Unit>() {
+            override fun execute() {
+                executionCalled++
+                firstStep.postExecution()
+            }
+        }
+        every { step.execution } returns { execution }
+        every { step.postExecution } returns postExecution
+        every { postExecution.assertions } returns mutableListOf({ `is true`(true) })
+
+        assertThrows<StepResultFailure> { step.run() }
+
+        assertEquals(1, executionCalled)
+
     }
 
     @Test
@@ -269,7 +302,7 @@ class FunctionsTest {
         verify(exactly = 0) { execution.onAssertionFailedError() }
         verify(exactly = 1) { execution.onAssertionSuccess() }
 
-        Assertions.assertEquals(step, res)
+        assertEquals(step, res)
     }
 
     @Test
@@ -303,7 +336,7 @@ class FunctionsTest {
 
         val time = measureTimeMillis { execution.execute() }
 
-        Assertions.assertEquals(stepRes, res)
+        assertEquals(stepRes, res)
         Assertions.assertTrue(time in 200..202) { "wait should take 200ms" }
     }
 
@@ -338,7 +371,7 @@ class FunctionsTest {
 
         val time = measureTimeMillis { execution.execute() }
 
-        Assertions.assertEquals(stepRes, res)
+        assertEquals(stepRes, res)
         Assertions.assertTrue(time in 200..202) { "step should take 200ms" }
     }
 
@@ -374,7 +407,7 @@ class FunctionsTest {
 
         val time = measureTimeMillis { execution.execute() }
 
-        Assertions.assertEquals(stepRes, res)
+        assertEquals(stepRes, res)
         Assertions.assertTrue(time in 200..202) { "nested scenario should take 200ms" }
     }
 
@@ -412,9 +445,9 @@ class FunctionsTest {
         lateinit var result: String
         val time = measureTimeMillis { result = execution.execute() }
 
-        Assertions.assertEquals(stepRes, res)
+        assertEquals(stepRes, res)
         Assertions.assertTrue(time in 200..202) { "nested scenario should take 200ms" }
-        Assertions.assertEquals("this is the result!", result)
+        assertEquals("this is the result!", result)
     }
 
 }

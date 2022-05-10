@@ -18,6 +18,7 @@ import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
+import com.github.lemfi.kest.core.model.StepResultFailure
 import org.opentest4j.AssertionFailedError
 
 fun scenario(name: String = "anonymous scenario", s: ScenarioBuilder.() -> Unit): Scenario {
@@ -138,6 +139,7 @@ fun <T> Step<T>.run(): Step<T> {
             postExecution.setResult(res)
         } catch (e: Throwable) {
             execution.onAssertionFailedError()
+            if (e is StepResultFailure) throw e
             tries--
             if (tries > 0) {
                 Thread.sleep(delay)
