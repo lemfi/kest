@@ -20,6 +20,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
+import java.io.File
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
@@ -100,7 +101,7 @@ internal data class HttpExecution<T>(
             | 
             | $method $url
             | $headers
-            | $body
+            | ${body.toLog()}
             | 
             | """.trimMargin()
         )
@@ -151,7 +152,16 @@ internal data class HttpExecution<T>(
                             contentType?.also { headers["Content-Type"] = it }
                             headers.forEach { addHeader(it.key, it.value) }
                         }
-                        .method(method, body?.toString()?.toRequestBody(contentType?.toMediaTypeOrNull()))
+                        .method(method, body
+                            ?.let { body ->
+                                when (body) {
+                                    is String -> body.toRequestBody(contentType?.toMediaTypeOrNull())
+                                    is ByteArray -> body.toRequestBody(contentType?.toMediaTypeOrNull())
+                                    is File -> body.asRequestBody(contentType?.toMediaTypeOrNull())
+                                    else -> throw IllegalArgumentException("only String, ByteArray or File is accepted for HTTP request body")
+                                }
+
+                            })
                         .build()
                 ).execute().toHttpResponse()
         }
@@ -189,4 +199,13 @@ internal data class HttpExecution<T>(
             )
         }
     }
+
+    private fun Any?.toLog() = this?.let { data ->
+        when (data) {
+            is ByteArray -> "ByteArray(${data.size})"
+            is File -> "File(${data.path}"
+            is String -> data
+            else -> data::class.simpleName
+        }
+    } ?: ""
 }
