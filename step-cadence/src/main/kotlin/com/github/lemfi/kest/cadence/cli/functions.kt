@@ -6,6 +6,7 @@ import com.github.lemfi.kest.cadence.builder.ActivityCallExecutionBuilder
 import com.github.lemfi.kest.cadence.builder.WorkflowExecutionBuilder
 import com.github.lemfi.kest.cadence.model.cadenceProperty
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -14,7 +15,6 @@ import com.google.gson.reflect.TypeToken
 import com.uber.cadence.RegisterDomainRequest
 import com.uber.cadence.serviceclient.ClientOptions
 import com.uber.cadence.serviceclient.WorkflowServiceTChannel
-import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("CADENCE-Kest")
 

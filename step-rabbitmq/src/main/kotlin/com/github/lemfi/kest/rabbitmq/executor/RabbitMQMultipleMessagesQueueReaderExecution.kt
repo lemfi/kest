@@ -1,11 +1,11 @@
 package com.github.lemfi.kest.rabbitmq.executor
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessage
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.GetResponse
-import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 
 internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(

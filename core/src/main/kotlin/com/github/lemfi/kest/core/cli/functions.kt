@@ -7,6 +7,8 @@ import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.builder.NestedScenarioExecutionBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
+import com.github.lemfi.kest.core.logger.getOrDefault
+import com.github.lemfi.kest.core.logger.threadLocalLogger
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.NestedScenarioStep
@@ -107,6 +109,8 @@ fun IScenario.run() {
 }
 
 fun <T> Step<T>.run(): Step<T> {
+
+    threadLocalLogger.getOrDefault().reset()
 
     val execution = try {
         execution()

@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.cadence.model
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.properties.property
-import org.slf4j.LoggerFactory
 
 internal data class CadenceProperties(
     val cadence: CadenceProp

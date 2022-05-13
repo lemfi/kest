@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.json.model
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.properties.property
-import org.slf4j.LoggerFactory
 
 internal data class JsonProperties(
     val json: JsonProp

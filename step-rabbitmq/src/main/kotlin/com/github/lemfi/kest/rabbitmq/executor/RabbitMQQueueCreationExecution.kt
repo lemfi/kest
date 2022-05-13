@@ -1,9 +1,9 @@
 package com.github.lemfi.kest.rabbitmq.executor
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.rabbitmq.builder.QueueAndBinding
 import com.rabbitmq.client.ConnectionFactory
-import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 
 internal class RabbitMQQueueCreationExecution(

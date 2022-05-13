@@ -5,11 +5,7 @@ import org.junit.platform.engine.reporting.ReportEntry
 import org.junit.platform.launcher.TestExecutionListener
 import org.junit.platform.launcher.TestIdentifier
 import org.junit.platform.launcher.TestPlan
-import java.io.ByteArrayOutputStream
-import java.io.OutputStream
-import java.io.PrintStream
 import java.util.Date
-import kotlin.concurrent.getOrSet
 
 @Suppress("unused")
 class KestTestListener(report: (Report) -> Unit) : TestExecutionListener {
@@ -53,6 +49,12 @@ internal abstract class AbstractTestListener(private val reportWriter: ReportWri
 
     private lateinit var report: InternalReport
 
+    private val logs by lazy {
+        Class
+            .forName("com.github.lemfi.kest.core.logger.KestLogs")
+            .getMethod("getLog")
+    }
+
     override fun testPlanExecutionStarted(testPlan: TestPlan?) {
         reportWriter.init()
         report = InternalReport()
@@ -68,7 +70,6 @@ internal abstract class AbstractTestListener(private val reportWriter: ReportWri
         val test = testIdentifier.toTestReport()
         test.duration = Date().time
         report.tests.add(test)
-        if (testIdentifier.isTest) consoleSpy.start()
     }
 
     override fun executionFinished(testIdentifier: TestIdentifier, testExecutionResult: TestExecutionResult) {
@@ -81,7 +82,8 @@ internal abstract class AbstractTestListener(private val reportWriter: ReportWri
         }
         report.getTest(testIdentifier.uniqueId)?.let { test ->
             if (test is InternalTestReport) {
-                test.console = consoleSpy.getText()
+
+                test.console = logs.invoke(null) as String
                 if (testExecutionResult.status == TestExecutionResult.Status.FAILED)
                     test.failure = testExecutionResult.throwable.orElseGet(null)?.stackTraceToString() ?: ""
             }
@@ -114,45 +116,3 @@ internal abstract class AbstractTestListener(private val reportWriter: ReportWri
 }
 
 internal class TestListener : AbstractTestListener(FileReportWriter())
-
-private val spy: ThreadLocal<ByteArrayOutputStream> = ThreadLocal<ByteArrayOutputStream>()
-
-private val consoleSpy = ConsoleSpy()
-
-private class ConsoleSpy {
-
-    private val printStream: (PrintStream) -> PrintStream = { spied ->
-        PrintStream(object : OutputStream() {
-            override fun flush() {
-                spy.getOrDefault().flush()
-                spied.flush()
-            }
-
-            override fun write(b: Int) {
-                spy.getOrDefault().write(b)
-                spied.write(b)
-            }
-
-            override fun write(b: ByteArray) {
-                spy.getOrDefault().write(b)
-                spied.write(b)
-            }
-
-            override fun write(b: ByteArray, off: Int, len: Int) {
-                spy.getOrDefault().write(b, off, len)
-                spied.write(b, off, len)
-            }
-        })
-    }
-
-    init {
-        System.setOut(printStream(System.out))
-        System.setErr(printStream(System.err))
-    }
-
-    fun getText(): String = spy.get().toString(Charsets.UTF_8)
-
-    fun start() = spy.set(ByteArrayOutputStream())
-
-    private fun ThreadLocal<ByteArrayOutputStream>.getOrDefault() = getOrSet { ByteArrayOutputStream() }
-}

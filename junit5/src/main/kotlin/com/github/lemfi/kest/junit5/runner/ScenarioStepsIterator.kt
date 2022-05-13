@@ -2,6 +2,7 @@ package com.github.lemfi.kest.junit5.runner
 
 import com.github.lemfi.kest.core.cli.run
 import com.github.lemfi.kest.core.executor.NestedScenarioStepExecution
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.NestedScenario
 import com.github.lemfi.kest.core.model.NestedScenarioStep
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.DynamicContainer
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest
 import org.opentest4j.TestAbortedException
-import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("JUNIT-RUNNER-Kest")
 

@@ -1,8 +1,8 @@
 package com.github.lemfi.kest.redis.model
 
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.properties.property
-import org.slf4j.LoggerFactory
 
 internal data class RedisProperties(
     val redis: RedisProp

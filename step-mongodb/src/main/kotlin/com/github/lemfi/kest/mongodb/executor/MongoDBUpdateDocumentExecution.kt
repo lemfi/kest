@@ -1,9 +1,9 @@
 package com.github.lemfi.kest.mongodb.executor
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
 import com.mongodb.client.MongoClients
 import org.bson.Document
-import org.slf4j.LoggerFactory
 
 internal data class MongoDBUpdateDocumentExecution(
     val collection: String,

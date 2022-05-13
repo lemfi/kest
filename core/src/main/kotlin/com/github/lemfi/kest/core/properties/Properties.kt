@@ -2,9 +2,9 @@
 
 package com.github.lemfi.kest.core.properties
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.sksamuel.hoplite.ConfigLoader
 import com.sksamuel.hoplite.ConfigResult
-import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 

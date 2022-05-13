@@ -4,6 +4,7 @@ package com.github.lemfi.kest.http.executor
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.http.model.DeserializeException
 import com.github.lemfi.kest.http.model.FileDataPart
@@ -18,7 +19,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream

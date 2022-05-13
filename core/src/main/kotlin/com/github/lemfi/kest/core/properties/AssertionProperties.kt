@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.core.properties
 
-import org.slf4j.LoggerFactory
+import com.github.lemfi.kest.core.logger.LoggerFactory
 
 internal data class AssertionProperties(
     val assertions: AssertionProp

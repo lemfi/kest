@@ -1,8 +1,8 @@
 package com.github.lemfi.kest.redis.executor
 
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.redis.builder.RedisInsert
-import org.slf4j.LoggerFactory
 import redis.clients.jedis.Jedis
 
 class RedisInsertKeyExecution(
