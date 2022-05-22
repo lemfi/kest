@@ -33,14 +33,18 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
 
     override fun onAssertionFailedError() {
         messagesToAcknowledge.forEach {
-            channel().basicNack(it.envelope.deliveryTag, true, true)
+            runCatching { channel().basicNack(it.envelope.deliveryTag, true, true) }
         }
+        messagesToAcknowledge.clear()
     }
 
     override fun onAssertionSuccess() {
         messagesToAcknowledge.forEach {
-            channel().basicAck(it.envelope.deliveryTag, true)
+            runCatching {
+                channel().basicAck(it.envelope.deliveryTag, true)
+            }
         }
+        messagesToAcknowledge.clear()
     }
 
 
