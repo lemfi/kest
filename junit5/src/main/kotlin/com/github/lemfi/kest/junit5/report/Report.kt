@@ -167,12 +167,12 @@ dl.ko span.status {
     color: var(--red);
 }
 
-dl.ok span.status {
-    color: var(--acid-green);
-}
-
 dl.skipped span.status {
     color: var(--honey-yellow);
+}
+
+dl.ok span.status {
+    color: var(--acid-green);
 }
 
 dt {
@@ -287,7 +287,7 @@ pre.err {
             """
         <ul>
             <li>
-                <dl class="${status.toCSS()}"}">
+                <dl class="${status.toCSS()}">
                     <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$htmlId')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
                     <dd id="$htmlId" class="hidden">
                         ${buildTests(children(id))}
