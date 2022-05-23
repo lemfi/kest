@@ -27,7 +27,7 @@ class NestedScenario<T>(
                 }
         } catch (e: Throwable) {
             with(
-                StepResultFailure(
+                e orStepResultFailure StepResultResultFailure(
                     step = parentStep,
                     cause = e,
                 )

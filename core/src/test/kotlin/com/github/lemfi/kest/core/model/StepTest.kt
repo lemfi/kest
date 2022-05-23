@@ -27,9 +27,10 @@ class StepTest {
         }
 
         Assertions.assertEquals(
-            """Step "a step" was not played yet! 
-You may use its result only in another step body
-""", exception.message
+            """|
+            |Step "a step" was not played yet! 
+            |You may use its result only in another step body
+            |""".trimMargin(), exception.message
         )
     }
 
@@ -51,7 +52,12 @@ You may use its result only in another step body
             stepRes()
         }
 
-        Assertions.assertEquals("""Could not get result from previous step "a step"""", exception.message)
+        Assertions.assertEquals(
+            """|
+            |Could not get result from previous step "a step"
+            |Assertions failed for step
+            |""".trimMargin(), exception.message
+        )
     }
 
     @Test
@@ -110,7 +116,12 @@ You may use its result only in another step body
             stepRes()
         }
 
-        Assertions.assertEquals("""Could not get result from previous step "a step"""", exception.message)
+        Assertions.assertEquals(
+            """|
+            |Could not get result from previous step "a step"
+            |Could not compute result
+            |""".trimMargin(), exception.message
+        )
     }
 
     @Test
@@ -201,7 +212,13 @@ You may use its result only in another step body
             stepRes1()
         }
 
-        Assertions.assertEquals("""Could not get result from previous step "step 1"""", exception.message)
+        Assertions.assertEquals(
+            """|
+            |Could not get result from previous step "step 1"
+            |Assertions failed for step
+            |""".trimMargin(),
+            exception.message
+        )
 
         Assertions.assertTrue(stepRes2.isFailed())
         Assertions.assertTrue(stepRes3.isFailed())

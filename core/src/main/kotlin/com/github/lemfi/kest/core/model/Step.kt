@@ -58,10 +58,7 @@ sealed class IStepPostExecution<T, R>(
                 it()
             } catch (e: Throwable) {
                 with(
-                    StepResultFailure(
-                        step = step,
-                        cause = e,
-                    )
+                    e orStepResultFailure StepResultResultFailure(step = step, cause = e)
                 ) {
                     setFailed(this)
                     throw this
@@ -70,18 +67,12 @@ sealed class IStepPostExecution<T, R>(
         }
 
         if (failed != null) {
-            throw StepResultFailure(step = step, cause = failed!!)
+            throw failed!! orStepResultFailure StepResultAssertionFailure(step = step, cause = failed!!)
         } else if (resSet) tryResolveResult {
             transformer(res as T)
         } else if (pe != null) tryResolveResult {
             transformer(pe.result())
-        } else throw StepResultFailure(
-            step,
-            """
-                |Step "${step.name?.value ?: step}" was not played yet! 
-                |You may use its result only in another step body
-                |""".trimMargin()
-        )
+        } else throw StepResultNotPlayedFailure(step)
     }
 
 
@@ -147,9 +138,3 @@ val Int.times: RetryStep get() = RetryStep(retries = this)
 val Int.ms: Long get() = this.toLong()
 val Int.seconds: Long get() = this * 1000L
 infix fun RetryStep.`by intervals of`(milliseconds: Long) = copy(delay = milliseconds)
-
-class StepResultFailure(
-    val step: Step<*>,
-    override val message: String? = """Could not get result from previous step "${step.name?.value ?: step}"""",
-    override val cause: Throwable? = null
-) : Throwable(message, cause)
