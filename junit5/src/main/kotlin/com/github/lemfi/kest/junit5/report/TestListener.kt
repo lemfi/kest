@@ -95,8 +95,12 @@ internal abstract class AbstractTestListener(private val reportWriter: ReportWri
                     TestExecutionResult.Status.ABORTED, null -> TestStatus.SKIPPED
                 }
                 is InternalContainerTestReport ->
-                    if (report.children(test.id).any { it.status == TestStatus.FAILED }) TestStatus.FAILED
-                    else TestStatus.SUCCESS
+                    when {
+                        report.children(test.id).any { it.status == TestStatus.FAILED } -> TestStatus.FAILED
+                        report.children(testIdentifier.uniqueId)
+                            .any { it.status == TestStatus.SKIPPED } -> TestStatus.SKIPPED
+                        else -> TestStatus.SUCCESS
+                    }
             }
         }
     }
