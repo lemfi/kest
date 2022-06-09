@@ -9,6 +9,7 @@ import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
+import com.github.lemfi.kest.rabbitmq.builder.RabbitMQCountMessagesExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQMessageExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueCreationExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueDeletionExecutionBuilder
@@ -88,6 +89,19 @@ fun ScenarioBuilder.`create rabbitmq queue`(
     val executionBuilder = RabbitMQQueueCreationExecutionBuilder()
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
+        scenarioName = scenarioName,
+        retry = retry
+    ).addToScenario(executionBuilder, builder)
+}
+
+fun ScenarioBuilder.`given number of messages in rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RabbitMQCountMessagesExecutionBuilder.() -> Unit
+): StepPostExecution<Long> {
+    val executionBuilder = RabbitMQCountMessagesExecutionBuilder()
+    return StandaloneStep<Long>(
+        name = name?.let { StepName(it) } ?: StepName("count messages from rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
