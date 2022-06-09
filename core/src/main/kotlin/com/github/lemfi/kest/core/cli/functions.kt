@@ -66,7 +66,6 @@ fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: 
 
 fun <T> ScenarioBuilder.nestedScenario(
     name: String? = null,
-    retryStep: RetryStep? = null,
     l: NestedScenarioExecutionBuilder<T>.() -> Unit
 ): NestedScenarioStepPostExecution<T, T> {
     val executionBuilder = NestedScenarioExecutionBuilder<T>(name)
@@ -74,7 +73,6 @@ fun <T> ScenarioBuilder.nestedScenario(
     return NestedScenarioStep<T>(
         name = name?.let { StepName(it) },
         scenarioName = scenarioName,
-        retry = retryStep
     )
         .apply { executionBuilder.step = this }
         .addToScenario(executionBuilder, l)
@@ -83,7 +81,6 @@ fun <T> ScenarioBuilder.nestedScenario(
 @JvmName("voidNestedScenario")
 fun ScenarioBuilder.nestedScenario(
     name: String? = null,
-    retryStep: RetryStep? = null,
     l: NestedScenarioExecutionBuilder<Unit>.() -> Unit
 ): NestedScenarioStepPostExecution<Unit, Unit> {
     val executionBuilder = NestedScenarioExecutionBuilder<Unit>(name)
@@ -96,7 +93,6 @@ fun ScenarioBuilder.nestedScenario(
     return NestedScenarioStep<Unit>(
         name = name?.let { StepName(it) },
         scenarioName = scenarioName,
-        retry = retryStep
     )
         .apply { executionBuilder.step = this }
         .addToScenario(executionBuilder, l)

@@ -27,8 +27,9 @@ class StandaloneStep<T>(
 class NestedScenarioStep<T>(
     override val scenarioName: String,
     override val name: StepName?,
-    override val retry: RetryStep?,
 ) : Step<T>() {
+    
+    override val retry: RetryStep? = null
 
     override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepPostExecution(this, null) { t -> t }
 
