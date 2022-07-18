@@ -68,7 +68,6 @@ class ScenarioBuilderTest {
         val step = NestedScenarioStep<String>(
             scenarioName = "scenario name",
             name = StepName("step name"),
-            retry = null,
         )
         val res = scenarioBuilder.run {
             step.run {
