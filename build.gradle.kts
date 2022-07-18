@@ -32,7 +32,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.0")
+        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.10")
     }
 
     tasks.withType(Sign::class.java) {
