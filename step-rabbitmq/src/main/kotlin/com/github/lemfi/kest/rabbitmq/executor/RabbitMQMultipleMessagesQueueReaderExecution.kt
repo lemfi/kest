@@ -33,7 +33,9 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
 
     override fun onAssertionFailedError() {
         messagesToAcknowledge.forEach {
-            runCatching { channel().basicNack(it.envelope.deliveryTag, true, true) }
+            runCatching {
+                channel().basicNack(it.envelope.deliveryTag, true, true)
+            }
         }
         messagesToAcknowledge.clear()
     }
@@ -47,6 +49,9 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
         messagesToAcknowledge.clear()
     }
 
+    override fun onExecutionEnded() {
+        channel().connection.close()
+    }
 
     override fun execute(): List<RabbitMQMessage<T>> {
 
@@ -61,6 +66,7 @@ internal class RabbitMQMultipleMessagesQueueReaderExecution<T>(
 
         return channel()
             .run {
+
                 mutableListOf<GetResponse?>().apply {
                     (1..nbMessages).forEach { _ ->
                         add(basicGet(queueName, false))

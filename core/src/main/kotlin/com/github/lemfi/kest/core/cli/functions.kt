@@ -150,6 +150,10 @@ fun <T> Step<T>.run(): Step<T> {
                 postExecution.setFailed(e)
                 assertion.fail(e)
             }
+        } finally {
+            if (tries == 0) {
+                execution.onExecutionEnded()
+            }
         }
     }
 

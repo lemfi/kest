@@ -133,6 +133,7 @@ class FunctionsTest {
         every { step.name } returns StepName("the step name")
 
         var onAssertionFailedCalled = false
+        var onExecutionEndedCalled = false
 
         val execution = object : Execution<String>() {
             override fun execute(): String {
@@ -145,6 +146,10 @@ class FunctionsTest {
 
             override fun onAssertionFailedError() {
                 onAssertionFailedCalled = true
+            }
+
+            override fun onExecutionEnded() {
+                onExecutionEndedCalled = true
             }
         }
         every { step.execution } returns { execution }
@@ -160,6 +165,7 @@ class FunctionsTest {
         assertEquals(IllegalAccessException::class, failing.captured::class)
         assertEquals("this step will fail on execution!", failing.captured.message)
         Assertions.assertTrue(onAssertionFailedCalled)
+        Assertions.assertTrue(onExecutionEndedCalled)
 
         assertEquals(
             """
@@ -187,6 +193,7 @@ class FunctionsTest {
             }
 
         var onAssertionFailedCalled = false
+        var onExecutionEndedCalled = false
 
         step.apply {
             postExecution = standaloneStepPostExecution
@@ -201,6 +208,10 @@ class FunctionsTest {
                     override fun onAssertionFailedError() {
                         onAssertionFailedCalled = true
                     }
+
+                    override fun onExecutionEnded() {
+                        onExecutionEndedCalled = true
+                    }
                 }
             }
         }
@@ -211,6 +222,7 @@ class FunctionsTest {
 
         Assertions.assertTrue(step.postExecution.isFailed())
         Assertions.assertTrue(onAssertionFailedCalled)
+        Assertions.assertTrue(onExecutionEndedCalled)
 
         assertEquals(
             """
@@ -245,6 +257,7 @@ class FunctionsTest {
         verify(exactly = 2) { execution.execute() }
         verify(exactly = 1) { execution.onAssertionFailedError() }
         verify(exactly = 1) { execution.onAssertionSuccess() }
+        verify(exactly = 1) { execution.onExecutionEnded() }
 
         assertEquals(step, res)
     }
@@ -301,6 +314,7 @@ class FunctionsTest {
         verify(exactly = 1) { execution.execute() }
         verify(exactly = 0) { execution.onAssertionFailedError() }
         verify(exactly = 1) { execution.onAssertionSuccess() }
+        verify(exactly = 1) { execution.onExecutionEnded() }
 
         assertEquals(step, res)
     }

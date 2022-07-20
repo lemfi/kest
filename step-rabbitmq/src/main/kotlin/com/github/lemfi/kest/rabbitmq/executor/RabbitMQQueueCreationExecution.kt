@@ -45,5 +45,6 @@ internal class RabbitMQQueueCreationExecution(
                 if (queueAndBinding.exchange != null && queueAndBinding.routingKey != null)
                     queueBind(queueAndBinding.queue, queueAndBinding.exchange, queueAndBinding.routingKey)
             }
+            .connection.close()
     }
 }

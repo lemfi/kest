@@ -26,9 +26,16 @@ internal data class MongoDBInsertDocumentExecution(
         """.trimMargin()
         )
 
-        MongoClients.create(connection).getDatabase(database)
-            .getCollection(collection)
-            .insertOne(Document.parse(document))
+        MongoClients
+            .create(connection)
+            .apply {
+                getDatabase(database)
+                    .getCollection(collection)
+                    .insertOne(Document.parse(document))
+
+                close()
+            }
+
 
     }
 }

@@ -33,5 +33,6 @@ internal class RabbitMQQueueDeletionExecution(
             .apply {
                 queueDelete(queue)
             }
+            .connection.close()
     }
 }

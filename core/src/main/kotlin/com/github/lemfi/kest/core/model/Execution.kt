@@ -5,4 +5,5 @@ abstract class Execution<T> {
 
     open fun onAssertionFailedError() {}
     open fun onAssertionSuccess() {}
+    open fun onExecutionEnded() {}
 }

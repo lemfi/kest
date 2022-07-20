@@ -29,17 +29,22 @@ internal data class MongoDBUpdateDocumentExecution(
         """.trimMargin()
         )
 
-        MongoClients.create(connection).getDatabase(database)
-            .getCollection(collection)
-            .updateMany(
-                Document().apply {
-                    filter.forEach { put(it.first, it.second) }
-                },
-                Document().apply {
-                    put("\$set", Document().apply {
-                        update.forEach { put(it.first, it.second) }
-                    })
-                },
-            )
+        MongoClients
+            .create(connection)
+            .apply {
+                getDatabase(database)
+                    .getCollection(collection)
+                    .updateMany(
+                        Document().apply {
+                            filter.forEach { put(it.first, it.second) }
+                        },
+                        Document().apply {
+                            put("\$set", Document().apply {
+                                update.forEach { put(it.first, it.second) }
+                            })
+                        },
+                    )
+                close()
+            }
     }
 }

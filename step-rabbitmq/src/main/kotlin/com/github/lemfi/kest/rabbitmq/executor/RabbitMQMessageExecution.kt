@@ -46,6 +46,8 @@ internal data class RabbitMQMessageExecution(
             .newConnection("kest connection")
             .createChannel()
             .publish()
+            .connection
+            .close()
 
     }
 
