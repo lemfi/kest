@@ -16,6 +16,7 @@ import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueDeletionExecutionBuil
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueMultipleMessagesReaderExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueSingleReaderExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessage
+import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessageCount
 
 fun ScenarioBuilder.`publish rabbitmq message`(
     name: String? = null,
@@ -98,9 +99,9 @@ fun ScenarioBuilder.`given number of messages in rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQCountMessagesExecutionBuilder.() -> Unit
-): StepPostExecution<Long> {
+): StepPostExecution<RabbitMQMessageCount> {
     val executionBuilder = RabbitMQCountMessagesExecutionBuilder()
-    return StandaloneStep<Long>(
+    return StandaloneStep<RabbitMQMessageCount>(
         name = name?.let { StepName(it) } ?: StepName("count messages from rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry

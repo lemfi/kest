@@ -9,8 +9,15 @@ internal data class RabbitMQProperties(
 
 internal data class RabbitMQProp(
     val connection: String = "amqp://guest:guest@localhost:5672",
+    val managementapi: RabbitMQManagementApiProp = RabbitMQManagementApiProp(),
     val vhost: String = "/",
     val exchange: String = "",
+)
+
+internal data class RabbitMQManagementApiProp(
+    val connection: String = "http://localhost:15672",
+    val user: String = "guest",
+    val password: String = "guest"
 )
 
 internal fun <R> rabbitMQProperty(l: RabbitMQProp.() -> R): R {
