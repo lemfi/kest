@@ -2,6 +2,7 @@ package com.github.lemfi.kest.rabbitmq.executor
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.rabbitmq.model.RabbitMQMessageCount
@@ -42,6 +43,21 @@ internal data class RabbitMQCountMessagesExecution(
                             unacked = queueDetails["messages_unacknowledged"].toString().toLong(),
                         )
                     }
+            }.also { count ->
+
+                LoggerFactory.getLogger("RABBITMQ-Kest").info(
+                    """
+                    |Count messages in queue:
+                    |
+                    |vhost: $vhost
+                    |queue: $queue
+                    |
+                    |ready messages         : ${count.ready}
+                    |unacknowledged messages: ${count.unacked}
+                    |total                  : ${count.total}
+                    |
+                    |""".trimMargin()
+                )
             }
     }
 
