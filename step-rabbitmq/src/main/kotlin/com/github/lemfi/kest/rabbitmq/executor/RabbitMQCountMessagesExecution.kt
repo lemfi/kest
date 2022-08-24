@@ -38,7 +38,7 @@ internal data class RabbitMQCountMessagesExecution(
                 jacksonObjectMapper().readValue(it.body?.byteStream(), object : TypeReference<JsonMap>() {})
                     .let { queueDetails ->
                         RabbitMQMessageCount(
-                            ready = queueDetails["messages"].toString().toLong(),
+                            ready = queueDetails["messages_ready"].toString().toLong(),
                             unacked = queueDetails["messages_unacknowledged"].toString().toLong(),
                         )
                     }
