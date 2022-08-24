@@ -142,22 +142,93 @@ class JsonAssertionsTest {
     fun `additional fields on observed json may be ignored - expected is a json object`() {
         val expected = """
                 {
-                    "hello": "world"
-                }
-            """.trimIndent()
-        val observed = """
-                {
                     "hello": "world",
-                    "how": "are you?"
+                    ${optionalJsonKey("who")}: "are you?",
+                    ${optionalJsonKey("how")}: "are you?"
                 }
             """.trimIndent()
 
-        assertionBuilder().jsonMatches(expected = expected, observed = observed, ignoreUnknownProperties = true)
+        val observedWithoutOptional = """
+                {
+                    "hello": "world",
+                    "why": "are you there?"
+                }
+            """.trimIndent()
+
+        val observedWithOptional1 = """
+                {
+                    "hello": "world",
+                    "who": "are you?",
+                    "why": "are you there?"
+                }
+            """.trimIndent()
+
+        val observedWithOptional2 = """
+                {
+                    "hello": "world",
+                    "how": "are you?",
+                    "why": "are you there?"
+                }
+            """.trimIndent()
+
+        val observedWithBothOptional = """
+                {
+                    "hello": "world",
+                    "who": "are you?",
+                    "how": "are you?",
+                    "why": "are you there?"
+                }
+            """.trimIndent()
+
+        assertionBuilder().jsonMatches(
+            expected = expected,
+            observed = observedWithoutOptional,
+            ignoreUnknownProperties = true
+        )
+        assertionBuilder().jsonMatches(
+            expected = expected,
+            observed = observedWithOptional1,
+            ignoreUnknownProperties = true
+        )
+        assertionBuilder().jsonMatches(
+            expected = expected,
+            observed = observedWithOptional2,
+            ignoreUnknownProperties = true
+        )
+        assertionBuilder().jsonMatches(
+            expected = expected,
+            observed = observedWithBothOptional,
+            ignoreUnknownProperties = true
+        )
 
         assertThrows<AssertionFailedError> {
             assertionBuilder().jsonMatches(
                 expected = expected,
-                observed = observed,
+                observed = observedWithoutOptional,
+                ignoreUnknownProperties = false
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                expected = expected,
+                observed = observedWithOptional1,
+                ignoreUnknownProperties = false
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                expected = expected,
+                observed = observedWithOptional2,
+                ignoreUnknownProperties = false
+            )
+        }
+
+        assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(
+                expected = expected,
+                observed = observedWithBothOptional,
                 ignoreUnknownProperties = false
             )
         }
@@ -1818,6 +1889,33 @@ class JsonAssertionsTest {
         }
         Assertions.assertTrue(time < 1000)
     }
+
+    @Test
+    fun `keys may be absent from JSON`() {
+        val expected = """{
+                "'MAYNOTBEPRESENT'[0-1]": "{{string}}",
+                "data": "{{string}}"
+            }""".trimIndent()
+
+        val observedPresent = """
+                {
+                    "MAYNOTBEPRESENT": "a string",
+                    "data": "world"
+                }
+            """.trimIndent()
+
+        val observedAbsent = """
+                {
+                    "data": "world"
+                }
+            """.trimIndent()
+
+        assertionBuilder().jsonMatches(expected = expected, observed = observedPresent, ignoreUnknownProperties = true)
+        assertionBuilder().jsonMatches(expected = expected, observed = observedPresent, ignoreUnknownProperties = false)
+        assertionBuilder().jsonMatches(expected = expected, observed = observedAbsent, ignoreUnknownProperties = true)
+        assertionBuilder().jsonMatches(expected = expected, observed = observedAbsent, ignoreUnknownProperties = false)
+    }
+
 }
 
 data class TestDataObject(

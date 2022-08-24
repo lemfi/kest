@@ -5,7 +5,7 @@ package com.github.lemfi.kest.json.cli
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.FilteredAssertionFailedError
@@ -13,6 +13,9 @@ import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.json.model.jsonProperty
 import kotlin.reflect.KClass
+
+fun optionalJsonKey(key: String) = """"'$key'[0-1]""""
+
 
 /**
  * Add a matcher
@@ -221,14 +224,36 @@ private fun AssertionsBuilder.jsonMatchesObject(
     path: List<String?>
 ) {
 
+    val isOptionalKey: String.() -> Boolean = {
+        startsWith("'") && endsWith("'[0-1]")
+    }
+
+    val unwrappedOptionalKey: String.() -> String = {
+        if (isOptionalKey()) removePrefix("'").removeSuffix("'[0-1]") else this
+    }
+
+    val unwrappedOptionalKeys: Set<String>.() -> Set<String> = {
+        map { it.unwrappedOptionalKey() }.toSet()
+    }
+
+    val filterOptionalKeys: Set<String>.() -> Set<String> = {
+        filter { it.isOptionalKey() }
+            .toSet()
+            .unwrappedOptionalKeys()
+    }
+
     if (expected.endsWith("?") && observed == null) return
 
     val exp = expected.toJsonMap(path)
     val obs = observed.toJsonMap(path)
 
-    if (exp.keys != obs.keys) {
+    val unwrappedKeys = exp.keys.unwrappedOptionalKeys()
+    val optionalKeys = exp.keys.filterOptionalKeys()
+    val mandatoryKeys = unwrappedKeys.minus(optionalKeys)
 
-        if (!ignoreUnknownProperties || !obs.keys.containsAll(exp.keys))
+    if (unwrappedKeys != obs.keys && mandatoryKeys != obs.keys.minus(optionalKeys)) {
+
+        if (!ignoreUnknownProperties || !obs.keys.containsAll(mandatoryKeys))
             throw FilteredAssertionFailedError(
                 "expected ${exp.keys} entries, got ${obs.keys} entries at ${path.path()}",
                 exp.keys,
@@ -236,24 +261,30 @@ private fun AssertionsBuilder.jsonMatchesObject(
             )
     }
     exp.keys.forEach { key ->
-        val expectedValue = exp[key]
-        val observedValue = obs[key]
 
-        if (isPattern(expectedValue, path) || isObject(expectedValue) || isArray(expectedValue))
-            jsonMatches(
-                expectedValue.toJsonStringOrPattern(path),
-                observedValue.toNullableJsonString(),
-                checkArraysOrder,
-                ignoreUnknownProperties,
-                path.copyAdd(key)
-            )
-        else {
-            (observedValue?.equals(expectedValue) ?: (expectedValue == null)).let { success ->
-                if (!success) throw FilteredAssertionFailedError(
-                    "Expected $expectedValue, got $observedValue at ${path.copyAdd(key).path()}",
-                    expectedValue,
-                    observedValue
+        val unwrappedKey = key.unwrappedOptionalKey()
+
+        if (obs.containsKey(unwrappedKey)) {
+
+            val expectedValue = exp[key]
+            val observedValue = obs[unwrappedKey]
+
+            if (isPattern(expectedValue, path) || isObject(expectedValue) || isArray(expectedValue))
+                jsonMatches(
+                    expectedValue.toJsonStringOrPattern(path),
+                    observedValue.toNullableJsonString(),
+                    checkArraysOrder,
+                    ignoreUnknownProperties,
+                    path.copyAdd(key)
                 )
+            else {
+                (observedValue?.equals(expectedValue) ?: (expectedValue == null)).let { success ->
+                    if (!success) throw FilteredAssertionFailedError(
+                        "Expected $expectedValue, got $observedValue at ${path.copyAdd(key).path()}",
+                        expectedValue,
+                        observedValue
+                    )
+                }
             }
         }
     }
@@ -411,15 +442,16 @@ private fun String?.isArray() = this?.trimIndent()?.trim()?.startsWith("[") ?: t
 private fun String?.isObject() = this?.trimIndent()?.trim()?.startsWith("{") ?: true
 
 
-private val mapper = jacksonObjectMapper().apply {
+private val mapper = jacksonMapperBuilder().apply {
     disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
     enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
-}
-private val mapperIgnoringAddtionalProperties = jacksonObjectMapper().apply {
+}.build()
+
+private val mapperIgnoringAddtionalProperties = jacksonMapperBuilder().apply {
     disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
     enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-}
+}.build()
 
 private sealed class JsonMatcherKind
 private data class StringPatternJsonMatcherKind(val patterns: List<String>) : JsonMatcherKind()
