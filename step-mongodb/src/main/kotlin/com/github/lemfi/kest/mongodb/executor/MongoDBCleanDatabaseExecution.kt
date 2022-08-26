@@ -8,6 +8,7 @@ import org.bson.Document
 internal data class MongoDBCleanDatabaseExecution(
     val connection: String,
     val database: String,
+    val collections: List<String>,
 ) : Execution<Unit>() {
 
     override fun execute() {
@@ -19,25 +20,28 @@ internal data class MongoDBCleanDatabaseExecution(
         )
 
         MongoClients.create(connection)
-            .let {client ->
+            .let { client ->
                 client
                     .getDatabase(database)
                     .let { database ->
-                        database.listCollectionNames().forEach { collection ->
-                            LoggerFactory.getLogger("MONGODB-Kest").info(
-                                """
+                        database
+                            .listCollectionNames()
+                            .let { if (collections.isNotEmpty()) it.intersect(collections.toSet()) else it }
+                            .forEach { collection ->
+                                LoggerFactory.getLogger("MONGODB-Kest").info(
+                                    """
                         |Clean collection: $collection
                     """.trimMargin()
-                            )
-                            database.getCollection(collection).deleteMany(Document.parse("{}"))
-                                .let {
-                                    LoggerFactory.getLogger("MONGODB-Kest").info(
-                                        """
+                                )
+                                database.getCollection(collection).deleteMany(Document.parse("{}"))
+                                    .let {
+                                        LoggerFactory.getLogger("MONGODB-Kest").info(
+                                            """
                                 |Deleted: ${it.deletedCount} documents
                             """.trimMargin()
-                                    )
-                                }
-                        }
+                                        )
+                                    }
+                            }
                     }
                     .apply { client.close() }
             }
