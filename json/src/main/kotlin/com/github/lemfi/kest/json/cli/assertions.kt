@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "unused")
 
 package com.github.lemfi.kest.json.cli
 
@@ -16,49 +16,197 @@ import kotlin.reflect.KClass
 
 fun optionalJsonKey(key: String) = """"'$key'[0-1]""""
 
+sealed class Pattern {
+    internal abstract val name: String
+    internal abstract val isNullable: Boolean
+    abstract val pattern: String
+}
+
+data class BasePattern internal constructor(
+    override val name: String,
+    override val isNullable: Boolean,
+) : Pattern() {
+
+    override val pattern = """{{$name${if (isNullable) "?" else ""}}}"""
+    override fun toString() = pattern
+
+    /**
+     * Define type represented by pattern
+     */
+    inline fun <reified T : Any> definedBy() = apply {
+        @Suppress("DEPRECATION")
+        `add json matcher`(this, T::class)
+    }
+
+    /**
+     * Define type represented by pattern
+     */
+    infix fun <T : Any> definedBy(cls: KClass<T>) = apply {
+        @Suppress("DEPRECATION")
+        `add json matcher`(this, cls)
+    }
+
+    /**
+     * Define json structure represented by pattern
+     */
+    infix fun definedBy(value: String) = apply {
+        `add json matcher`(this, value)
+    }
+
+    /**
+     * Define list of json structures represented by pattern
+     */
+    infix fun definedBy(value: List<String>) = apply {
+        `add json matcher`(this, value)
+    }
+
+    /**
+     * Define a function that validates the pattern
+     */
+    inline infix fun <reified T : Any> definedBy(noinline validator: (T) -> Boolean) = apply {
+        @Suppress("DEPRECATION")
+        `add json matcher`(this, T::class, validator)
+    }
+}
+
+data class ArrayPattern internal constructor(
+    override val name: String,
+    override val isNullable: Boolean,
+    val nullableArray: Boolean,
+    val arrayOf: Pattern
+) : Pattern() {
+
+    override val pattern = """[[{{$name${if (isNullable) "?" else ""}}}]]${if (nullableArray) "?" else ""}"""
+    override fun toString(): String = pattern
+}
 
 /**
- * Add a matcher
- *
- * @param key the key for your matcher, for example {{my_matcher}}
- * @param value KClass representing of your matcher, jackson annotations can be used on that Class, for polyphormism for example
+ * Declare a pattern occurence as nullable
  */
+val Pattern.nullable: Pattern
+    get() = when (this) {
+        is BasePattern -> BasePattern(
+            name = name,
+            isNullable = true,
+        )
+
+        is ArrayPattern -> ArrayPattern(
+            name = name,
+            isNullable = isNullable,
+            nullableArray = true,
+            arrayOf = arrayOf
+        )
+    }
+
+/**
+ * Not Nullable String Pattern
+ */
+val stringPattern: Pattern = BasePattern(
+    name = "string",
+    isNullable = false,
+)
+
+/**
+ * Not Nullable Boolean Pattern
+ */
+val booleanPattern = BasePattern(
+    name = "boolean",
+    isNullable = false,
+)
+
+/**
+ * Not Nullable Number Pattern
+ */
+val numberPattern = BasePattern(
+    name = "number",
+    isNullable = false,
+)
+
+/**
+ * Define a pattern
+ *
+ * @param name the key for your matcher
+ */
+fun pattern(name: String) = BasePattern(
+    name = name,
+    isNullable = false,
+)
+
+/**
+ * Describe an array of a pattern type
+ *
+ * @param pattern the pattern composing the array entries
+ */
+fun jsonArrayOf(pattern: Pattern) = ArrayPattern(
+    name = pattern.name,
+    isNullable = pattern.isNullable,
+    nullableArray = false,
+    arrayOf = pattern,
+)
+
+
+@Deprecated(
+    "replace with pattern() / definedBy() functions", replaceWith = ReplaceWith(
+        "pattern(key /* /!\\ without surrounding {{ }} */) definedBy value"
+    )
+)
 fun `add json matcher`(key: String, value: KClass<*>) {
     matchers[key] = ClassPatternJsonMatcherKind(value)
 }
 
-/**
- * Add a matcher
- *
- * @param key the key for your matcher, for example {{my_matcher}}
- * @param pattern string description for matcher, for example:
- *          {
- *              "mykey": "{{string}},
- *              "myotherkey": "{{number}}
- *          }
- */
+@Deprecated(
+    "replace with pattern() / definedBy() functions", replaceWith = ReplaceWith(
+        "pattern(key /* /!\\ without surrounding {{ }} */) definedBy pattern"
+    )
+)
 fun `add json matcher`(key: String, pattern: String) {
     matchers[key] = StringPatternJsonMatcherKind(listOf(pattern))
 }
 
-/**
- * Add a matcher
- *
- * @param key the key for your matcher, for example {{my_matcher}}
- * @param patterns a list of possible string description for matcher, to use for polymorphism
- */
+
+@Deprecated(
+    "replace with pattern() / definedBy() functions", replaceWith = ReplaceWith(
+        "pattern(key /* /!\\ without surrounding {{ }} */) definedBy patterns"
+    )
+)
 fun `add json matcher`(key: String, patterns: List<String>) {
     matchers[key] = StringPatternJsonMatcherKind(patterns)
 }
 
-/**
- * Add a matcher
- *
- * @param key the key for your matcher, for example {{my_matcher}}
- * @param validator a function that will validate content
- */
+@Deprecated(
+    "replace with pattern() / definedBy() functions", replaceWith = ReplaceWith(
+        "pattern(key /* /!\\ without surrounding {{ }} */) definedBy validator"
+    )
+)
 fun <T : Any> `add json matcher`(key: String, cls: KClass<T>, validator: (T) -> Boolean) {
     matchers[key] = FunctionJsonMatcherKind(cls, validator)
+}
+
+
+@Deprecated(
+    "replace with pattern() / definedBy() functions", replaceWith = ReplaceWith(
+        "pattern(pattern) definedBy value"
+    )
+)
+fun `add json matcher`(pattern: Pattern, value: KClass<*>) {
+    matchers[pattern(pattern.name).pattern] = ClassPatternJsonMatcherKind(value)
+}
+
+private fun `add json matcher`(p: Pattern, pattern: String) {
+    matchers[pattern(p.name).pattern] = StringPatternJsonMatcherKind(listOf(pattern))
+}
+
+private fun `add json matcher`(pattern: Pattern, patterns: List<String>) {
+    matchers[pattern(pattern.name).toString()] = StringPatternJsonMatcherKind(patterns)
+}
+
+@Deprecated(
+    "replace with pattern() / definedBy() functions", replaceWith = ReplaceWith(
+        "pattern(pattern) definedBy validator"
+    )
+)
+fun <T : Any> `add json matcher`(pattern: Pattern, cls: KClass<T>, validator: (T) -> Boolean) {
+    matchers[pattern(pattern.name).pattern] = FunctionJsonMatcherKind(cls, validator)
 }
 
 /**

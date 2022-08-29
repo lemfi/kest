@@ -236,9 +236,10 @@ class JsonAssertionsTest {
 
     @Test
     fun `additional fields on observed json may be ignored - expected is a string pattern`() {
-        `add json matcher`("{{data}}", """{"hello": "{{string}}"}""")
+        val dataPattern = pattern("data") definedBy """{"hello": "$stringPattern"}"""
 
-        val expected = """{{data}}"""
+
+        val expected = """$dataPattern"""
         val observed = """
                 {
                     "hello": "world",
@@ -258,9 +259,10 @@ class JsonAssertionsTest {
 
     @Test
     fun `additional fields on observed json may be ignored - expected is a class pattern`() {
-        `add json matcher`("{{data}}", TestDataObject::class)
 
-        val expected = """{{data}}"""
+        val dataPattern = pattern("data") definedBy TestDataObject::class
+
+        val expected = dataPattern.toString()
 
         val observed = """
                 {
@@ -304,7 +306,7 @@ class JsonAssertionsTest {
                     {
                         "data": [{
                             "hello": "world",
-                            "bye": "{{string?}}"
+                            "bye": "${stringPattern.nullable}"
                         }]
                     }
                     """,
@@ -323,9 +325,9 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    {
-                        "string": "{{string}}",
-                        "number": "{{number}}",
-                        "boolean": "{{boolean}}",
+                        "string": "$stringPattern",
+                        "number": "$numberPattern",
+                        "boolean": "$booleanPattern",
                         "a string": "hello",
                         "a number": 1,
                         "a boolean": false
@@ -351,9 +353,9 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    [{
-                        "string": "{{string}}",
-                        "number": "{{number}}",
-                        "boolean": "{{boolean}}"
+                        "string": "$stringPattern",
+                        "number": "$numberPattern",
+                        "boolean": "$booleanPattern"
                     }, {
                         "astring": "hello",
                         "anumber": 1,
@@ -384,9 +386,9 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    [{
-                        "string": "{{string}}",
-                        "number": "{{number}}",
-                        "boolean": "{{boolean}}"
+                        "string": "$stringPattern",
+                        "number": "$numberPattern",
+                        "boolean": "$booleanPattern"
                     }, {
                         "astring": "hello",
                         "anumber": 1,
@@ -417,9 +419,9 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    {
-                        "string": {"key": "{{string}}"},
-                        "number": "{{number}}",
-                        "boolean": "{{boolean}}"
+                        "string": {"key": "$stringPattern"},
+                        "number": "$numberPattern",
+                        "boolean": "$booleanPattern"
                     }
                 """,
             """
@@ -442,7 +444,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "strings": "[[{{string}}]]"
+                        "strings": "${jsonArrayOf(stringPattern)}"
                    }
                 """,
                 """
@@ -460,7 +462,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "numbers": "[[{{number}}]]"
+                        "numbers": "${jsonArrayOf(numberPattern)}"
                    }
                 """,
                 """
@@ -478,7 +480,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "booleans": "[[{{boolean}}]]"
+                        "booleans": "${jsonArrayOf(booleanPattern)}"
                    }
                 """,
                 """
@@ -554,9 +556,9 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    {
-                        "strings": "[[{{string}}]]",
-                        "numbers": "[[{{number}}]]",
-                        "booleans": "[[{{boolean}}]]",
+                        "strings": "${jsonArrayOf(stringPattern)}",
+                        "numbers": "${jsonArrayOf(numberPattern)}",
+                        "booleans": "${jsonArrayOf(booleanPattern)}",
                         "some strings": ["hello", "world"],
                         "some numbers": [1, 2],
                         "some booleans": [true, false]
@@ -584,7 +586,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "string": "{{string}}"
+                        "string": "$stringPattern"
                    } 
                 """,
                 """
@@ -594,21 +596,20 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value {{string}} at "string"""", exception.message)
+        Assertions.assertEquals("""expected none nullable value $stringPattern at "string"""", exception.message)
 
     }
 
     @Test
     fun `json array with not nullable pattern fails`() {
 
-        `add json matcher`("{{stringornumber}}", listOf("[[{{string}}]]", "[[{{number}}]]"))
+        val stringOrNumberPattern =
+            pattern("stringornumber") definedBy listOf("${jsonArrayOf(stringPattern)}", "${jsonArrayOf(numberPattern)}")
 
         val exception = assertThrows<AssertionFailedError> {
 
             assertionBuilder().jsonMatches(
-                """
-                   {{stringornumber}}
-                """,
+                stringOrNumberPattern.pattern,
                 """
                    ["12", null] 
                 """
@@ -622,14 +623,14 @@ class JsonAssertionsTest {
     fun `json array with multiple possible patterns`() {
 
         assertionBuilder().jsonMatches(
-            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            listOf("${jsonArrayOf(stringPattern)}", "${jsonArrayOf(numberPattern)}"),
             """
                    ["12", "13"] 
                 """
         )
 
         assertionBuilder().jsonMatches(
-            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            listOf("${jsonArrayOf(stringPattern)}", "${jsonArrayOf(numberPattern)}"),
             """
                    [12, 13] 
                 """
@@ -641,12 +642,12 @@ class JsonAssertionsTest {
     fun `json array with multiple possible patterns observed is JsonArray`() {
 
         assertionBuilder().jsonMatches(
-            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            listOf("${jsonArrayOf(stringPattern)}", "${jsonArrayOf(numberPattern)}"),
             mutableListOf("12", "13")
         )
 
         assertionBuilder().jsonMatches(
-            listOf("[[{{string}}]]", "[[{{number}}]]"),
+            listOf("${jsonArrayOf(stringPattern)}", "${jsonArrayOf(numberPattern)}"),
             mutableListOf(12, 13)
         )
 
@@ -660,7 +661,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "string": "{{string}}"
+                        "string": "$stringPattern"
                    } 
                 """,
                 """
@@ -699,7 +700,7 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    {
-                        "string": "{{string?}}"
+                        "string": "${stringPattern.nullable}"
                    } 
                 """,
             """
@@ -719,7 +720,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "number": "{{number}}"
+                        "number": "$numberPattern"
                    } 
                 """,
                 """
@@ -729,7 +730,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value {{number}} at "number"""", exception.message)
+        Assertions.assertEquals("""expected none nullable value $numberPattern at "number"""", exception.message)
 
     }
 
@@ -739,7 +740,7 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    {
-                        "number": "{{number?}}"
+                        "number": "${numberPattern.nullable}"
                    } 
                 """,
             """
@@ -759,7 +760,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "boolean": "{{boolean}}"
+                        "boolean": "$booleanPattern"
                    } 
                 """,
                 """
@@ -770,7 +771,7 @@ class JsonAssertionsTest {
             )
         }
         Assertions.assertEquals(
-            """expected none nullable value {{boolean}} at "boolean"""", exception.message
+            """expected none nullable value $booleanPattern at "boolean"""", exception.message
         )
 
     }
@@ -781,7 +782,7 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                    {
-                        "boolean": "{{boolean?}}"
+                        "boolean": "${booleanPattern.nullable}"
                    } 
                 """,
             """
@@ -801,7 +802,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                    {
-                        "number": "{{number}}"
+                        "number": "$numberPattern"
                    } 
                 """,
                 """
@@ -827,7 +828,7 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                         {
-                            "boolean": "{{boolean}}"
+                            "boolean": "$booleanPattern"
                         } 
                     """,
                 """
@@ -998,9 +999,9 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     [[{
-                        "string": "{{string?}}",
-                        "number": "{{number?}}",
-                        "boolean": "{{boolean?}}",
+                        "string": "${stringPattern.nullable}",
+                        "number": "${numberPattern.nullable}",
+                        "boolean": "${booleanPattern.nullable}",
                         "astring": "hello",
                         "anumber": 1,
                         "aboolean": false
@@ -1032,13 +1033,13 @@ class JsonAssertionsTest {
     @Test
     fun `json array of object in subtype`() {
 
-        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
+        val descDataPattern = pattern("descdata") definedBy """{"data": "$numberPattern"}"""
 
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": "[[{{descdata}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "array": "${jsonArrayOf(descDataPattern)}"
                    } 
                 """,
             """
@@ -1056,13 +1057,13 @@ class JsonAssertionsTest {
     @Test
     fun `json array of nullable object in subtype`() {
 
-        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
+        val descDataPattern = pattern("descdata") definedBy """{"data": "$numberPattern"}"""
 
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": "[[{{descdata?}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "array": "${jsonArrayOf(descDataPattern.nullable)}"
                    } 
                 """,
             """
@@ -1080,13 +1081,13 @@ class JsonAssertionsTest {
     @Test
     fun `json nullable array of nullable objects in subtypes - array null`() {
 
-        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
+        val descDataPattern = pattern("descdata") definedBy """{"data": "$numberPattern"}"""
 
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": "[[{{descdata?}}]]?"
+                        "string": "${stringPattern.nullable}",
+                        "array": "${jsonArrayOf(descDataPattern.nullable).nullable}"
                    } 
                 """,
             """
@@ -1101,13 +1102,13 @@ class JsonAssertionsTest {
     @Test
     fun `json nullable array of nullable objects in subtypes - objects null`() {
 
-        `add json matcher`("{{descdata}}", """{"data": "{{number}}"}""")
+        val descDataPattern = pattern("descdata") definedBy """{"data": "$numberPattern"}"""
 
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": "[[{{descdata?}}]]?"
+                        "string": "${stringPattern.nullable}",
+                        "array": "${jsonArrayOf(descDataPattern.nullable).nullable}"
                    } 
                 """,
             """
@@ -1122,13 +1123,13 @@ class JsonAssertionsTest {
     @Test
     fun `array pattern or array of patterns`() {
 
-        `add json matcher`("{{data}}", """{"data": "{{string}}"}""")
+        val dataPattern = pattern("data") definedBy """{"data": "$stringPattern"}"""
 
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": ["{{data}}", "{{data}}"]
+                        "string": "${stringPattern.nullable}",
+                        "array": ["$dataPattern", "$dataPattern"]
                    } 
                 """,
             """
@@ -1142,8 +1143,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": ["{{data}}", {"data": "world"}]
+                        "string": "${stringPattern.nullable}",
+                        "array": ["$dataPattern", {"data": "world"}]
                    } 
                 """,
             """
@@ -1157,8 +1158,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": [{"data": "world"}, "{{data}}"]
+                        "string": "${stringPattern.nullable}",
+                        "array": [{"data": "world"}, "$dataPattern"]
                    } 
                 """,
             """
@@ -1173,8 +1174,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "array": "[[{{data}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "array": "${jsonArrayOf(dataPattern)}"
                    } 
                 """,
             """
@@ -1195,10 +1196,10 @@ class JsonAssertionsTest {
                 """
                 [[
                 {
-                    "string": "{{string?}}"
+                    "string": "${stringPattern.nullable}"
                 },
                 {
-                    "number": "{{number}}"
+                    "number": "$numberPattern"
                 }
                ]]
                 """,
@@ -1223,10 +1224,10 @@ class JsonAssertionsTest {
         Assertions.assertEquals(
             """wrong pattern [[
  {
-     "string": "{{string?}}"
+     "string": "${stringPattern.nullable}"
  },
  {
-     "number": "{{number}}"
+     "number": "$numberPattern"
  }
 ]]""", exception.message
         )
@@ -1236,10 +1237,10 @@ class JsonAssertionsTest {
     @Test
     fun `json matcher of type function`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        fun patternFunction(data: String): Boolean {
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
-            try {
+            return try {
                 dateFormatter.parse(data)
                 true
             } catch (e: DateTimeParseException) {
@@ -1247,12 +1248,14 @@ class JsonAssertionsTest {
             }
         }
 
+        val datePattern = pattern("date") definedBy ::patternFunction
+
         assertionBuilder().jsonMatches(
             """
                         {
-                            "string": "{{string?}}",
-                            "date": "{{date}}",
-                            "date_array": "[[{{date}}]]"
+                            "string": "${stringPattern.nullable}",
+                            "date": "$datePattern",
+                            "date_array": "${jsonArrayOf(datePattern)}"
                        } 
                     """,
             """
@@ -1268,8 +1271,8 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                     {
-                        "string": "{{string?}}",
-                        "date": "{{date}}"
+                        "string": "${stringPattern.nullable}",
+                        "date": "$datePattern"
                    } 
                 """,
                 """
@@ -1280,14 +1283,14 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(""""hello" does not validate pattern {{date}} at "date"""", exception.message)
+        Assertions.assertEquals(""""hello" does not validate pattern $datePattern at "date"""", exception.message)
 
     }
 
     @Test
     fun `json matcher of type function - nullable`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        val datePattern = pattern("date") definedBy { data: String ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
             try {
@@ -1301,8 +1304,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "date": "{{date?}}"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${datePattern.nullable}"
                    } 
                 """,
             """
@@ -1317,7 +1320,7 @@ class JsonAssertionsTest {
     @Test
     fun `json matcher of type function - not nullable`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        val datePattern = pattern("date") definedBy { data: String ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
             try {
@@ -1333,8 +1336,8 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                     {
-                        "string": "{{string?}}",
-                        "date": "{{date}}"
+                        "string": "${stringPattern.nullable}",
+                        "date": "$datePattern"
                    } 
                 """,
                 """
@@ -1345,14 +1348,14 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value {{date}} at "date"""", exception.message)
+        Assertions.assertEquals("""expected none nullable value $datePattern at "date"""", exception.message)
 
     }
 
     @Test
     fun `json matcher of type function - array`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        val datePattern = pattern("date") definedBy { data: String ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
             try {
@@ -1366,8 +1369,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "date": "[[{{date}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${jsonArrayOf(datePattern)}"
                    }
                 """,
             """
@@ -1382,8 +1385,8 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                     {
-                        "string": "{{string?}}",
-                        "date": "[[{{date}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${jsonArrayOf(datePattern)}"
                    } 
                 """,
                 """
@@ -1394,13 +1397,16 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(""""bad format" does not validate pattern {{date}} at "date[1]"""", exception.message)
+        Assertions.assertEquals(
+            """"bad format" does not validate pattern $datePattern at "date[1]"""",
+            exception.message
+        )
     }
 
     @Test
     fun `json matcher of type function - array not nullable`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        val datePattern = pattern("date") definedBy { data: String ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
             try {
@@ -1417,8 +1423,8 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                     {
-                        "string": "{{string?}}",
-                        "date": "[[{{date}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${jsonArrayOf(datePattern)}"
                    }
                 """,
                 """
@@ -1429,7 +1435,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value {{date}} at "date"""", exception1.message)
+        Assertions.assertEquals("""expected none nullable value $datePattern at "date"""", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -1437,8 +1443,8 @@ class JsonAssertionsTest {
             assertionBuilder().jsonMatches(
                 """
                     {
-                        "string": "{{string?}}",
-                        "date": "[[{{date}}]]"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${jsonArrayOf(datePattern)}"
                    }
                 """,
                 """
@@ -1449,13 +1455,13 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value {{date}} at "date[1]"""", exception2.message)
+        Assertions.assertEquals("""expected none nullable value $datePattern at "date[1]"""", exception2.message)
     }
 
     @Test
     fun `json matcher of type function - nullable array`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        val datePattern = pattern("date") definedBy { data: String ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
             try {
@@ -1469,8 +1475,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "date": "[[{{date}}]]?"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${jsonArrayOf(datePattern).nullable}"
                    } 
                 """,
             """
@@ -1485,7 +1491,7 @@ class JsonAssertionsTest {
     @Test
     fun `json matcher of type function - nullable array of nullable elements`() {
 
-        `add json matcher`("{{date}}", String::class) { data ->
+        val datePattern = pattern("date") definedBy { data: String ->
             val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
 
             try {
@@ -1499,8 +1505,8 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(
             """
                     {
-                        "string": "{{string?}}",
-                        "date": "[[{{date?}}]]?"
+                        "string": "${stringPattern.nullable}",
+                        "date": "${jsonArrayOf(datePattern.nullable).nullable}"
                    } 
                 """,
             """
@@ -1515,11 +1521,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed is string`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
-                   {{mydata}} 
+                   $myDataPattern 
                 """,
             """
                    {
@@ -1534,12 +1540,12 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - matcher in subtype`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
                    {
-                        "data": "{{mydata}}"
+                        "data": "$myDataPattern"
                    } 
                 """,
             """
@@ -1557,12 +1563,12 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - nullable matcher in subtype`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
                    {
-                        "data": "{{mydata?}}"
+                        "data": "${myDataPattern.nullable}"
                    } 
                 """,
             """
@@ -1576,11 +1582,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed is JsonMap`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
-                   {{mydata}} 
+                   $myDataPattern 
                 """,
             JsonMap().apply {
                 put("string", "hello")
@@ -1600,7 +1606,7 @@ class JsonAssertionsTest {
                 """,
 
                 """
-                   {"string": "{{string}}", "number": "{{number}}", "boolean": "{{boolean}}"} 
+                   {"string": "$stringPattern", "number": "$numberPattern", "boolean": "$booleanPattern"} 
                 """
             ),
             JsonMap().apply {
@@ -1614,11 +1620,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed an array displayed as string`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
-                [[{{mydata}}]]
+                ${jsonArrayOf(myDataPattern)}
             """,
             """
                 [{
@@ -1633,11 +1639,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed an array displayed as JsonArray`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
-                [[{{mydata}}]]
+                ${jsonArrayOf(myDataPattern)}
             """,
             JsonArray().apply {
                 add(JsonMap().apply {
@@ -1652,12 +1658,12 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - matcher in subtype as array`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
                 {
-                    "data": "[[{{mydata}}]]"
+                    "data": "${jsonArrayOf(myDataPattern)}"
                 } 
             """,
             """
@@ -1675,12 +1681,12 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - nullable matcher in subtype as array`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
                    {
-                        "data": "[[{{mydata?}}]]"
+                        "data": "${jsonArrayOf(myDataPattern.nullable)}"
                    } 
                 """,
             """
@@ -1698,11 +1704,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - observed is JsonArray`() {
 
-        `add json matcher`("{{mydata}}", TestDataObject::class)
+        val myDataPattern = pattern("mydata") definedBy TestDataObject::class
 
         assertionBuilder().jsonMatches(
             """
-                   [[{{mydata}}]] 
+                   ${jsonArrayOf(myDataPattern)} 
                 """,
             JsonArray().apply {
                 add(
@@ -1719,11 +1725,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as class - observed is a polymorphic JsonArray`() {
 
-        `add json matcher`("{{yolo}}", Yolo::class)
+        val yoloPattern = pattern("yolo") definedBy Yolo::class
 
         assertionBuilder().jsonMatches(
             """
-                   [[{{yolo}}]] 
+                   ${jsonArrayOf(yoloPattern)} 
                 """,
             JsonArray().apply {
                 add(
@@ -1745,21 +1751,20 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as string - observed is a polymorphic JsonArray`() {
 
-        `add json matcher`(
-            "{{yolo}}", listOf(
-                """{
+        val yoloPattern = pattern("yolo") definedBy
+                listOf(
+                    """{
                     "common": "c1",
-                    "yolo1": "{{string}}"
+                    "yolo1": "$stringPattern"
                 }""",
-                """{
+                    """{
                     "common": "c2",
-                    "yolo2": "{{string}}"
+                    "yolo2": "$stringPattern"
                 }"""
-            )
-        )
+                )
 
         assertionBuilder().jsonMatches(
-            """[[{{yolo}}]]""",
+            """${jsonArrayOf(yoloPattern)}""",
             JsonArray().apply {
                 add(
                     JsonMap().apply {
@@ -1780,11 +1785,11 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as class - observed is a polymorphic json array as string`() {
 
-        `add json matcher`("{{yolo}}", Yolo::class)
+        val yoloPattern = pattern("yolo") definedBy Yolo::class
 
         assertionBuilder().jsonMatches(
             """
-                   [[{{yolo}}]] 
+                  ${jsonArrayOf(yoloPattern)}
             """,
             """[
                        {
@@ -1803,22 +1808,21 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration as string - observed is a polymorphic json array as string`() {
 
-        `add json matcher`(
-            "{{yolo}}", listOf(
-                """{
+        val yoloPattern = pattern("yolo") definedBy
+                listOf(
+                    """{
                     "common": "c1",
-                    "yolo1": "{{string}}"
+                    "yolo1": "$stringPattern"
                 }""",
-                """{
+                    """{
                     "common": "c2",
-                    "yolo2": "{{string}}"
+                    "yolo2": "$stringPattern"
                 }"""
-            )
-        )
+                )
 
         assertionBuilder().jsonMatches(
             """
-                   [[{{yolo}}]] 
+                   ${jsonArrayOf(yoloPattern)}
                 """,
             """[
                        {
@@ -1837,22 +1841,21 @@ class JsonAssertionsTest {
     @Test
     fun `matcher registration - polymorphism in arrays`() {
 
-        `add json matcher`(
-            "{{yolo}}", listOf(
-                """{
+        val yoloPattern = pattern("yolo") definedBy listOf(
+            """{
                     "common": "c1",
-                    "yolo1": "{{string}}"
+                    "yolo1": "$stringPattern"
                 }""",
-                """{
+            """{
                     "common": "c2",
-                    "yolo2": "{{string}}"
+                    "yolo2": "$stringPattern"
                 }"""
-            )
         )
+
         assertionBuilder().jsonMatches(
             """
                    {
-                        "data": "[[{{yolo?}}]]"
+                        "data": "${jsonArrayOf(yoloPattern.nullable)}"
                    } 
                 """,
             """
@@ -1893,8 +1896,8 @@ class JsonAssertionsTest {
     @Test
     fun `keys may be absent from JSON`() {
         val expected = """{
-                "'MAYNOTBEPRESENT'[0-1]": "{{string}}",
-                "data": "{{string}}"
+                "'MAYNOTBEPRESENT'[0-1]": "$stringPattern",
+                "data": "$stringPattern"
             }""".trimIndent()
 
         val observedPresent = """
