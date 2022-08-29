@@ -224,24 +224,6 @@ private fun AssertionsBuilder.jsonMatchesObject(
     path: List<String?>
 ) {
 
-    val isOptionalKey: String.() -> Boolean = {
-        startsWith("'") && endsWith("'[0-1]")
-    }
-
-    val unwrappedOptionalKey: String.() -> String = {
-        if (isOptionalKey()) removePrefix("'").removeSuffix("'[0-1]") else this
-    }
-
-    val unwrappedOptionalKeys: Set<String>.() -> Set<String> = {
-        map { it.unwrappedOptionalKey() }.toSet()
-    }
-
-    val filterOptionalKeys: Set<String>.() -> Set<String> = {
-        filter { it.isOptionalKey() }
-            .toSet()
-            .unwrappedOptionalKeys()
-    }
-
     if (expected.endsWith("?") && observed == null) return
 
     val exp = expected.toJsonMap(path)
@@ -646,4 +628,23 @@ private fun List<String?>.copyAddIndex(i: Int): List<String?> =
         .apply { add("${this@copyAddIndex.lastOrNull() ?: ""}[$i]") }
 
 private fun List<String?>.path() =
-    if (isEmpty()) "ROOT" else joinToString(" > ") { """"$it"""" }
+    if (isEmpty()) "ROOT" else joinToString(" > ") { """"${it?.unwrappedOptionalKey()}"""" }
+
+private val isOptionalKey: String.() -> Boolean = {
+    startsWith("'") && endsWith("'[0-1]")
+}
+
+private val unwrappedOptionalKey: String.() -> String = {
+    if (isOptionalKey()) removePrefix("'").removeSuffix("'[0-1]") else this
+}
+
+private val unwrappedOptionalKeys: Set<String>.() -> Set<String> = {
+    map { it.unwrappedOptionalKey() }.toSet()
+}
+
+private val filterOptionalKeys: Set<String>.() -> Set<String> = {
+    filter { it.isOptionalKey() }
+        .toSet()
+        .unwrappedOptionalKeys()
+}
+
