@@ -11,10 +11,10 @@ class MongoDBUpdateDocumentExecutionBuilder : ExecutionBuilder<Unit> {
     lateinit var collection: String
 
     @Suppress("MemberVisibilityCanBePrivate")
-    lateinit var filter: List<Pair<String, Any?>>
+    var filter: Map<String, Any?> = mapOf()
 
     @Suppress("MemberVisibilityCanBePrivate")
-    lateinit var update: List<Pair<String, Any?>>
+    lateinit var update: Map<String, Any?>
 
     @Suppress("MemberVisibilityCanBePrivate")
     var connection = mongoDBProperty { connection }
