@@ -9,6 +9,14 @@ In order to simplify steps configuration, two parameters can be set to kest glob
 * `connection`: String // Mongo DB connection string, if not set will default to `mongodb://localhost:27017`
 * `database`: String // name of targeted database, if not set will default to `test`
 
+=== sample
+[source,yml, title="kest.yml"]
+----
+mongodb:
+    connection: mongodb://localhost:27017
+    database: test
+----
+
 == Clean database
 
 `clean mongo database`
