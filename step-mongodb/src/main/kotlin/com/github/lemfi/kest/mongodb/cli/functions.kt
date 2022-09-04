@@ -9,6 +9,7 @@ import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.mongodb.builder.MongoDBCleanDatabaseExecutionBuilder
+import com.github.lemfi.kest.mongodb.builder.MongoDBCountDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBInsertDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBReadDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
@@ -55,6 +56,19 @@ fun ScenarioBuilder.`given mongo documents`(
     ).addToScenario(executionBuilder, h)
 }
 
+fun ScenarioBuilder.`given count of mongo documents`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBCountDocumentExecutionBuilder.() -> Unit
+): StepPostExecution<Long> {
+    val executionBuilder = MongoDBCountDocumentExecutionBuilder()
+
+    return StandaloneStep<Long>(
+        name = name?.let { StepName(it) } ?: StepName("count mongo documents"),
+        scenarioName = scenarioName,
+        retry = retryStep
+    ).addToScenario(executionBuilder, h)
+}
 
 fun ScenarioBuilder.`clean mongo database`(
     name: String? = null,
