@@ -7,8 +7,10 @@ import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepPostExecution
+import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.mongodb.builder.MongoDBCleanDatabaseExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBInsertDocumentExecutionBuilder
+import com.github.lemfi.kest.mongodb.builder.MongoDBReadDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
 
 fun ScenarioBuilder.`insert mongo document`(
@@ -34,6 +36,20 @@ fun ScenarioBuilder.`update mongo document`(
 
     return StandaloneStep<Unit>(
         name = name?.let { StepName(it) } ?: StepName("update mongo document"),
+        scenarioName = scenarioName,
+        retry = retryStep
+    ).addToScenario(executionBuilder, h)
+}
+
+fun ScenarioBuilder.`given mongo documents`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBReadDocumentExecutionBuilder.() -> Unit
+): StepPostExecution<List<JsonMap>> {
+    val executionBuilder = MongoDBReadDocumentExecutionBuilder()
+
+    return StandaloneStep<List<JsonMap>>(
+        name = name?.let { StepName(it) } ?: StepName("read mongo documents"),
         scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
