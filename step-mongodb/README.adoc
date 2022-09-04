@@ -1,0 +1,193 @@
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+
+= MongoDB Steps
+
+== Configuration
+
+In order to simplify steps configuration, two parameters can be set to kest global configuration :
+
+* `connection`: String // Mongo DB connection string, if not set will default to `mongodb://localhost:27017`
+* `database`: String // name of targeted database, if not set will default to `test`
+
+== Clean database
+
+`clean mongo database`
+
+=== Parameters configure step
+
+* `connection`: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml
+* `database`: String // Database name to clean.
+Optional, defaults to database configured in kest.yml
+* `collections`: List<String> // Target collections to clean.
+Optional, by default all collections of DB will be cleaned
+
+=== Samples
+
+[source,kotlin]
+----
+`clean mongo database`(name = """clean "vehicles" and "planets" collections on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collections("vehicles", "planets")
+}
+----
+
+[source,kotlin]
+----
+`clean mongo database`(name = """clean "vehicles" and "planets" collections on globally configured database""") {
+    collections("vehicles", "planets")
+}
+----
+
+[source,kotlin]
+----
+`clean mongo database`(name = "clean all collections on globally configured database")
+----
+
+== Insert document
+
+`insert mongo document`
+
+=== Parameters to provide on step
+
+* `connection`: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml
+* `database`: String // Database name to clean.
+Optional, defaults to database configured in kest.yml
+* `collection`: String // mandatory, collection on which insert document
+* `document`: String // mandatory, document to insert
+
+=== Samples
+
+[source,kotlin]
+----
+`insert mongo document`(name = """insert Endor into "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+    document = """
+        {
+            "name": "Endor",
+            "population": 7500000000
+        }
+    """
+}
+----
+
+[source,kotlin]
+----
+`insert mongo document`(name = """insert Endor into "planets" collection on globally configured database""") {
+    collection = "planets"
+    document = """
+        {
+        "name": "Endor",
+        "population": 7500000000
+        }
+    """
+    }
+----
+
+== Update documents
+
+`update mongo document`
+
+=== Parameters to provide on step
+
+* `connection`: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml
+* `database`: String // Database name to clean.
+Optional, defaults to database configured in kest.yml
+* `collection`: String // mandatory, collection on which insert document
+* `filter`: Map<String, Any> // optional, filters documents to update
+* `update`: Map<String, Any> // mandatory, filters documents to update
+
+=== Samples
+
+[source,kotlin]
+----
+`update mongo document`(name = """update Endor planet from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+    update = mapOf("oceans" to 3)
+}
+----
+
+[source,kotlin]
+----
+`update mongo document`(name = """update Endor planet from "planets" collection on globally configured database""") {
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+    update = mapOf("oceans" to 3)
+}
+----
+
+== Read documents
+
+`given mongo documents`
+
+=== Parameters to provide on step
+
+* `connection`: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml
+* `database`: String // Database name to clean.
+Optional, defaults to database configured in kest.yml
+* `collection`: String // mandatory, collection on which insert document
+* `filter`: Map<String, Any> // optional, filters documents to retrieve
+
+=== Samples
+
+[source,kotlin]
+----
+`given mongo documents`(name = """read Endor planet from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+}
+----
+
+[source,kotlin]
+----
+`given mongo documents`(name = """read Endor planet from "planets" collection on globally configured database""") {
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+}
+----
+
+== Count documents
+
+`given count of mongo documents`
+
+=== Parameters to provide on step
+
+* `connection`: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml
+* `database`: String // Database name to clean.
+Optional, defaults to database configured in kest.yml
+* `collection`: String // mandatory, collection on which insert document
+* `filter`: Map<String, Any> // optional, filters documents to retrieve
+
+=== Samples
+
+[source,kotlin]
+----
+`given count of mongo documents`(name = """count documents from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+}
+----
+
+[source,kotlin]
+----
+`given count of mongo documents`(name = """count documents from "planets" collection collection on globally configured database""") {
+    collection = "planets"
+}
+----

@@ -387,7 +387,7 @@ A step returns an object . which is invokable: you may reuse its result in anoth
 
 * link:step-http/README.adoc[HTTP]
 * link:step-rabbitmq/README.adoc[RabbitMQ]
-* Mongo
+* link:step-mongodb/README.adoc[Mongo]
 * Redis
 * Cadence
 
