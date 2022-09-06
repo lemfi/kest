@@ -10,6 +10,7 @@ import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.mongodb.builder.MongoDBCleanDatabaseExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBCountDocumentExecutionBuilder
+import com.github.lemfi.kest.mongodb.builder.MongoDBDeleteDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBInsertDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBReadDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
@@ -51,6 +52,20 @@ fun ScenarioBuilder.`given mongo documents`(
 
     return StandaloneStep<List<JsonMap>>(
         name = name?.let { StepName(it) } ?: StepName("read mongo documents"),
+        scenarioName = scenarioName,
+        retry = retryStep
+    ).addToScenario(executionBuilder, h)
+}
+
+fun ScenarioBuilder.`delete mongo documents`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBDeleteDocumentExecutionBuilder.() -> Unit
+): StepPostExecution<Long> {
+    val executionBuilder = MongoDBDeleteDocumentExecutionBuilder()
+
+    return StandaloneStep<Long>(
+        name = name?.let { StepName(it) } ?: StepName("delete mongo documents"),
         scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)

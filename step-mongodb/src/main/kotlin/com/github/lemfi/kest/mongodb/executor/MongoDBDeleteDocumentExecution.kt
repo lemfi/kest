@@ -3,50 +3,39 @@ package com.github.lemfi.kest.mongodb.executor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.json.model.JsonMap
-import com.github.lemfi.kest.json.model.getForPath
 import com.mongodb.client.MongoClients
 import org.bson.Document
-import org.bson.types.ObjectId
 
 private val jsonwriter = jacksonObjectMapper().writerWithDefaultPrettyPrinter()
 
-internal data class MongoDBReadDocumentExecution(
+internal data class MongoDBDeleteDocumentExecution(
     val collection: String,
     val filter: Map<String, Any?>,
     val connection: String,
     val database: String,
-) : Execution<List<JsonMap>>() {
+) : Execution<Long>() {
 
-
-    override fun execute(): List<JsonMap> {
+    override fun execute(): Long {
 
         return MongoClients
             .create(connection)
             .run {
                 getDatabase(database)
                     .getCollection(collection)
-                    .find(
+                    .deleteMany(
                         Document().apply {
                             filter.forEach { put(it.key, it.value) }
                         },
                     )
-                    .toList()
-                    .map {
-                        it.toMap() as JsonMap
-                    }.map {
-                        if (it.containsKey("_id") && it["_id"] is ObjectId) {
-                            it["_id"] = it.getForPath<ObjectId>("_id").toHexString()
-                        }
-                        it
-                    }.also { result ->
+                    .deletedCount
+                    .also { result ->
 
                         close()
 
                         LoggerFactory.getLogger("MONGODB-Kest").info(
                             """
                                 |
-                                |Find documents: 
+                                |Delete documents: 
                                 |
                                 |-----------------------------------------------------------------------------
                                 |database: $database
@@ -57,7 +46,7 @@ internal data class MongoDBReadDocumentExecution(
                                 |-----------------------------------------------------------------------------
                                 |result: 
                                 |
-                                |${jsonwriter.writeValueAsString(result)}
+                                |$result document${if (result > 0) "s" else ""} deleted
                             """.trimMargin()
                         )
                     }
