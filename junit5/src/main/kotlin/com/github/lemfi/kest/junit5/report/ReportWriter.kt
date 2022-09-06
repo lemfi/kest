@@ -22,7 +22,6 @@ internal class FileReportWriter : ReportWriter {
         file?.apply {
             parentFile.mkdirs()
             createNewFile()
-            println("write : " + report.duration)
             appendText(report.toHTML())
         }
     }
