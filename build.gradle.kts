@@ -41,6 +41,7 @@ allprojects {
 }
 
 val isRelease = !(project.version as String).endsWith("SNAPSHOT")
+val Project.noSample: Boolean get() = !name.startsWith("sample")
 
 subprojects {
 
@@ -111,8 +112,10 @@ subprojects {
     }
 
     configure<PublishingExtension> {
+
         publications {
             create<MavenPublication>("mavenJava") {
+
                 from(components["java"])
 
                 artifact(tasks["sourcesJar"])
@@ -155,6 +158,10 @@ subprojects {
                 }
             }
         }
+    }
+
+    tasks.withType<PublishToMavenRepository> {
+        enabled = noSample
     }
 
     tasks.register<DefaultTask>("install") {
