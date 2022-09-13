@@ -385,7 +385,7 @@ private fun AssertionsBuilder.jsonMatchesObject(
 
         if (!ignoreUnknownProperties || !obs.keys.containsAll(mandatoryKeys))
             throw FilteredAssertionFailedError(
-                "expected ${exp.keys} entries, got ${obs.keys} entries at ${path.path()}",
+                "expected ${exp.keys.sorted()} entries, got ${obs.keys.sorted()} entries at ${path.path()}",
                 exp.keys,
                 obs.keys
             )

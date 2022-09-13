@@ -6,6 +6,7 @@ import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.opentest4j.AssertionFailedError
@@ -132,7 +133,7 @@ class JsonAssertionsTest {
         """.trimIndent(), checkArraysOrder = false
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """{data=[3, 3, 3]} is not an expected element of array at "array"""",
             exception.message
         )
@@ -406,7 +407,7 @@ class JsonAssertionsTest {
             )
         }
 
-        Assertions.assertEquals(
+        assertEquals(
             "missing entries for [{number=1, boolean=true, string=hello}], expected 2 entries, got 1 entries at ROOT",
             exception.message
         )
@@ -454,7 +455,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected class kotlin.String, got 1 at "strings[1]"""", exception1.message)
+        assertEquals("""expected class kotlin.String, got 1 at "strings[1]"""", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -472,7 +473,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("expected json object structure at ROOT", exception2.message)
+        assertEquals("expected json object structure at ROOT", exception2.message)
 
 
         val exception3 = assertThrows<AssertionFailedError> {
@@ -490,7 +491,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """expected object of type class kotlin.Boolean, got "world" at "booleans[1]"""",
             exception3.message
         )
@@ -511,7 +512,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected "world", got "worlds" at "some strings[1]"""", exception4.message)
+        assertEquals("""expected "world", got "worlds" at "some strings[1]"""", exception4.message)
 
 
         val exception5 = assertThrows<AssertionFailedError> {
@@ -529,7 +530,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected 2, got true at "some numbers[1]"""", exception5.message)
+        assertEquals("""expected 2, got true at "some numbers[1]"""", exception5.message)
 
         val exception6 = assertThrows<AssertionFailedError> {
 
@@ -546,7 +547,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected false, got 2 at "some booleans[1]"""", exception6.message)
+        assertEquals("""expected false, got 2 at "some booleans[1]"""", exception6.message)
 
     }
 
@@ -596,7 +597,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value $stringPattern at "string"""", exception.message)
+        assertEquals("""expected none nullable value $stringPattern at "string"""", exception.message)
 
     }
 
@@ -615,7 +616,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected object of type class kotlin.Number, got "12" at "[0]"""", exception.message)
+        assertEquals("""expected object of type class kotlin.Number, got "12" at "[0]"""", exception.message)
 
     }
 
@@ -672,7 +673,7 @@ class JsonAssertionsTest {
             )
         }
 
-        Assertions.assertEquals("""expected class kotlin.String, got 12 at "string"""", exception1.message)
+        assertEquals("""expected class kotlin.String, got 12 at "string"""", exception1.message)
 
         val exception2 = assertThrows<AssertionFailedError> {
 
@@ -690,7 +691,7 @@ class JsonAssertionsTest {
             )
         }
 
-        Assertions.assertEquals("""Expected hello, got 12 at "string"""", exception2.message)
+        assertEquals("""Expected hello, got 12 at "string"""", exception2.message)
 
     }
 
@@ -730,7 +731,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value $numberPattern at "number"""", exception.message)
+        assertEquals("""expected none nullable value $numberPattern at "number"""", exception.message)
 
     }
 
@@ -770,7 +771,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """expected none nullable value $booleanPattern at "boolean"""", exception.message
         )
 
@@ -812,7 +813,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """expected object of type class kotlin.Number, got "1" at "number"""",
             exception.message
         )
@@ -838,7 +839,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """expected object of type class kotlin.Boolean, got "true" at "boolean"""",
             exception.message
         )
@@ -864,7 +865,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("""Expected 1234, got 5678 at "data"""", exception.message)
+        assertEquals("""Expected 1234, got 5678 at "data"""", exception.message)
 
     }
 
@@ -964,7 +965,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """Expected level112314, got error here at "level0" > "level11" > "level112[1]" > "level11231" > "level112314"""",
             exception.message
         )
@@ -989,7 +990,7 @@ class JsonAssertionsTest {
                     """
             )
         }
-        Assertions.assertEquals("expected [data1] entries, got [data2] entries at ROOT", exception.message)
+        assertEquals("expected [data1] entries, got [data2] entries at ROOT", exception.message)
 
     }
 
@@ -1221,7 +1222,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """wrong pattern [[
  {
      "string": "${stringPattern.nullable}"
@@ -1283,7 +1284,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(""""hello" does not validate pattern $datePattern at "date"""", exception.message)
+        assertEquals(""""hello" does not validate pattern $datePattern at "date"""", exception.message)
 
     }
 
@@ -1348,7 +1349,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value $datePattern at "date"""", exception.message)
+        assertEquals("""expected none nullable value $datePattern at "date"""", exception.message)
 
     }
 
@@ -1397,7 +1398,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals(
+        assertEquals(
             """"bad format" does not validate pattern $datePattern at "date[1]"""",
             exception.message
         )
@@ -1435,7 +1436,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value $datePattern at "date"""", exception1.message)
+        assertEquals("""expected none nullable value $datePattern at "date"""", exception1.message)
 
 
         val exception2 = assertThrows<AssertionFailedError> {
@@ -1455,7 +1456,7 @@ class JsonAssertionsTest {
                 """
             )
         }
-        Assertions.assertEquals("""expected none nullable value $datePattern at "date[1]"""", exception2.message)
+        assertEquals("""expected none nullable value $datePattern at "date[1]"""", exception2.message)
     }
 
     @Test
@@ -1917,6 +1918,50 @@ class JsonAssertionsTest {
         assertionBuilder().jsonMatches(expected = expected, observed = observedPresent, ignoreUnknownProperties = false)
         assertionBuilder().jsonMatches(expected = expected, observed = observedAbsent, ignoreUnknownProperties = true)
         assertionBuilder().jsonMatches(expected = expected, observed = observedAbsent, ignoreUnknownProperties = false)
+    }
+
+    @Test
+    fun `sort attributes when expeted pattern and observed data do not have same attributes`() {
+
+        val expected = """
+            {
+                "attr0": "$stringPattern",
+                "attr1": "$stringPattern",
+                "attr2": "$stringPattern",
+                "attr3": "$stringPattern",
+                "attr4": "$stringPattern",
+                "attr5": "$stringPattern",
+                "attr6": "$stringPattern",
+                "attr7": "$stringPattern",
+                "attr8": "$stringPattern",
+                "attr9": "$stringPattern"
+            }
+        """
+
+        val observed = """
+            {
+                "attr8": "$stringPattern",
+                "attrb": "$stringPattern",
+                "attr2": "$stringPattern",
+                "attr9": "$stringPattern",
+                "attr4": "$stringPattern",
+                "attra": "$stringPattern",
+                "attr5": "$stringPattern",
+                "attr7": "$stringPattern",
+                "attr1": "$stringPattern",
+                "attr3": "$stringPattern",
+                "attrc": "$stringPattern"
+            }
+        """
+
+        val exception = assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(expected, observed)
+        }
+
+        assertEquals(
+            "expected [attr0, attr1, attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9] entries, got [attr1, attr2, attr3, attr4, attr5, attr7, attr8, attr9, attra, attrb, attrc] entries at ROOT",
+            exception.message
+        )
     }
 
 }
