@@ -61,7 +61,7 @@ Optional, by default all collections of DB will be cleaned
 
 * `connection`: String // Mongo DB connection string.
 Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
+* `database`: String // Targeted database name.
 Optional, defaults to database configured in kest.yml
 * `collection`: String // mandatory, collection on which insert document
 * `document`: String // mandatory, document to insert
@@ -104,7 +104,7 @@ Optional, defaults to database configured in kest.yml
 
 * `connection`: String // Mongo DB connection string.
 Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
+* `database`: String // Targeted database name.
 Optional, defaults to database configured in kest.yml
 * `collection`: String // mandatory, collection on which insert document
 * `filter`: Map<String, Any> // optional, filters documents to update
@@ -142,7 +142,7 @@ Optional, defaults to database configured in kest.yml
 
 * `connection`: String // Mongo DB connection string.
 Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
+* `database`: String // Targeted database name.
 Optional, defaults to database configured in kest.yml
 * `collection`: String // mandatory, collection on which insert document
 * `filter`: Map<String, Any> // optional, filters documents to retrieve
@@ -177,7 +177,7 @@ Optional, defaults to database configured in kest.yml
 
 * `connection`: String // Mongo DB connection string.
 Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
+* `database`: String // Targeted database name.
 Optional, defaults to database configured in kest.yml
 * `collection`: String // mandatory, collection on which insert document
 * `filter`: Map<String, Any> // optional, filters documents to retrieve
