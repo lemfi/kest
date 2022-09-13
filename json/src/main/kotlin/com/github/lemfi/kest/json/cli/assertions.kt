@@ -290,14 +290,26 @@ private fun AssertionsBuilder.jsonMatches(
     ignoreUnknownProperties: Boolean,
     path: List<String?>,
 ) {
-    expectedPatterns.fold(Throwable() as Throwable?) { acc, expected ->
-        @Suppress("KotlinConstantConditions")
-        if (acc != null)
-            runCatching {
+
+    var isPatternValid = false
+
+    val errors = expectedPatterns
+        .mapNotNull { expected ->
+            if (!isPatternValid) expected to runCatching {
                 jsonMatches(expected, observed, checkArraysOrder, ignoreUnknownProperties, path)
-            }.exceptionOrNull()
-        else acc
-    }?.let { throw it }
+            }.exceptionOrNull().apply {
+                isPatternValid = this == null
+            }
+            else null
+        }
+
+    if (errors.none { (_, error) -> error == null }) throw FilteredAssertionFailedError(
+        """Failed to validate pattern, none of following patterns matched
+            |
+            |${errors.joinToString("\n\n\n") { (pattern, error) -> "--------\nPATTERN\n--------\n $pattern => ${error?.message}" }}
+        """.trimMargin()
+    )
+
 }
 
 /**

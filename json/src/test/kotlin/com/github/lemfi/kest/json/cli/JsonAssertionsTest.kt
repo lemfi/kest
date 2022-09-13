@@ -616,7 +616,20 @@ class JsonAssertionsTest {
                 """
             )
         }
-        assertEquals("""expected object of type class kotlin.Number, got "12" at "[0]"""", exception.message)
+        assertEquals(
+            """Failed to validate pattern, none of following patterns matched
+
+--------
+PATTERN
+--------
+ [[{{string}}]] => expected none nullable value {{string}} at "[1]"
+
+
+--------
+PATTERN
+--------
+ [[{{number}}]] => expected object of type class kotlin.Number, got "12" at "[0]"""", exception.message
+        )
 
     }
 
@@ -1960,6 +1973,72 @@ class JsonAssertionsTest {
 
         assertEquals(
             "expected [attr0, attr1, attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9] entries, got [attr1, attr2, attr3, attr4, attr5, attr7, attr8, attr9, attra, attrb, attrc] entries at ROOT",
+            exception.message
+        )
+    }
+
+    @Test
+    fun `unclear error message when validating a pattern on an element of an array when pattern is not well-formed json`() {
+
+        val expected = listOf(
+            """
+                {
+                    "a": "$stringPattern",  
+                    "b": "$stringPattern"
+                } 
+            """,
+            """
+                
+                    "c": "$stringPattern",  
+                    "d": "$stringPattern"
+                
+            """
+        )
+
+        val observed = """
+            {
+                "e": "$stringPattern",
+                "f": "$stringPattern"
+            }
+        """
+
+        val exception = assertThrows<AssertionFailedError> {
+            assertionBuilder().jsonMatches(expected, observed)
+        }
+
+        assertEquals(
+            """Failed to validate pattern, none of following patterns matched
+
+--------
+PATTERN
+--------
+ 
+                {
+                    "a": "{{string}}",  
+                    "b": "{{string}}"
+                } 
+             => expected [a, b] entries, got [e, f] entries at ROOT
+
+
+--------
+PATTERN
+--------
+ 
+                
+                    "c": "{{string}}",  
+                    "d": "{{string}}"
+                
+             => expected 
+                
+                    "c": "{{string}}",  
+                    "d": "{{string}}"
+                
+            , got 
+            {
+                "e": "{{string}}",
+                "f": "{{string}}"
+            }
+         at ROOT""",
             exception.message
         )
     }
