@@ -199,3 +199,38 @@ Optional, defaults to database configured in kest.yml
     collection = "planets"
 }
 ----
+
+== Delete documents
+
+`delete mongo documents`
+
+=== Parameters to provide on step
+
+* `connection`: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml
+* `database`: String // Targeted database name.
+Optional, defaults to database configured in kest.yml
+* `collection`: String // mandatory, collection on which delete documents
+* `filter`: Map<String, Any> // optional, filters documents to delete
+
+=== Samples
+
+[source,kotlin]
+----
+`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+
+    filter = mapOf("name" to "Alderaan")
+}
+----
+
+[source,kotlin]
+----
+`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on globally configured database""") {
+    collection = "planets"
+
+    filter = mapOf("name" to "Alderaan")
+}
+----
