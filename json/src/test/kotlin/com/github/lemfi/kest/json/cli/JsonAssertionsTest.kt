@@ -2013,6 +2013,35 @@ PATTERN
     }
 
     @Test
+    fun `optional json key are not in expected error message when not in observed`() {
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+                   {
+                        ${optionalJsonKey("optKey1")}: "$stringPattern",
+                        "manKey2": "$stringPattern",
+                        "manKey1": "$stringPattern",
+                        ${optionalJsonKey("optKey2")}: "$stringPattern"
+                   } 
+                """,
+                """
+                   {
+                        "optKey2": "12",
+                        "manKey1": "12"
+                   } 
+                """
+            )
+        }
+
+        assertEquals(
+            """expected [manKey1, manKey2, optKey2, optional(optKey1)] entries, got [manKey1, optKey2] entries at ROOT""",
+            exception.message
+        )
+    }
+
+    @Test
     fun `unclear error message when validating a pattern on an element of an array when pattern is not well-formed json`() {
 
         val expected = listOf(

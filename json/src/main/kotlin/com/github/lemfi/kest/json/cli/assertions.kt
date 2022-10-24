@@ -395,11 +395,23 @@ private fun AssertionsBuilder.jsonMatchesObject(
 
     if (unwrappedKeys != obs.keys && mandatoryKeys != obs.keys.minus(optionalKeys)) {
 
+        val displayExpectedKeys =
+            (
+                    mandatoryKeys +
+                            optionalKeys.filter { obs.containsKey(it) } +
+                            optionalKeys
+                                .filter { !obs.containsKey(it) }
+                                .map { "optional($it)" }
+                    )
+                .sortedWith { k1, k2 ->
+                    if (k1.startsWith("optional(")) 1 else k1.compareTo(k2)
+                }
+
         if (!ignoreUnknownProperties || !obs.keys.containsAll(mandatoryKeys))
             throw FilteredAssertionFailedError(
-                "expected ${exp.keys.sorted()} entries, got ${obs.keys.sorted()} entries at ${path.path()}",
-                exp.keys,
-                obs.keys
+                "expected $displayExpectedKeys entries, got ${obs.keys.sorted()} entries at ${path.path()}",
+                displayExpectedKeys,
+                obs.keys.sorted(),
             )
     }
     exp.keys.forEach { key ->
