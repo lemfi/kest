@@ -633,6 +633,41 @@ PATTERN
 
     }
 
+
+    @Test
+    fun `error message is correct for pattern of pattern`() {
+
+        val p1 = pattern("p1") definedBy """
+            {
+                "a": "$stringPattern"
+            }
+        """.trimIndent()
+
+        val p2 =
+            pattern("p2") definedBy """
+                {
+                    "b": "$p1"
+                }
+            """.trimIndent()
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                p2.pattern,
+                """
+                   {
+                        "b": {
+                            "a": 12
+                        }
+                   }
+                        
+                """
+            )
+        }
+        assertEquals("""expected class kotlin.String, got 12 at "b" > "a"""", exception.message)
+
+    }
+
     @Test
     fun `json array with multiple possible patterns`() {
 

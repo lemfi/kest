@@ -615,13 +615,24 @@ private data class StringPatternJsonMatcher(
         ignoreUnknownProperties: Boolean,
         path: List<String?>
     ) {
-        jsonMatches(
-            clsDescriptor.map { if (isNullable) "$it?" else it },
-            observed,
-            checkArraysOrder,
-            ignoreUnknownProperties,
-            path
-        )
+
+        if (clsDescriptor.size == 1) {
+            jsonMatches(
+                clsDescriptor.map { if (isNullable) "$it?" else it }.first(),
+                observed,
+                checkArraysOrder,
+                ignoreUnknownProperties,
+                path
+            )
+        } else {
+            jsonMatches(
+                clsDescriptor.map { if (isNullable) "$it?" else it },
+                observed,
+                checkArraysOrder,
+                ignoreUnknownProperties,
+                path
+            )
+        }
     }
 }
 
