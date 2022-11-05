@@ -5,6 +5,7 @@ package com.github.lemfi.kest.rabbitmq.cli
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
+import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -25,7 +26,7 @@ fun ScenarioBuilder.`publish rabbitmq message`(
 ): StepPostExecution<Unit> {
     val executionBuilder = RabbitMQMessageExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("publish message to rabbitmq"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("publish message to rabbitmq"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -42,7 +43,7 @@ inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
         }
     }
     return StandaloneStep<List<RabbitMQMessage<T>>>(
-        name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("read message from rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -67,7 +68,7 @@ inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
         }
     }
     return StandaloneStep<RabbitMQMessage<T>>(
-        name = name?.let { StepName(it) } ?: StepName("read message from rabbitmq queue"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("read message from rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -89,7 +90,7 @@ fun ScenarioBuilder.`create rabbitmq queue`(
 ): StepPostExecution<Unit> {
     val executionBuilder = RabbitMQQueueCreationExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("create rabbitmq queue"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("create rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -102,7 +103,7 @@ fun ScenarioBuilder.`given number of messages in rabbitmq queue`(
 ): StepPostExecution<RabbitMQMessageCount> {
     val executionBuilder = RabbitMQCountMessagesExecutionBuilder()
     return StandaloneStep<RabbitMQMessageCount>(
-        name = name?.let { StepName(it) } ?: StepName("count messages from rabbitmq queue"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("count messages from rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -115,7 +116,7 @@ fun ScenarioBuilder.`delete rabbitmq queue`(
 ): StepPostExecution<Unit> {
     val executionBuilder = RabbitMQQueueDeletionExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("delete rabbitmq queue"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("delete rabbitmq queue"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)

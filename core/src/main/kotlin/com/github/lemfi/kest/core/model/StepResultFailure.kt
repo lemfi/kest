@@ -3,7 +3,7 @@ package com.github.lemfi.kest.core.model
 
 sealed class StepResultFailure(
     val step: Step<*>,
-    override val message: String? = """Could not get result from previous step "${step.name?.value ?: step}"""",
+    override val message: String? = """Could not get result from previous step "${step.name.value}"""",
     override val cause: Throwable? = null
 ) : Throwable(message, cause)
 
@@ -14,7 +14,7 @@ class StepResultAssertionFailure(
     step,
     """
         
-        Could not get result from previous step "${step.name?.value ?: step}"
+        Could not get result from previous step "${step.name.value}"
         Assertions failed for step
         
         """.trimIndent(),
@@ -28,7 +28,7 @@ class StepResultResultFailure(
     step,
     """
         
-        Could not get result from previous step "${step.name?.value ?: step}"
+        Could not get result from previous step "${step.name.value}"
         Could not compute result
         
         """.trimIndent(),
@@ -42,7 +42,7 @@ class StepResultNotPlayedFailure(
     step,
     """
         
-        Step "${step.name?.value ?: step}" was not played yet! 
+        Step "${step.name.value}" was not played yet! 
         You may use its result only in another step body
         
         """.trimIndent(), cause

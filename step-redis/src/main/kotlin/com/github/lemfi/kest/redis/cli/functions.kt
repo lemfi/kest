@@ -3,6 +3,7 @@
 package com.github.lemfi.kest.redis.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -18,7 +19,7 @@ fun ScenarioBuilder.`redis delete key`(
 ): StepPostExecution<Unit> {
     val executionBuilder = RedisDeleteExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("delete redis key"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("delete redis key"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -31,7 +32,7 @@ fun ScenarioBuilder.`redis get key`(
 ): StepPostExecution<String?> {
     val executionBuilder = RedisReadExecutionBuilder()
     return StandaloneStep<String?>(
-        name = name?.let { StepName(it) } ?: StepName("get redis key"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("get redis key"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)
@@ -44,7 +45,7 @@ fun ScenarioBuilder.`redis insert data`(
 ): StepPostExecution<Unit> {
     val executionBuilder = RedisInsertExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("insert data in redis"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("insert data in redis"),
         scenarioName = scenarioName,
         retry = retry
     ).addToScenario(executionBuilder, builder)

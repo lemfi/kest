@@ -9,8 +9,10 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
 import com.github.lemfi.kest.core.logger.getOrDefault
 import com.github.lemfi.kest.core.logger.threadLocalLogger
+import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.IScenario
+import com.github.lemfi.kest.core.model.IStepName
 import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
 import com.github.lemfi.kest.core.model.RetryStep
@@ -43,7 +45,7 @@ fun ScenarioBuilder.wait(time: Long, name: String? = null): StepPostExecution<Un
 
     return StandaloneStep<Unit>(
         scenarioName = scenarioName,
-        name = name?.let { StepName(it) } ?: StepName("wait $time ms"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("wait $time ms"),
         retry = null
     )
         .addToScenario(executionBuilder) {}
@@ -58,7 +60,7 @@ fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: 
 
     return StandaloneStep<T>(
         scenarioName = scenarioName,
-        name = name?.let { StepName(it) } ?: StepName("generic step"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("generic step"),
         retry = retry
     )
         .addToScenario(executionBuilder) {}
@@ -71,7 +73,7 @@ fun <T> ScenarioBuilder.nestedScenario(
     val executionBuilder = NestedScenarioExecutionBuilder<T>(name)
 
     return NestedScenarioStep<T>(
-        name = name?.let { StepName(it) },
+        name = name?.let { StepName(it) } ?: DefaultStepName("nested scenario step"),
         scenarioName = scenarioName,
     )
         .apply { executionBuilder.step = this }
@@ -91,7 +93,7 @@ fun ScenarioBuilder.nestedScenario(
         }
 
     return NestedScenarioStep<Unit>(
-        name = name?.let { StepName(it) },
+        name = name?.let { StepName(it) } ?: DefaultStepName("nested scenario step"),
         scenarioName = scenarioName,
     )
         .apply { executionBuilder.step = this }
@@ -173,7 +175,7 @@ private fun AssertionsBuilder.fail(cause: Throwable) {
 
 private fun AssertionsBuilder.failureMessage(
     message: String?,
-    stepName: StepName?
+    stepName: IStepName?
 ): String {
 
     val messages = message?.lines()?.flatMap { it.chunked(80) } ?: listOf("null")

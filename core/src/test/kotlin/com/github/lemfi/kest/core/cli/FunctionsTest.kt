@@ -7,6 +7,7 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.IScenario
+import com.github.lemfi.kest.core.model.IStepName
 import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
 import com.github.lemfi.kest.core.model.Scenario
@@ -130,7 +131,9 @@ class FunctionsTest {
 
         every { step.retry } returns null
         every { step.scenarioName } returns "the scenario name"
-        every { step.name } returns StepName("the step name")
+        every { step.name } returns object : IStepName {
+            override val value = "the step name"
+        }
 
         var onAssertionFailedCalled = false
         var onExecutionEndedCalled = false
@@ -244,7 +247,9 @@ class FunctionsTest {
 
         every { step.retry } returns 2.times.`by intervals of`(10.ms)
         every { step.scenarioName } returns "the scenario name"
-        every { step.name } returns StepName("the step name")
+        every { step.name } returns object : IStepName {
+            override val value = "the step name"
+        }
         val execution = mockk<Execution<String>>(relaxUnitFun = true)
         every { step.execution } returns { execution }
         every { execution.execute() } throws IllegalAccessException("first call fails") andThen "success"
@@ -267,7 +272,9 @@ class FunctionsTest {
 
         val firstStep = mockk<Step<Unit>>(relaxUnitFun = true)
         every { firstStep.scenarioName } returns "the scenario name"
-        every { firstStep.name } returns StepName("the first step name")
+        every { firstStep.name } returns object : IStepName {
+            override val value = "the first step name"
+        }
         every { firstStep.postExecution } returns StepPostExecution(firstStep, null) {}
 
         val step = mockk<Step<Unit>>(relaxUnitFun = true)
@@ -275,7 +282,9 @@ class FunctionsTest {
 
         every { step.retry } returns 2.times.`by intervals of`(10.ms)
         every { step.scenarioName } returns "the scenario name"
-        every { step.name } returns StepName("the step name")
+        every { step.name } returns object : IStepName {
+            override val value = "the step name"
+        }
         var executionCalled = 0
         val execution = object : Execution<Unit>() {
             override fun execute() {
@@ -301,7 +310,9 @@ class FunctionsTest {
 
         every { step.retry } returns null
         every { step.scenarioName } returns "the scenario name"
-        every { step.name } returns StepName("the step name")
+        every { step.name } returns object : IStepName {
+            override val value = "the step name"
+        }
         val execution = mockk<Execution<String>>(relaxUnitFun = true)
         every { step.execution } returns { execution }
         every { execution.execute() } returns "success"

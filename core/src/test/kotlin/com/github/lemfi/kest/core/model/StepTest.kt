@@ -14,7 +14,9 @@ class StepTest {
     fun `resolve a step that was not played yet`() {
         val step = mockk<Step<String>>()
 
-        every { step.name } returns StepName("a step")
+        every { step.name } returns object : IStepName {
+            override val value = "a step"
+        }
 
         val stepRes = StepPostExecution<String>(
             step = step,
@@ -38,7 +40,9 @@ class StepTest {
     fun `resolve a step that failed`() {
         val step = mockk<Step<String>>()
 
-        every { step.name } returns StepName("a step")
+        every { step.name } returns object : IStepName {
+            override val value = "a step"
+        }
 
         val stepRes = StepPostExecution<String>(
             step = step,
@@ -102,7 +106,9 @@ class StepTest {
     fun `resolve and transform with failure a successful step`() {
         val step = mockk<Step<String>>()
 
-        every { step.name } returns StepName("a step")
+        every { step.name } returns object : IStepName {
+            override val value = "a step"
+        }
 
         val stepRes = StepPostExecution<String>(
             step = step,
@@ -186,7 +192,9 @@ class StepTest {
     fun `all parents are marked as failed when a post execution is marked as failed`() {
         val step1 = mockk<Step<String>>()
 
-        every { step1.name } returns StepName("step 1")
+        every { step1.name } returns object : IStepName {
+            override val value = "step 1"
+        }
 
         val stepRes3 = StepPostExecution<String>(
             step = step1,

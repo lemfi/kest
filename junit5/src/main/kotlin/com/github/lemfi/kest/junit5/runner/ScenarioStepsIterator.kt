@@ -44,16 +44,16 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
             }
                 .let {
                     if (it.isFailure) {
-                        createDynamicTest(name?.value ?: "anonymous step") { throw it.exceptionOrNull()!! }
+                        createDynamicTest(name.value) { throw it.exceptionOrNull()!! }
                     } else {
                         DynamicContainer.dynamicContainer(
-                            name?.value ?: "anonymous step",
+                            name.value,
                             ScenarioStepsIterator(it.getOrNull()!!.scenario())
                         )
                     }
                 }
 
-        } else createDynamicTest(name?.value ?: "anonymous step") { run() }
+        } else createDynamicTest(name.value) { run() }
 
 
     private fun createDynamicTest(name: String, test: () -> Unit) =

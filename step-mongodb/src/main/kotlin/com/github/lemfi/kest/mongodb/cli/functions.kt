@@ -3,6 +3,7 @@
 package com.github.lemfi.kest.mongodb.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
+import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StepName
@@ -22,7 +23,7 @@ fun ScenarioBuilder.`insert mongo document`(
 ): StepPostExecution<Unit> {
     val executionBuilder = MongoDBInsertDocumentExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("insert mongo document"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("insert mongo document"),
         scenarioName = scenarioName,
         retry = retryStep
     )
@@ -37,7 +38,7 @@ fun ScenarioBuilder.`update mongo document`(
     val executionBuilder = MongoDBUpdateDocumentExecutionBuilder()
 
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("update mongo document"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("update mongo document"),
         scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
@@ -51,7 +52,7 @@ fun ScenarioBuilder.`given mongo documents`(
     val executionBuilder = MongoDBReadDocumentExecutionBuilder()
 
     return StandaloneStep<List<JsonMap>>(
-        name = name?.let { StepName(it) } ?: StepName("read mongo documents"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("read mongo documents"),
         scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
@@ -65,7 +66,7 @@ fun ScenarioBuilder.`delete mongo documents`(
     val executionBuilder = MongoDBDeleteDocumentExecutionBuilder()
 
     return StandaloneStep<Long>(
-        name = name?.let { StepName(it) } ?: StepName("delete mongo documents"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("delete mongo documents"),
         scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
@@ -79,7 +80,7 @@ fun ScenarioBuilder.`given count of mongo documents`(
     val executionBuilder = MongoDBCountDocumentExecutionBuilder()
 
     return StandaloneStep<Long>(
-        name = name?.let { StepName(it) } ?: StepName("count mongo documents"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("count mongo documents"),
         scenarioName = scenarioName,
         retry = retryStep
     ).addToScenario(executionBuilder, h)
@@ -92,7 +93,7 @@ fun ScenarioBuilder.`clean mongo database`(
 ): StepPostExecution<Unit> {
     val executionBuilder = MongoDBCleanDatabaseExecutionBuilder()
     return StandaloneStep<Unit>(
-        name = name?.let { StepName(it) } ?: StepName("clean database"),
+        name = name?.let { StepName(it) } ?: DefaultStepName("clean database"),
         scenarioName = scenarioName,
         retry = retryStep
     )

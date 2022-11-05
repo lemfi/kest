@@ -44,8 +44,8 @@ class NestedScenarioExecutionBuilderTest {
 
         Assertions.assertEquals(2, scenario.steps.size)
         Assertions.assertEquals("hello world", scenario.name)
-        Assertions.assertEquals("step 1 of nested scenario", scenario.steps[0].name!!.value)
-        Assertions.assertEquals("step 2 of nested scenario", scenario.steps[1].name!!.value)
+        Assertions.assertEquals("step 1 of nested scenario", scenario.steps[0].name.value)
+        Assertions.assertEquals("step 2 of nested scenario", scenario.steps[1].name.value)
     }
 
     @Test
