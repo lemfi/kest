@@ -39,14 +39,36 @@ internal data class RabbitMQCountMessagesExecution(
                 jacksonObjectMapper().readValue(it.body?.byteStream(), object : TypeReference<JsonMap>() {})
                     .let { queueDetails ->
                         RabbitMQMessageCount(
-                            ready = queueDetails["messages_ready"].toString().toLong(),
-                            unacked = queueDetails["messages_unacknowledged"].toString().toLong(),
+                            ready = runCatching {
+                                queueDetails["messages_ready"].toString().toLong()
+                            }.getOrDefault(-1L),
+                            unacked = runCatching {
+                                queueDetails["messages_unacknowledged"].toString().toLong()
+                            }.getOrDefault(-1L),
+                            total = runCatching {
+                                queueDetails["messages"].toString().toLong()
+                            }.getOrDefault(-1L),
                         )
                     }
             }.also { count ->
 
-                LoggerFactory.getLogger("RABBITMQ-Kest").info(
-                    """
+                if (count.ready == -1L || count.unacked == -1L || count.total == -1L)
+                    LoggerFactory.getLogger("RABBITMQ-Kest").info(
+                        """
+                    |Count messages in queue not available yet
+                    |
+                    |vhost: $vhost
+                    |queue: $queue
+                    |
+                    |ready messages         : unavailable
+                    |unacknowledged messages: unavailable
+                    |total                  : unavailable
+                    |
+                    |""".trimMargin()
+                    )
+                else
+                    LoggerFactory.getLogger("RABBITMQ-Kest").info(
+                        """
                     |Count messages in queue:
                     |
                     |vhost: $vhost
@@ -57,7 +79,7 @@ internal data class RabbitMQCountMessagesExecution(
                     |total                  : ${count.total}
                     |
                     |""".trimMargin()
-                )
+                    )
             }
     }
 

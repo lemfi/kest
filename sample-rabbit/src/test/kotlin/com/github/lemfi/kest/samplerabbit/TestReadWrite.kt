@@ -3,6 +3,7 @@ package com.github.lemfi.kest.samplerabbit
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.`by intervals of`
+import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.junit5.runner.`play scenario`
@@ -28,6 +29,12 @@ class TestReadWrite {
 
         `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
             `create queue` { "obi-wan_kenobi" }
+        }
+
+        `given number of messages in rabbitmq queue`(retry = 20.times `by intervals of` 200.ms) {
+            queue = "obi-wan_kenobi"
+        } `assert that` {
+            eq(0L, it.total)
         }
 
         `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
