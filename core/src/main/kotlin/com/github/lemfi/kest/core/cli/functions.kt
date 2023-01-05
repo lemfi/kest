@@ -7,23 +7,21 @@ import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.builder.NestedScenarioExecutionBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.core.logger.getOrDefault
 import com.github.lemfi.kest.core.logger.threadLocalLogger
 import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.IStepName
-import com.github.lemfi.kest.core.model.NestedScenarioStep
-import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.Scenario
-import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
-import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.core.model.StepResultFailure
 import org.opentest4j.AssertionFailedError
+import org.slf4j.Logger
 
 fun scenario(name: String = "anonymous scenario", s: ScenarioBuilder.() -> Unit): Scenario {
     return StandaloneScenarioBuilder(name).apply(s).toScenario()
@@ -34,71 +32,69 @@ infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(l: Assert
     return this
 }
 
-fun ScenarioBuilder.wait(time: Long, name: String? = null): StepPostExecution<Unit> {
-    val executionBuilder = object : ExecutionBuilder<Unit> {
-        override fun toExecution(): Execution<Unit> = object : Execution<Unit>() {
-            override fun execute() {
-                Thread.sleep(time)
+@Suppress("BlockingMethodInNonBlockingContext")
+fun ScenarioBuilder.wait(time: Long, name: String? = null) =
+
+    createStep(
+        name = name?.let { StepName(it) } ?: DefaultStepName("wait $time ms"),
+        retry = null,
+    ) {
+        object : ExecutionBuilder<Unit> {
+            override fun toExecution(): Execution<Unit> = object : Execution<Unit>() {
+                override fun execute() {
+                    Thread.sleep(time)
+                }
+            }
+        }
+
+    }
+
+fun <T> ScenarioBuilder.step(
+    name: String? = null,
+    retry: RetryStep? = null,
+    l: (Logger) -> T
+) =
+
+    createStep(
+        name = name?.let { StepName(it) } ?: DefaultStepName("generic step"),
+        retry = retry,
+    ) {
+        object : ExecutionBuilder<T> {
+            override fun toExecution(): Execution<T> = object : Execution<T>() {
+                override fun execute(): T = l(LoggerFactory.getLogger("KEST"))
             }
         }
     }
 
-    return StandaloneStep<Unit>(
-        scenarioName = scenarioName,
-        name = name?.let { StepName(it) } ?: DefaultStepName("wait $time ms"),
-        retry = null
-    )
-        .addToScenario(executionBuilder) {}
-}
-
-fun <T> ScenarioBuilder.step(name: String? = null, retry: RetryStep? = null, l: () -> T): StepPostExecution<T> {
-    val executionBuilder = object : ExecutionBuilder<T> {
-        override fun toExecution(): Execution<T> = object : Execution<T>() {
-            override fun execute(): T = l()
-        }
-    }
-
-    return StandaloneStep<T>(
-        scenarioName = scenarioName,
-        name = name?.let { StepName(it) } ?: DefaultStepName("generic step"),
-        retry = retry
-    )
-        .addToScenario(executionBuilder) {}
-}
-
 fun <T> ScenarioBuilder.nestedScenario(
     name: String? = null,
     l: NestedScenarioExecutionBuilder<T>.() -> Unit
-): NestedScenarioStepPostExecution<T, T> {
-    val executionBuilder = NestedScenarioExecutionBuilder<T>(name)
+) =
 
-    return NestedScenarioStep<T>(
+    createNestedScenarioStep(
         name = name?.let { StepName(it) } ?: DefaultStepName("nested scenario step"),
-        scenarioName = scenarioName,
-    )
-        .apply { executionBuilder.step = this }
-        .addToScenario(executionBuilder, l)
-}
+    ) {
+        NestedScenarioExecutionBuilder<T>(name).apply(l)
+    }
+
 
 @JvmName("voidNestedScenario")
 fun ScenarioBuilder.nestedScenario(
     name: String? = null,
     l: NestedScenarioExecutionBuilder<Unit>.() -> Unit
-): NestedScenarioStepPostExecution<Unit, Unit> {
-    val executionBuilder = NestedScenarioExecutionBuilder<Unit>(name)
-        .apply {
-            returns {
-                steps.onEach { if (it.postExecution.isFailed()) it.postExecution() }
-            }
-        }
+) =
 
-    return NestedScenarioStep<Unit>(
+    createNestedScenarioStep(
         name = name?.let { StepName(it) } ?: DefaultStepName("nested scenario step"),
-        scenarioName = scenarioName,
-    )
-        .apply { executionBuilder.step = this }
-        .addToScenario(executionBuilder, l)
-}
+    ) {
+        NestedScenarioExecutionBuilder<Unit>(name)
+            .apply {
+                returns {
+                    steps.onEach { if (it.postExecution.isFailed()) it.postExecution() }
+                }
+            }
+            .apply(l)
+    }
 
 @Suppress("unchecked_cast")
 fun IScenario.run() {
@@ -139,6 +135,7 @@ fun <T> Step<T>.run(): Step<T> {
             tries = 0
             execution.onAssertionSuccess()
             postExecution.setResult(res)
+
         } catch (e: Throwable) {
             execution.onAssertionFailedError()
             if (e is StepResultFailure) throw e

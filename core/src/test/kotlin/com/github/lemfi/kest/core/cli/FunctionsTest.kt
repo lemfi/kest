@@ -2,14 +2,12 @@ package com.github.lemfi.kest.core.cli
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
-import com.github.lemfi.kest.core.builder.NestedScenarioExecutionBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
+import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.IStepName
-import com.github.lemfi.kest.core.model.NestedScenarioStep
-import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
 import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
@@ -336,28 +334,16 @@ class FunctionsTest {
         val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
         every { scenarioBuilder.scenarioName } returns "a name"
 
-        val waitStep = slot<StandaloneStep<Unit>>()
-        val waitExecutionBuilder = slot<ExecutionBuilder<Unit>>()
-        val waitExecutionConfiguration = slot<ExecutionBuilder<Unit>.() -> Unit>()
+        val waitExecutionBuilder = slot<() -> ExecutionBuilder<Unit>>()
         val stepRes = mockk<StepPostExecution<Unit>>()
 
-        with(scenarioBuilder) {
-            every {
-                capture(waitStep)
-                    .addToScenario(
-                        capture(waitExecutionBuilder),
-                        capture(waitExecutionConfiguration)
-                    )
-            } returns stepRes
-        }
+        every { scenarioBuilder.createStep(any(), any(), capture(waitExecutionBuilder)) } returns stepRes
 
         val res = with(scenarioBuilder) {
             wait(200)
         }
 
-        val execution = waitExecutionBuilder.captured
-            .apply(waitExecutionConfiguration.captured)
-            .toExecution()
+        val execution = waitExecutionBuilder.captured().toExecution()
 
         val time = measureTimeMillis { execution.execute() }
 
@@ -371,108 +357,65 @@ class FunctionsTest {
         val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
         every { scenarioBuilder.scenarioName } returns "a name"
 
-        val step = slot<StandaloneStep<Unit>>()
-        val executionBuilder = slot<ExecutionBuilder<Unit>>()
-        val executionConfiguration = slot<ExecutionBuilder<Unit>.() -> Unit>()
-        val stepRes = mockk<StepPostExecution<Unit>>()
+        val executionBuilder = slot<() -> ExecutionBuilder<String>>()
+        val stepRes = mockk<StepPostExecution<String>>()
 
-        with(scenarioBuilder) {
-            every {
-                capture(step)
-                    .addToScenario(
-                        capture(executionBuilder),
-                        capture(executionConfiguration)
-                    )
-            } returns stepRes
-        }
+        every { scenarioBuilder.steps } returns mutableListOf()
+
+
+        every {
+            scenarioBuilder.createStep(
+                name = DefaultStepName("generic step"),
+                retry = null,
+                builder = capture(executionBuilder)
+            )
+        } returns stepRes
+
 
         val res = with(scenarioBuilder) {
-            step { Thread.sleep(200) }
+            step { "HELLO WORLD!" }
         }
 
-        val execution = executionBuilder.captured
-            .apply(executionConfiguration.captured)
+        val execution = executionBuilder.captured()
             .toExecution()
 
-        val time = measureTimeMillis { execution.execute() }
+        val executionResult = execution.execute()
 
         assertEquals(stepRes, res)
-        Assertions.assertTrue(time in 200..202) { "step should take 200ms" }
+        assertEquals("HELLO WORLD!", executionResult)
+
     }
 
     @Test
     fun `a step may be a scenario`() {
-        val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
-        every { scenarioBuilder.scenarioName } returns "a name"
-
-        val step = slot<NestedScenarioStep<Unit>>()
-        val executionBuilder = slot<NestedScenarioExecutionBuilder<Unit>>()
-        val executionConfiguration = slot<NestedScenarioExecutionBuilder<Unit>.() -> Unit>()
-        val stepRes = mockk<NestedScenarioStepPostExecution<Unit, Unit>>()
+        val scenarioBuilder = StandaloneScenarioBuilder()
 
         with(scenarioBuilder) {
-            every {
-                capture(step)
-                    .addToScenario(
-                        capture(executionBuilder),
-                        capture(executionConfiguration)
-                    )
-            } returns stepRes
-        }
-
-        val res = with(scenarioBuilder) {
             nestedScenario(name = "my nested scenario") {
                 wait(200)
             }
         }
 
-        val execution = executionBuilder.captured
-            .apply(executionConfiguration.captured)
-            .toExecution()
+        val time = scenarioBuilder.toScenario().run { measureTimeMillis { steps.first().run() } }
 
-        val time = measureTimeMillis { execution.execute() }
-
-        assertEquals(stepRes, res)
         Assertions.assertTrue(time in 200..202) { "nested scenario should take 200ms" }
     }
 
     @Test
     fun `a step may be a scenario that returns something`() {
-        val scenarioBuilder = mockk<ScenarioBuilder>(relaxUnitFun = true)
-        every { scenarioBuilder.scenarioName } returns "a name"
 
-        val step = slot<NestedScenarioStep<String>>()
-        val executionBuilder = slot<NestedScenarioExecutionBuilder<String>>()
-        val executionConfiguration = slot<NestedScenarioExecutionBuilder<String>.() -> Unit>()
-        val stepRes = mockk<NestedScenarioStepPostExecution<String, String>>()
+        val scenarioBuilder = StandaloneScenarioBuilder()
 
         with(scenarioBuilder) {
-            every {
-                capture(step)
-                    .addToScenario(
-                        capture(executionBuilder),
-                        capture(executionConfiguration)
-                    )
-            } returns stepRes
-        }
-
-        val res = with(scenarioBuilder) {
             nestedScenario<String>(name = "my nested scenario") {
-                wait(200)
-                returns { "this is the result!" }
+                val s = step { "played!" }
+                returns { s() }
             }
         }
 
-        val execution = executionBuilder.captured
-            .apply(executionConfiguration.captured)
-            .toExecution()
+        val stepExecution = scenarioBuilder.toScenario().run { steps.first().run() }
 
-        lateinit var result: String
-        val time = measureTimeMillis { result = execution.execute() }
-
-        assertEquals(stepRes, res)
-        Assertions.assertTrue(time in 200..202) { "nested scenario should take 200ms" }
-        assertEquals("this is the result!", result)
+        assertEquals("played!", stepExecution.postExecution())
     }
 
 }

@@ -1,12 +1,15 @@
 package com.github.lemfi.kest.core.builder
 
+import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.IScenario
+import com.github.lemfi.kest.core.model.IStepName
 import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
+import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneScenario
 import com.github.lemfi.kest.core.model.StandaloneStep
-import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
 import com.github.lemfi.kest.core.model.Step
+import com.github.lemfi.kest.core.model.StepPostExecution
 
 sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") {
 
@@ -25,26 +28,26 @@ sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") 
 
     abstract fun toScenario(): IScenario
 
-    fun <T, E : ExecutionBuilder<T>> StandaloneStep<T>.addToScenario(
-        executionBuilder: E,
-        executionConfiguration: E.() -> Unit
-    ): StandaloneStepPostExecution<T, T, T> =
-        let { step ->
-            steps.add(this)
-            step.execution = { executionBuilder.apply(executionConfiguration).toExecution() }
-            @Suppress("unchecked_cast")
-            step.postExecution as StandaloneStepPostExecution<T, T, T>
-        }
+    @Suppress("UNCHECKED_CAST")
+    fun <T> createStep(
+        name: IStepName = DefaultStepName("generic step"),
+        retry: RetryStep? = null,
+        builder: () -> ExecutionBuilder<T>
+    ) =
+        StandaloneStep<T>(name = name, retry = retry, scenarioName = scenarioName)
+            .also { it.execution = { builder().toExecution() } }
+            .apply { steps.add(this) }
+            .postExecution as StepPostExecution<T>
 
-    fun <T, E : ExecutionBuilder<T>> NestedScenarioStep<T>.addToScenario(
-        executionBuilder: E,
-        executionConfiguration: E.() -> Unit
-    ): NestedScenarioStepPostExecution<T, T> =
-        let { step ->
-            steps.add(this)
-            step.execution = { executionBuilder.apply(executionConfiguration).toExecution() }
-            step.postExecution as NestedScenarioStepPostExecution<T, T>
-        }
+    fun <T> createNestedScenarioStep(
+        name: IStepName = DefaultStepName("generic step"),
+        builder: () -> NestedScenarioExecutionBuilder<T>
+    ) =
+        NestedScenarioStep<T>(name = name, scenarioName = scenarioName)
+            .also { it.execution = { builder().apply { step = it }.toExecution() } }
+            .apply { steps.add(this) }
+            .postExecution as NestedScenarioStepPostExecution<T, T>
+
 }
 
 class StandaloneScenarioBuilder(name: String = "anonymous scenario") : ScenarioBuilder(name) {
