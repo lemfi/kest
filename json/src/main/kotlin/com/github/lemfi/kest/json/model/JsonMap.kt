@@ -36,7 +36,6 @@ inline fun <reified T> JsonMap.getForPath(vararg keys: String): T {
  *
  * For picking nth element of an array use &#91;n&#93; notation
  */
-@Suppress("unchecked_cast")
 @JvmName("getAnyForPath")
 @Deprecated(
     message = "Consider using typed function",
