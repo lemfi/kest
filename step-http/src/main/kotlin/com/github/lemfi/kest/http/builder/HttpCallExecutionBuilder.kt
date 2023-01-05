@@ -7,7 +7,14 @@ import com.github.lemfi.kest.http.executor.HttpExecution
 import com.github.lemfi.kest.http.model.HttpResponse
 import com.github.lemfi.kest.http.model.httpProperty
 
-class HttpCallExecutionBuilder<T>(val typeReference: TypeReference<T>) : ExecutionBuilder<HttpResponse<T>> {
+class HttpCallExecutionBuilder<T>(private val typeReference: TypeReference<T>) :
+
+    ExecutionBuilder<HttpResponse<T>> {
+
+    companion object {
+        inline operator fun <reified T : Any> invoke(): HttpCallExecutionBuilder<T> =
+            HttpCallExecutionBuilder(object : TypeReference<T>() {})
+    }
 
     lateinit var url: String
     var method: String = "GET"
@@ -20,6 +27,15 @@ class HttpCallExecutionBuilder<T>(val typeReference: TypeReference<T>) : Executi
     var timeout: Long? = httpProperty { timeout }
 
     override fun toExecution(): Execution<HttpResponse<T>> {
-        return HttpExecution(url, method, typeReference, body, headers, contentType, followRedirect, timeout)
+        return HttpExecution(
+            url,
+            method,
+            typeReference,
+            body,
+            headers,
+            contentType,
+            followRedirect,
+            timeout
+        )
     }
 }
