@@ -175,23 +175,17 @@ private fun AssertionsBuilder.failureMessage(
     stepName: IStepName?
 ): String {
 
-    val messages = message?.lines()?.flatMap { it.chunked(80) } ?: listOf("null")
-    val scenario = "Scenario: $scenarioName".lines().flatMap { it.chunked(80) }
-    val step =
-        (if (stepName != null) "Step: ${stepName.value}".chunked(80) else emptyList()).let {
-            if (scenario.size > 1) listOf("", *it.toTypedArray()) else it
-        }
-    val max =
-        listOf(*scenario.toTypedArray(), *step.toTypedArray(), *messages.toTypedArray()).maxByOrNull { it.length }!!
+    val messages = message?.lines()?.flatMap { it.chunked(200) } ?: emptyList()
+    val scenario = "Scenario: $scenarioName"
+    val step = if (stepName != null) "    Step: ${stepName.value}" else ""
 
     return """
         
-        +${(0..max.length + 1).joinToString("") { "-" }}+
-        ${scenario.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
-        ${step.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
-        |${(0..max.length + 1).joinToString("") { " " }}|
-        ${messages.joinToString("\n        ") { "| ${it.padEnd(max.length, ' ')} |" }}
-        +${(0..max.length + 1).joinToString("") { "-" }}+
+        
+        $scenario
+        $step
+        
+        ${messages.joinToString("\n")}
         
     """.trimIndent()
 }

@@ -171,12 +171,11 @@ class FunctionsTest {
 
         assertEquals(
             """
-+-----------------------------------+
-| Scenario: the scenario name       |
-| Step: the step name               |
-|                                   |
-| this step will fail on execution! |
-+-----------------------------------+
+
+Scenario: the scenario name
+    Step: the step name
+
+this step will fail on execution!
 """, exception.message
         )
     }
@@ -229,12 +228,11 @@ class FunctionsTest {
 
         assertEquals(
             """
-+-----------------------------+
-| Scenario: the scenario name |
-| Step: the step name         |
-|                             |
-| hahaha                      |
-+-----------------------------+
+
+Scenario: the scenario name
+    Step: the step name
+
+hahaha
 """, exception.message
         )
     }
