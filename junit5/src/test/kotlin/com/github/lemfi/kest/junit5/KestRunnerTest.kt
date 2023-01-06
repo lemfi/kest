@@ -2,7 +2,7 @@ package com.github.lemfi.kest.junit5
 
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.cli.step
-import com.github.lemfi.kest.core.model.StepPostExecution
+import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.junit5.runner.ScenarioStepsIterator
 import com.github.lemfi.kest.junit5.runner.`play scenario`
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
@@ -16,8 +16,8 @@ class KestRunnerTest {
 
     @Test
     fun `play a scenario - wrapped`() {
-        lateinit var res1: StepPostExecution<String>
-        lateinit var res2: StepPostExecution<String>
+        lateinit var res1: StandaloneStepResult<String>
+        lateinit var res2: StandaloneStepResult<String>
 
         val scenario = scenario("my scenario") {
             res1 = step(name = "step 1") { "res" }
@@ -54,8 +54,8 @@ class KestRunnerTest {
 
     @Test
     fun `play a scenario - unwrapped`() {
-        lateinit var res1: StepPostExecution<String>
-        lateinit var res2: StepPostExecution<String>
+        lateinit var res1: StandaloneStepResult<String>
+        lateinit var res2: StandaloneStepResult<String>
 
         val scenario = scenario("my scenario") {
             res1 = step(name = "step 1") { "res" }
@@ -90,8 +90,8 @@ class KestRunnerTest {
 
     @Test
     fun `play a scenario - builder - wrapped`() {
-        lateinit var res1: StepPostExecution<String>
-        lateinit var res2: StepPostExecution<String>
+        lateinit var res1: StandaloneStepResult<String>
+        lateinit var res2: StandaloneStepResult<String>
 
         val testNode = `play scenario`("my scenario", false) {
             res1 = step(name = "step 1") { "res" }
@@ -126,8 +126,8 @@ class KestRunnerTest {
 
     @Test
     fun `play a scenario - builder - unwrapped`() {
-        lateinit var res1: StepPostExecution<String>
-        lateinit var res2: StepPostExecution<String>
+        lateinit var res1: StandaloneStepResult<String>
+        lateinit var res2: StandaloneStepResult<String>
 
         val testNode = `play scenario`("my scenario", true) {
             res1 = step(name = "step 1") { "res" }
@@ -159,10 +159,10 @@ class KestRunnerTest {
 
     @Test
     fun `play multiple scenarios`() {
-        lateinit var res1: StepPostExecution<String>
-        lateinit var res2: StepPostExecution<String>
-        lateinit var res3: StepPostExecution<String>
-        lateinit var res4: StepPostExecution<String>
+        lateinit var res1: StandaloneStepResult<String>
+        lateinit var res2: StandaloneStepResult<String>
+        lateinit var res3: StandaloneStepResult<String>
+        lateinit var res4: StandaloneStepResult<String>
 
         val scenario1 = scenario("my scenario 1") {
             res1 = step(name = "step 1") { "res1" }
@@ -234,12 +234,12 @@ class KestRunnerTest {
     @Test
     fun `play multiple scenarios - beforeEach`() {
         var number = 0
-        lateinit var beforeRes1: StepPostExecution<Int>
-        lateinit var beforeRes2: StepPostExecution<Int>
-        lateinit var res1: StepPostExecution<Int>
-        lateinit var res2: StepPostExecution<Int>
-        lateinit var res3: StepPostExecution<Int>
-        lateinit var res4: StepPostExecution<Int>
+        lateinit var beforeRes1: StandaloneStepResult<Int>
+        lateinit var beforeRes2: StandaloneStepResult<Int>
+        lateinit var res1: StandaloneStepResult<Int>
+        lateinit var res2: StandaloneStepResult<Int>
+        lateinit var res3: StandaloneStepResult<Int>
+        lateinit var res4: StandaloneStepResult<Int>
 
         val beforeEach = scenario("before each") {
             beforeRes1 = step(name = "before step 1") { ++number }
@@ -365,12 +365,12 @@ class KestRunnerTest {
     @Test
     fun `play multiple scenarios - beforeAll`() {
         var number = 0
-        lateinit var beforeRes1: StepPostExecution<Int>
-        lateinit var beforeRes2: StepPostExecution<Int>
-        lateinit var res1: StepPostExecution<Int>
-        lateinit var res2: StepPostExecution<Int>
-        lateinit var res3: StepPostExecution<Int>
-        lateinit var res4: StepPostExecution<Int>
+        lateinit var beforeRes1: StandaloneStepResult<Int>
+        lateinit var beforeRes2: StandaloneStepResult<Int>
+        lateinit var res1: StandaloneStepResult<Int>
+        lateinit var res2: StandaloneStepResult<Int>
+        lateinit var res3: StandaloneStepResult<Int>
+        lateinit var res4: StandaloneStepResult<Int>
 
         val beforeAll = scenario("before all") {
             beforeRes1 = step(name = "before step 1") { ++number }
@@ -464,12 +464,12 @@ class KestRunnerTest {
     @Test
     fun `play multiple scenarios - afterEach`() {
         var number = 0
-        lateinit var afterRes1: StepPostExecution<Int>
-        lateinit var afterRes2: StepPostExecution<Int>
-        lateinit var res1: StepPostExecution<Int>
-        lateinit var res2: StepPostExecution<Int>
-        lateinit var res3: StepPostExecution<Int>
-        lateinit var res4: StepPostExecution<Int>
+        lateinit var afterRes1: StandaloneStepResult<Int>
+        lateinit var afterRes2: StandaloneStepResult<Int>
+        lateinit var res1: StandaloneStepResult<Int>
+        lateinit var res2: StandaloneStepResult<Int>
+        lateinit var res3: StandaloneStepResult<Int>
+        lateinit var res4: StandaloneStepResult<Int>
 
         val afterEach = scenario("after each") {
             afterRes1 = step(name = "after step 1") { ++number }
@@ -595,12 +595,12 @@ class KestRunnerTest {
     @Test
     fun `play multiple scenarios - afterAll`() {
         var number = 0
-        lateinit var afterRes1: StepPostExecution<Int>
-        lateinit var afterRes2: StepPostExecution<Int>
-        lateinit var res1: StepPostExecution<Int>
-        lateinit var res2: StepPostExecution<Int>
-        lateinit var res3: StepPostExecution<Int>
-        lateinit var res4: StepPostExecution<Int>
+        lateinit var afterRes1: StandaloneStepResult<Int>
+        lateinit var afterRes2: StandaloneStepResult<Int>
+        lateinit var res1: StandaloneStepResult<Int>
+        lateinit var res2: StandaloneStepResult<Int>
+        lateinit var res3: StandaloneStepResult<Int>
+        lateinit var res4: StandaloneStepResult<Int>
 
         val afterAll = scenario("after all") {
             afterRes1 = step(name = "after step 1") { ++number }

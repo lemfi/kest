@@ -8,8 +8,8 @@ import com.github.lemfi.kest.core.model.NestedScenarioStepPostExecution
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StandaloneScenario
 import com.github.lemfi.kest.core.model.StandaloneStep
+import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.core.model.Step
-import com.github.lemfi.kest.core.model.StepPostExecution
 
 sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") {
 
@@ -37,7 +37,7 @@ sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") 
         StandaloneStep<T>(name = name, retry = retry, scenarioName = scenarioName)
             .also { it.execution = { builder().toExecution() } }
             .apply { steps.add(this) }
-            .postExecution as StepPostExecution<T>
+            .postExecution as StandaloneStepResult<T>
 
     fun <T> createNestedScenarioStep(
         name: IStepName = DefaultStepName("generic step"),

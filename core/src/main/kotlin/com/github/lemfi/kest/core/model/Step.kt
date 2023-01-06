@@ -19,7 +19,7 @@ class StandaloneStep<T>(
     override val retry: RetryStep?,
 ) : Step<T>() {
 
-    override var postExecution: IStepPostExecution<T, T> = StandaloneStepPostExecution<T, T, T>(this, null) { t -> t }
+    override var postExecution: IStepPostExecution<T, T> = StandaloneStepResult(this, null) { t -> t }
 
     override lateinit var execution: () -> Execution<T>
 }
@@ -31,7 +31,7 @@ class NestedScenarioStep<T>(
 
     override val retry: RetryStep? = null
 
-    override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepPostExecution(this, null) { t -> t }
+    override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepResult(this, null) { t -> t }
 
     override lateinit var execution: () -> Execution<T>
 }
@@ -46,7 +46,18 @@ value class StepName(override val value: String) : IStepName
 @JvmInline
 value class DefaultStepName(override val value: String) : IStepName
 
+@Deprecated(
+    message = "use StandaloneStepResult instead",
+    replaceWith = ReplaceWith(
+        "StandaloneStepResult<T>",
+        imports = ["com.github.lemfi.kest.core.model.StandaloneStepResult"]
+    )
+)
 typealias StepPostExecution<T> = StandaloneStepPostExecution<T, T, T>
+
+typealias StepResult<T> = IStepPostExecution<T, T>
+typealias StandaloneStepResult<T> = StandaloneStepPostExecution<T, T, T>
+typealias NestedScenarioStepResult<T> = NestedScenarioStepPostExecution<T, T>
 
 sealed class IStepPostExecution<T, R>(
     private val step: Step<*>,

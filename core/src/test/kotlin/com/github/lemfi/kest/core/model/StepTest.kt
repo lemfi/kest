@@ -18,7 +18,7 @@ class StepTest {
             override val value = "a step"
         }
 
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> t }
@@ -44,7 +44,7 @@ class StepTest {
             override val value = "a step"
         }
 
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> t }
@@ -70,7 +70,7 @@ class StepTest {
 
         every { step.name } returns StepName("a step")
 
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> t }
@@ -89,7 +89,7 @@ class StepTest {
 
         every { step.name } returns StepName("a step")
 
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> "$t is transformed" }
@@ -110,7 +110,7 @@ class StepTest {
             override val value = "a step"
         }
 
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { _ -> throw IllegalArgumentException("make transformation fail") }
@@ -136,13 +136,13 @@ class StepTest {
 
         every { step1.name } returns StepName("step 1")
 
-        val stepRes2 = StepPostExecution<String>(
+        val stepRes2 = StandaloneStepResult<String>(
             step = step1,
             pe = null,
             transformer = { t -> t }
         )
 
-        val stepRes1 = StepPostExecution(
+        val stepRes1 = StandaloneStepResult<String>(
             step = step1,
             pe = stepRes2,
             transformer = { t -> "$t is transformed" }
@@ -161,19 +161,19 @@ class StepTest {
 
         every { step1.name } returns StepName("step 1")
 
-        val stepRes3 = StepPostExecution<String>(
+        val stepRes3 = StandaloneStepResult<String>(
             step = step1,
             pe = null,
             transformer = { t -> t }
         )
 
-        val stepRes2 = StepPostExecution(
+        val stepRes2 = StandaloneStepResult<String>(
             step = step1,
             pe = stepRes3,
             transformer = { t -> t }
         )
 
-        val stepRes1 = StepPostExecution(
+        val stepRes1 = StandaloneStepResult<String>(
             step = step1,
             pe = stepRes2,
             transformer = { t -> "$t is transformed" }
@@ -196,19 +196,19 @@ class StepTest {
             override val value = "step 1"
         }
 
-        val stepRes3 = StepPostExecution<String>(
+        val stepRes3 = StandaloneStepResult<String>(
             step = step1,
             pe = null,
             transformer = { t -> t }
         )
 
-        val stepRes2 = StepPostExecution(
+        val stepRes2 = StandaloneStepResult<String>(
             step = step1,
             pe = stepRes3,
             transformer = { t -> t }
         )
 
-        val stepRes1 = StepPostExecution(
+        val stepRes1 = StandaloneStepResult<String>(
             step = step1,
             pe = stepRes2,
             transformer = { t -> "$t is transformed" }
@@ -237,7 +237,7 @@ class StepTest {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> t }
@@ -256,12 +256,12 @@ class StepTest {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
-        val stepRes2 = StepPostExecution<String>(
+        val stepRes2 = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> t }
         )
-        val stepRes1 = StepPostExecution(
+        val stepRes1 = StandaloneStepResult<String>(
             step = step,
             pe = stepRes2,
             transformer = { t -> t }
@@ -282,7 +282,7 @@ class StepTest {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
-        val stepRes = StepPostExecution<String>(
+        val stepRes = StandaloneStepResult<String>(
             step = step,
             pe = null,
             transformer = { t -> t }

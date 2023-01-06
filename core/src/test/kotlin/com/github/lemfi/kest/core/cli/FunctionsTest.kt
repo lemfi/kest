@@ -12,9 +12,9 @@ import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.model.StandaloneScenario
 import com.github.lemfi.kest.core.model.StandaloneStep
 import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
-import com.github.lemfi.kest.core.model.StepPostExecution
 import com.github.lemfi.kest.core.model.StepResultFailure
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
@@ -109,7 +109,7 @@ class FunctionsTest {
     @Test
     fun `run a step may fail while building execution`() {
         val step = mockk<StandaloneStep<String>>(relaxUnitFun = true)
-        val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
+        val postExecution = mockk<StandaloneStepResult<String>>(relaxUnitFun = true)
 
         every { step.execution } returns { throw IllegalAccessException("this step will fail on execution build!") }
         every { step.postExecution } returns postExecution
@@ -126,7 +126,7 @@ class FunctionsTest {
     @Test
     fun `run a step may fail on execution`() {
         val step = mockk<StandaloneStep<String>>(relaxUnitFun = true)
-        val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
+        val postExecution = mockk<StandaloneStepResult<String>>(relaxUnitFun = true)
 
         every { step.retry } returns null
         every { step.scenarioName } returns "the scenario name"
@@ -189,16 +189,17 @@ class FunctionsTest {
                 name = StepName("the step name"),
                 retry = null
             )
-        val standaloneStepPostExecution: StepPostExecution<String> = StepPostExecution<String>(step, null) { it }
-            .apply {
-                assertions.add { `is true`(false) { "hahaha" } }
-            }
+        val standaloneStandaloneStepResult: StandaloneStepResult<String> =
+            StandaloneStepResult<String>(step, null) { it }
+                .apply {
+                    assertions.add { `is true`(false) { "hahaha" } }
+                }
 
         var onAssertionFailedCalled = false
         var onExecutionEndedCalled = false
 
         step.apply {
-            postExecution = standaloneStepPostExecution
+            postExecution = standaloneStandaloneStepResult
             execution = {
                 object : Execution<String>() {
                     override fun execute(): String = "execution is successful"
@@ -242,7 +243,7 @@ class FunctionsTest {
     fun `a test may fail once and pass when retried`() {
 
         val step = mockk<StandaloneStep<String>>(relaxUnitFun = true)
-        val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
+        val postExecution = mockk<StandaloneStepResult<String>>(relaxUnitFun = true)
 
         every { step.retry } returns 2.times.`by intervals of`(10.ms)
         every { step.scenarioName } returns "the scenario name"
@@ -274,10 +275,10 @@ class FunctionsTest {
         every { firstStep.name } returns object : IStepName {
             override val value = "the first step name"
         }
-        every { firstStep.postExecution } returns StepPostExecution(firstStep, null) {}
+        every { firstStep.postExecution } returns StandaloneStepResult(firstStep, null) {}
 
         val step = mockk<StandaloneStep<Unit>>(relaxUnitFun = true)
-        val postExecution = mockk<StepPostExecution<Unit>>(relaxUnitFun = true)
+        val postExecution = mockk<StandaloneStepResult<Unit>>(relaxUnitFun = true)
 
         every { step.retry } returns 2.times.`by intervals of`(10.ms)
         every { step.scenarioName } returns "the scenario name"
@@ -305,7 +306,7 @@ class FunctionsTest {
     fun `and sometimes a test just goes fine!`() {
 
         val step = mockk<StandaloneStep<String>>(relaxUnitFun = true)
-        val postExecution = mockk<StepPostExecution<String>>(relaxUnitFun = true)
+        val postExecution = mockk<StandaloneStepResult<String>>(relaxUnitFun = true)
 
         every { step.retry } returns null
         every { step.scenarioName } returns "the scenario name"
@@ -336,7 +337,7 @@ class FunctionsTest {
         every { scenarioBuilder.scenarioName } returns "a name"
 
         val waitExecutionBuilder = slot<() -> ExecutionBuilder<Unit>>()
-        val stepRes = mockk<StepPostExecution<Unit>>()
+        val stepRes = mockk<StandaloneStepResult<Unit>>()
 
         every { scenarioBuilder.createStep(any(), any(), capture(waitExecutionBuilder)) } returns stepRes
 
@@ -359,7 +360,7 @@ class FunctionsTest {
         every { scenarioBuilder.scenarioName } returns "a name"
 
         val executionBuilder = slot<() -> ExecutionBuilder<String>>()
-        val stepRes = mockk<StepPostExecution<String>>()
+        val stepRes = mockk<StandaloneStepResult<String>>()
 
         every { scenarioBuilder.steps } returns mutableListOf()
 
