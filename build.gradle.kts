@@ -1,5 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
 
 group = "com.github.lemfi.kest"
 version = "0.6.14"
@@ -21,6 +21,7 @@ plugins {
     signing
     jacoco
     id("org.jetbrains.dokka") version "1.7.10"
+    kotlin("jvm") version "1.8.0"
 }
 
 allprojects {
@@ -60,13 +61,10 @@ subprojects {
         toolVersion = "0.8.7"
     }
 
-    val compileKotlin: KotlinCompile by tasks
-    compileKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
-    compileKotlin.kotlinOptions.jvmTarget = "11"
+    kotlin {
+        jvmToolchain(11)
+    }
 
-    val compileTestKotlin: KotlinCompile by tasks
-    compileTestKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
-    compileTestKotlin.kotlinOptions.jvmTarget = "11"
 
     tasks.withType<DokkaTask> {
         onlyIf { isRelease }
@@ -77,7 +75,7 @@ subprojects {
             named("main") {
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(java.net.URL("https://github.com/lemfi/kest"))
+                    remoteUrl.set(URL("https://github.com/lemfi/kest"))
                     remoteLineSuffix.set("#L")
                 }
             }
@@ -206,7 +204,7 @@ tasks.create<JacocoReport>("jacoco") {
 
     doLast {
         File("build/reports/jacoco/jacoco/jacoco.csv")
-            .readText(java.nio.charset.Charset.defaultCharset())
+            .readText(Charsets.UTF_8)
             .lines()
             .drop(1)
             .filterNot { it.isEmpty() }
