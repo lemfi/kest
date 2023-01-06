@@ -34,9 +34,13 @@ internal data class InternalReport(
 
     fun children(id: String) = tests.filter { it.parent == id }
 
-    fun root() = tests.filter { it.parent == null }.let {
-        if (it.size == 1) children(it.first().id) else it
-    }
+    fun root() =
+        tests
+            .filter { it.parent == null }
+            .filterNot { children(it.id).isEmpty() }
+            .let {
+                if (it.size == 1) children(it.first().id) else it
+            }
 
     fun AInternalTestReport.toTestReport(): ATestReport =
         when (this) {
