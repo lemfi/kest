@@ -34,13 +34,7 @@ internal data class InternalReport(
 
     fun children(id: String) = tests.filter { it.parent == id }
 
-    fun root() =
-        tests
-            .filter { it.parent == null }
-            .filterNot { children(it.id).isEmpty() }
-            .let {
-                if (it.size == 1) children(it.first().id) else it
-            }
+    fun root() = tests.filter { it.level == 2 }
 
     fun AInternalTestReport.toTestReport(): ATestReport =
         when (this) {
@@ -50,9 +44,11 @@ internal data class InternalReport(
 
     private fun InternalContainerTestReport.toTestReport(): ATestReport =
         ContainerTestReport(
+            id = id,
             name = name,
             status = status,
             duration = duration,
+            level = level,
             steps = children(id).map {
                 it.toTestReport()
             },
@@ -60,10 +56,12 @@ internal data class InternalReport(
 
     private fun InternalTestReport.toTestReport(): ATestReport =
         TestReport(
+            id = id,
             name = name,
             status = status,
             duration = duration,
-            console = console,
+            level = level,
+            log = console,
             failure = failure,
         )
 
@@ -73,6 +71,7 @@ internal data class InternalReport(
             TestStatus.SUCCESS -> "ok"
             TestStatus.FAILED -> "ko"
             TestStatus.SKIPPED -> "skipped"
+            TestStatus.ONGOING, TestStatus.NOT_STARTED -> ""
         }
 
     fun toHTML() = """
@@ -329,23 +328,29 @@ ${
 }
 
 sealed class ATestReport {
+    abstract val id: String
     abstract val name: String
     abstract val status: TestStatus
     abstract val duration: Long
+    abstract val level: Int
 }
 
 data class TestReport(
+    override val id: String,
     override val name: String,
     override val status: TestStatus,
     override val duration: Long,
-    val console: String,
+    override val level: Int,
+    val log: String,
     val failure: String,
 ) : ATestReport()
 
 data class ContainerTestReport(
+    override val id: String,
     override val name: String,
     override val status: TestStatus,
     override val duration: Long,
+    override val level: Int,
     val steps: List<ATestReport>,
 ) : ATestReport()
 
@@ -355,16 +360,18 @@ internal sealed class AInternalTestReport {
     abstract var status: TestStatus
     abstract var duration: Long
     abstract val parent: String?
+    abstract val level: Int
 }
 
 enum class TestStatus {
-    SUCCESS, FAILED, SKIPPED
+    SUCCESS, FAILED, SKIPPED, ONGOING, NOT_STARTED
 }
 
 internal data class InternalContainerTestReport(
     override val id: String,
     override val name: String,
-    override var status: TestStatus = TestStatus.FAILED,
+    override val level: Int,
+    override var status: TestStatus = TestStatus.NOT_STARTED,
     override var duration: Long = 0,
     override val parent: String? = null,
 ) : AInternalTestReport()
@@ -372,7 +379,8 @@ internal data class InternalContainerTestReport(
 internal data class InternalTestReport(
     override val id: String,
     override val name: String,
-    override var status: TestStatus = TestStatus.FAILED,
+    override val level: Int,
+    override var status: TestStatus = TestStatus.NOT_STARTED,
     override var duration: Long = 0,
     var console: String = "",
     var failure: String = "",
