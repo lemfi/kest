@@ -4,6 +4,7 @@ include(
     "json",
     "step-http",
     "junit5",
+    "gherkin-core",
     "step-rabbitmq",
     "step-mongodb",
     "step-cadence",
