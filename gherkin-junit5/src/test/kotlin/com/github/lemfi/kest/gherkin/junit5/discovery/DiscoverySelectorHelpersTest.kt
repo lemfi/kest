@@ -291,7 +291,3 @@ class DiscoverySelectorHelpersTest {
         }
     }
 }
-
-@KestGherkin
-private class FeatureClass
-private class NoFeatureClass

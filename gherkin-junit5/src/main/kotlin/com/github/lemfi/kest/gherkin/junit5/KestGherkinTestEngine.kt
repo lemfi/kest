@@ -10,6 +10,7 @@ import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepResultFailure
 import com.github.lemfi.kest.gherkin.core.GherkinScenarioBuilder
 import com.github.lemfi.kest.gherkin.junit5.discovery.FeaturesDiscoveryConfiguration
+import com.github.lemfi.kest.gherkin.junit5.discovery.KestGherkinDiscoverySelector
 import com.github.lemfi.kest.gherkin.junit5.discovery.toFeaturesDiscoveryConfiguration
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.EngineExecutionListener
@@ -67,6 +68,15 @@ class KestGherkinTestEngine : TestEngine {
                     engineDiscoveryRequest
                         .getSelectorsByType(DirectorySelector::class.java)
                         .toFeaturesDiscoveryConfiguration()
+                )
+                addAll(engineDiscoveryRequest
+                    .getSelectorsByType(KestGherkinDiscoverySelector::class.java)
+                    .flatMap {
+                        it.toFeaturesDiscoveryConfiguration(
+                            it.getStepDefinitionsPackages(),
+                            object : TestSource {},
+                        )
+                    }
                 )
 
             }.flatMap { sourcesDefinition ->
