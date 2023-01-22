@@ -1,6 +1,7 @@
 package com.github.lemfi.kest.gherkin.junit5.discovery
 
 import com.github.lemfi.kest.gherkin.junit5.KestGherkin
+import com.github.lemfi.kest.gherkin.junit5.KestGherkinCustom
 import com.github.lemfi.kest.gherkin.junit5.gherkinProperty
 import org.junit.platform.engine.DiscoverySelector
 import org.junit.platform.engine.TestSource
@@ -26,6 +27,8 @@ import java.nio.file.Paths
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.pathString
+import kotlin.reflect.full.createInstance
+
 
 
 data class FeaturesDiscoveryConfiguration(
@@ -50,7 +53,7 @@ internal fun DiscoverySelector.toFeatureProviderClasses() =
 
         is ClassSelector ->
             listOfNotNull(
-                if (javaClass.declaredAnnotations.any { it is KestGherkin }) javaClass
+                if (javaClass.declaredAnnotations.any { it is KestGherkin || it is KestGherkinCustom }) javaClass
                 else null
             )
 
@@ -58,25 +61,29 @@ internal fun DiscoverySelector.toFeatureProviderClasses() =
             ConfigurationBuilder()
                 .addUrls(classpathRoot.toURL())
                 .setScanners(Scanners.TypesAnnotated)
-        ).getTypesAnnotatedWith(KestGherkin::class.java)
+        ).let {
+            it.getTypesAnnotatedWith(KestGherkin::class.java) + it.getTypesAnnotatedWith(KestGherkinCustom::class.java)
+        }
 
         is PackageSelector -> Reflections(
             ConfigurationBuilder()
                 .forPackage(packageName)
                 .filterInputsBy(FilterBuilder().includePackage(packageName))
                 .setScanners(Scanners.TypesAnnotated)
-        ).getTypesAnnotatedWith(KestGherkin::class.java)
+        ).let {
+            it.getTypesAnnotatedWith(KestGherkin::class.java) + it.getTypesAnnotatedWith(KestGherkinCustom::class.java)
+        }
 
         else -> emptyList()
     }
 
 internal fun Class<*>.toFeaturesDiscoveryConfiguration(): List<FeaturesDiscoveryConfiguration> =
     declaredAnnotations
-        .firstOrNull { it is KestGherkin }
+        .firstOrNull { it is KestGherkin || it is KestGherkinCustom }
         ?.toFeaturesDiscoveryConfiguration(this)
         ?: emptyList()
 
- fun Annotation.toFeaturesDiscoveryConfiguration(source: Class<*>): List<FeaturesDiscoveryConfiguration> =
+fun Annotation.toFeaturesDiscoveryConfiguration(source: Class<*>): List<FeaturesDiscoveryConfiguration> =
     when (this) {
 
         is KestGherkin -> listOf(
@@ -86,6 +93,13 @@ internal fun Class<*>.toFeaturesDiscoveryConfiguration(): List<FeaturesDiscovery
                 source = ClassSource.from(source),
             )
         )
+
+        is KestGherkinCustom -> {
+            runCatching { sourceProvider.createInstance() }
+                .getOrElse { sourceProvider.objectInstance }
+                ?.toFeaturesDiscoveryConfiguration(source = ClassSource.from(source), stepsDefinitionPackages = stepDefinitionsPackage.toList())
+                ?: throw IllegalArgumentException("Could not instantiate $sourceProvider")
+        }
 
         else -> throw IllegalArgumentException("$this is not a recognized source provider")
     }

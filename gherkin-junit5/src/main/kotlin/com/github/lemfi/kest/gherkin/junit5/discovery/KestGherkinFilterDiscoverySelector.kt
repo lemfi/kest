@@ -6,7 +6,6 @@ import org.junit.platform.engine.discovery.ClasspathRootSelector
 import org.junit.platform.engine.discovery.DirectorySelector
 import org.junit.platform.engine.discovery.FileSelector
 import org.junit.platform.engine.discovery.PackageSelector
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 @Suppress("unused")

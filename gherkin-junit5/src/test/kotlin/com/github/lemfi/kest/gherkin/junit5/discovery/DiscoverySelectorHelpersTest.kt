@@ -2,6 +2,7 @@ package com.github.lemfi.kest.gherkin.junit5.discovery
 
 import com.github.lemfi.kest.gherkin.junit5.GherkinProp
 import com.github.lemfi.kest.gherkin.junit5.KestGherkin
+import com.github.lemfi.kest.gherkin.junit5.KestGherkinCustom
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -50,7 +51,7 @@ class DiscoverySelectorHelpersTest {
     @Test
     fun `discover feature provides classes with a package selector - ok`() {
         val selector = selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery")
-        assertEquals(listOf(FeatureClass::class.java), selector.toFeatureProviderClasses().toList())
+        assertEquals(listOf(FeatureClass::class.java, FeatureClassFromCustomProvider::class.java), selector.toFeatureProviderClasses().toList())
     }
 
     @Test
@@ -62,7 +63,7 @@ class DiscoverySelectorHelpersTest {
     @Test
     fun `discover feature provides classes with a ClasspathRootSelector selector - ok`() {
         val selector = selectClasspathRoots(setOf(Path("."))).first()
-        assertEquals(listOf(FeatureClass::class.java), selector.toFeatureProviderClasses().toList())
+        assertEquals(listOf(FeatureClass::class.java, FeatureClassFromCustomProvider::class.java), selector.toFeatureProviderClasses().toList())
     }
 
     @Test
@@ -78,7 +79,7 @@ class DiscoverySelectorHelpersTest {
 
         val selectors = listOf(selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery"), selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery.blah"))
 
-        assertEquals(listOf(FeatureClass::class.java), selectors.toClasses().toList())
+        assertEquals(listOf(FeatureClass::class.java, FeatureClassFromCustomProvider::class.java), selectors.toClasses().toList())
     }
 
     @Test
@@ -105,15 +106,37 @@ class DiscoverySelectorHelpersTest {
     }
 
     @Test
+    fun `discover configuration from KestGherkinCustom annotated class - ok`() {
+
+        mockkStatic(KestGherkinCustom::toFeaturesDiscoveryConfiguration) {
+            val conf = listOf(
+                FeaturesDiscoveryConfiguration(
+                    features = listOf("feature1", "feature2"),
+                    stepsPackages = listOf("stepPackage1", "stepPackage2"),
+                    source = ClassSource.from(FeatureClass::class.java)
+                )
+            )
+
+            every { KestGherkinCustom::toFeaturesDiscoveryConfiguration.invoke(any(), any()) } returns conf
+
+            val res = FeatureClassFromCustomProvider::class.java.toFeaturesDiscoveryConfiguration()
+
+            verify { KestGherkinCustom::toFeaturesDiscoveryConfiguration.invoke(any(), any()) }
+
+            assertEquals(conf, res)
+        }
+
+    }
+
+    @Test
     fun `discover configuration from an annotated class - no tests found`() {
 
-        mockkStatic(KestGherkin::toFeaturesDiscoveryConfiguration) {
-
-            every { KestGherkin::toFeaturesDiscoveryConfiguration.invoke(any(), any()) } returns emptyList()
+        mockkStatic(KestGherkin::toFeaturesDiscoveryConfiguration, KestGherkinCustom::toFeaturesDiscoveryConfiguration) {
 
             val res = NoFeatureClass::class.java.toFeaturesDiscoveryConfiguration()
 
             verify(exactly = 0) { KestGherkin::toFeaturesDiscoveryConfiguration.invoke(any(), any()) }
+            verify(exactly = 0) { KestGherkinCustom::toFeaturesDiscoveryConfiguration.invoke(any(), any()) }
 
             assertEquals(emptyList<FeaturesDiscoveryConfiguration>(), res)
         }
@@ -176,6 +199,22 @@ class DiscoverySelectorHelpersTest {
                 res
             )
         }
+    }
+
+    @Test
+    fun `convert KestGherkinCustom annotation to FeaturesDiscoveryConfiguration - custom values`() {
+
+        val res = KestGherkinCustom(sourceProvider = Provider::class, stepDefinitionsPackage = listOf("s1", "s2").toTypedArray()).toFeaturesDiscoveryConfiguration(Any::class.java)
+
+        assertEquals(
+            listOf(
+                FeaturesDiscoveryConfiguration(
+                    features = listOf("Feature: feature1", "Feature: feature2"),
+                    stepsPackages = listOf("s1", "s2"),
+                    source = ClassSource.from(Any::class.java)
+                )
+            ), res
+        )
     }
 
     @Test
