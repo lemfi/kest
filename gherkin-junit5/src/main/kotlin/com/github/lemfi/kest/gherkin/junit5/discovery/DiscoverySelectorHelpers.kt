@@ -6,14 +6,17 @@ import org.junit.platform.engine.DiscoverySelector
 import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.discovery.ClassSelector
 import org.junit.platform.engine.discovery.ClasspathRootSelector
+import org.junit.platform.engine.discovery.FileSelector
 import org.junit.platform.engine.discovery.PackageSelector
 import org.junit.platform.engine.support.descriptor.ClassSource
+import org.junit.platform.engine.support.descriptor.FileSource
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
 import org.reflections.util.FilterBuilder
 import java.io.File
 import java.net.URI
+import java.nio.charset.Charset
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -129,3 +132,13 @@ internal fun Collection<ClasspathRootSelector>.toFeaturesDiscoveryConfiguration(
 @JvmName("packageSelectorToSourceDefinition")
 internal fun Collection<PackageSelector>.toFeaturesDiscoveryConfiguration() =
     toClasses().flatMap { it.toFeaturesDiscoveryConfiguration() }
+
+@JvmName("fileSelectorToSourceDefinition")
+internal fun Collection<FileSelector>.toFeaturesDiscoveryConfiguration() =
+    map {
+        FeaturesDiscoveryConfiguration(
+            features = listOf(it.file.readText(Charset.defaultCharset())),
+            stepsPackages = gherkinProperty { stepDefinitions },
+            source = FileSource.from(it.file),
+        )
+    }

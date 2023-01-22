@@ -21,6 +21,7 @@ import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.discovery.ClassSelector
 import org.junit.platform.engine.discovery.ClasspathRootSelector
+import org.junit.platform.engine.discovery.FileSelector
 import org.junit.platform.engine.discovery.PackageSelector
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
@@ -54,6 +55,11 @@ class KestGherkinTestEngine : TestEngine {
                 addAll(
                     engineDiscoveryRequest
                         .getSelectorsByType(PackageSelector::class.java)
+                        .toFeaturesDiscoveryConfiguration()
+                )
+                addAll(
+                    engineDiscoveryRequest
+                        .getSelectorsByType(FileSelector::class.java)
                         .toFeaturesDiscoveryConfiguration()
                 )
 

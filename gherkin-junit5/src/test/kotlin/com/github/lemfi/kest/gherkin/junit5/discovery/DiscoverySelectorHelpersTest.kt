@@ -3,6 +3,7 @@ package com.github.lemfi.kest.gherkin.junit5.discovery
 import com.github.lemfi.kest.gherkin.junit5.GherkinProp
 import com.github.lemfi.kest.gherkin.junit5.KestGherkin
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.verify
@@ -12,9 +13,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClasspathRoots
+import org.junit.platform.engine.discovery.DiscoverySelectors.selectFile
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectUri
 import org.junit.platform.engine.support.descriptor.ClassSource
+import org.junit.platform.engine.support.descriptor.FileSource
+import java.io.File
 import java.lang.annotation.Inherited
 import java.net.URI
 import kotlin.io.path.Path
@@ -205,6 +209,38 @@ class DiscoverySelectorHelpersTest {
 
         assertTrue(resources.isEmpty())
 
+    }
+
+    @Test
+    fun `compute FeatureDiscoveryConfiguration from a FileSelector`() {
+
+        mockkConstructor(GherkinProp::class) {
+            mockkStatic(File::readText, File::getPath) {
+
+                every { anyConstructed<GherkinProp>().getProperty("stepDefinitions") } returns listOf(
+                    "packageFromConf1",
+                    "packageFromConf2"
+                )
+                val file = mockk<File>()
+                every { file.readText(any()) } returns "file content"
+                every { file.isFile } returns true
+                every { file.canonicalPath } returns "/file"
+                every { file.canonicalFile } returns File("/file")
+                every { file.path } returns "/file"
+
+                val selectors = listOf(selectFile(file))
+
+                assertEquals(listOf(
+                    FeaturesDiscoveryConfiguration(
+                        features = listOf("file content"),
+                        stepsPackages = listOf(
+                            "packageFromConf1",
+                            "packageFromConf2"
+                        ),
+                        source = FileSource.from(file),
+                    )), selectors.toFeaturesDiscoveryConfiguration())
+            }
+        }
     }
 }
 
