@@ -11,10 +11,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
+import org.junit.platform.engine.discovery.DiscoverySelectors.selectClasspathRoots
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectUri
 import org.junit.platform.engine.support.descriptor.ClassSource
 import java.lang.annotation.Inherited
 import java.net.URI
+import kotlin.io.path.Path
 
 class DiscoverySelectorHelpersTest {
 
@@ -26,15 +28,21 @@ class DiscoverySelectorHelpersTest {
     }
 
     @Test
-    fun `discover feature providers classes with a class selector - ok`() {
+    fun `discover feature provides classes with a class selector - ok`() {
         val selector = selectClass(FeatureClass::class.java)
         assertEquals(listOf(FeatureClass::class.java), selector.toFeatureProviderClasses())
     }
 
     @Test
-    fun `discover feature providers classes with a class selector - ko`() {
+    fun `discover feature provides classes with a class selector - ko`() {
         val selector = selectClass(NoFeatureClass::class.java)
         assertEquals(emptyList<Class<*>>(), selector.toFeatureProviderClasses())
+    }
+
+    @Test
+    fun `discover feature provides classes with a ClasspathRootSelector selector - ok`() {
+        val selector = selectClasspathRoots(setOf(Path("."))).first()
+        assertEquals(listOf(FeatureClass::class.java), selector.toFeatureProviderClasses().toList())
     }
 
     @Test
@@ -42,7 +50,7 @@ class DiscoverySelectorHelpersTest {
 
         val selectors = listOf(selectClass(NoFeatureClass::class.java), selectClass(FeatureClass::class.java))
 
-        assertEquals(listOf(FeatureClass::class.java), selectors.toClasses())
+        assertEquals(listOf(FeatureClass::class.java), selectors.toClasses().toList())
     }
 
     @Test

@@ -9,6 +9,7 @@ import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.gherkin.core.GherkinScenarioBuilder
 import com.github.lemfi.kest.gherkin.junit5.discovery.FeaturesDiscoveryConfiguration
 import com.github.lemfi.kest.gherkin.junit5.discovery.toFeaturesDiscoveryConfiguration
+import io.mockk.EqMatcher
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -32,9 +33,13 @@ import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.discovery.ClassSelector
+import org.junit.platform.engine.discovery.ClasspathRootSelector
 import org.junit.platform.engine.discovery.DiscoverySelectors
 import org.junit.platform.engine.support.descriptor.ClassSource
+import org.junit.platform.engine.support.descriptor.ClasspathResourceSource
 import org.opentest4j.AssertionFailedError
+import java.net.URI
+import kotlin.io.path.Path
 
 class KestGherkinTestEngineTest {
 
@@ -53,7 +58,7 @@ class KestGherkinTestEngineTest {
                         if (cls == ClassSelector::class.java) {
                             @Suppress("UNCHECKED_CAST")
                             mutableListOf<ClassSelector>(DiscoverySelectors.selectClass(FeatureClass::class.java)) as MutableList<T>
-                        } else throw NotImplementedError("...")
+                        } else mutableListOf()
 
                     override fun <T : DiscoveryFilter<*>?> getFiltersByType(p0: Class<T>?): MutableList<T> {
                         throw NotImplementedError("...")
@@ -123,6 +128,93 @@ class KestGherkinTestEngineTest {
         }
     }
 
+    @Test
+    fun `kest gherkin test engines discovers tests from ClasspathRootSelector`() {
+
+        mockkConstructor(GherkinScenarioBuilder::class) {
+
+            mockkStatic(
+                Collection<ClasspathRootSelector>::toFeaturesDiscoveryConfiguration,
+                GherkinScenarioBuilder::resourceToScenarios
+            ) {
+
+                val request = object : EngineDiscoveryRequest {
+                    override fun <T : DiscoverySelector> getSelectorsByType(cls: Class<T>): MutableList<T> =
+                        if (cls == ClasspathRootSelector::class.java) {
+                            @Suppress("UNCHECKED_CAST")
+                            DiscoverySelectors.selectClasspathRoots(mutableSetOf(Path("."))) as MutableList<T>
+                        } else mutableListOf()
+
+                    override fun <T : DiscoveryFilter<*>?> getFiltersByType(p0: Class<T>?): MutableList<T> {
+                        throw NotImplementedError("...")
+                    }
+
+                    override fun getConfigurationParameters(): ConfigurationParameters {
+                        throw NotImplementedError("...")
+                    }
+                }
+
+                val fdc = listOf(
+                    FeaturesDiscoveryConfiguration(
+                        features = listOf("f"),
+                        stepsPackages = listOf("s"),
+                        source = ClasspathResourceSource.from("...")
+                    )
+                )
+
+                every { Collection<ClasspathRootSelector>::toFeaturesDiscoveryConfiguration.invoke(any()) } returns fdc
+
+                val s1 =
+                    scenario(name = "s1") { nestedScenario(name = "scenario1") { }; nestedScenario(name = "scenario2") { } }
+                val s2 =
+                    scenario(name = "s2") { nestedScenario(name = "scenario3") { }; nestedScenario(name = "scenario4") { } }
+                val scenarios = listOf(s1, s2)
+
+                every { constructedWith<GherkinScenarioBuilder>(EqMatcher(listOf("s"))).resourceToScenarios(listOf("f")) } returns scenarios
+
+                val res = KestGherkinTestEngine().discover(request, UniqueId.forEngine(KestGherkinTestEngineName))
+
+                verify { constructedWith<GherkinScenarioBuilder>(EqMatcher(listOf("s"))).resourceToScenarios(listOf("f")) }
+
+                assertTrue(res.isRoot)
+                assertEquals(2, res.children.size)
+                assertTrue(res.children.all { it is FeatureTestDescriptor })
+                assertEquals("s1", res.children.first().displayName)
+                assertEquals("s2", res.children.last().displayName)
+                assertEquals("[engine:KestGherkinTestEngine]/[feature:s1]", res.children.first().uniqueId.toString())
+                assertEquals("[engine:KestGherkinTestEngine]/[feature:s2]", res.children.last().uniqueId.toString())
+
+                assertEquals(2, res.children.first().children.size)
+                assertTrue(res.children.first().children.all { it is NestedStepTestDescriptor })
+                assertEquals("scenario1", res.children.first().children.first().displayName)
+                assertEquals("scenario2", res.children.first().children.last().displayName)
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s1]/[scenario:scenario1]",
+                    res.children.first().children.first().uniqueId.toString()
+                )
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s1]/[scenario:scenario2]",
+                    res.children.first().children.last().uniqueId.toString()
+                )
+
+                assertEquals(2, res.children.last().children.size)
+                assertTrue(res.children.last().children.all { it is NestedStepTestDescriptor })
+                assertEquals("scenario3", res.children.last().children.first().displayName)
+                assertEquals("scenario4", res.children.last().children.last().displayName)
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s2]/[scenario:scenario3]",
+                    res.children.last().children.first().uniqueId.toString()
+                )
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s2]/[scenario:scenario4]",
+                    res.children.last().children.last().uniqueId.toString()
+                )
+
+            }
+
+        }
+    }
+
 
     @Test
     fun `kest gherkin test engines discovers tests from ClassSelector and filters scenarios when filter is provided`() {
@@ -139,7 +231,7 @@ class KestGherkinTestEngineTest {
                         if (cls == ClassSelector::class.java) {
                             @Suppress("UNCHECKED_CAST")
                             mutableListOf<ClassSelector>(DiscoverySelectors.selectClass(FeatureClass::class.java)) as MutableList<T>
-                        } else throw NotImplementedError("...")
+                        } else mutableListOf()
 
                     override fun <T : DiscoveryFilter<*>?> getFiltersByType(p0: Class<T>?): MutableList<T> {
                         throw NotImplementedError("...")

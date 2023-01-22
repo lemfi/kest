@@ -5,7 +5,11 @@ import com.github.lemfi.kest.gherkin.junit5.gherkinProperty
 import org.junit.platform.engine.DiscoverySelector
 import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.discovery.ClassSelector
+import org.junit.platform.engine.discovery.ClasspathRootSelector
 import org.junit.platform.engine.support.descriptor.ClassSource
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
+import org.reflections.util.ConfigurationBuilder
 import java.io.File
 import java.net.URI
 import java.nio.file.FileSystems
@@ -24,6 +28,9 @@ data class FeaturesDiscoveryConfiguration(
     val source: TestSource,
 )
 
+@JvmName("classpathRootSelectorToClasses")
+internal fun Collection<ClasspathRootSelector>.toClasses(): List<Class<*>> = flatMap { it.toFeatureProviderClasses() }
+
 @JvmName("classSelectorToClasses")
 internal fun Collection<ClassSelector>.toClasses(): List<Class<*>> = flatMap { it.toFeatureProviderClasses() }
 
@@ -35,6 +42,12 @@ internal fun DiscoverySelector.toFeatureProviderClasses() =
                 if (javaClass.declaredAnnotations.any { it is KestGherkin }) javaClass
                 else null
             )
+
+        is ClasspathRootSelector -> Reflections(
+            ConfigurationBuilder()
+                .addUrls(classpathRoot.toURL())
+                .setScanners(Scanners.TypesAnnotated)
+        ).getTypesAnnotatedWith(KestGherkin::class.java)
 
         else -> emptyList()
     }
@@ -94,4 +107,8 @@ internal fun resourceSources(sourcesPath: String) =
 
 @JvmName("classSelectorToSourceDefinition")
 internal fun Collection<ClassSelector>.toFeaturesDiscoveryConfiguration() =
+    toClasses().flatMap { it.toFeaturesDiscoveryConfiguration() }
+
+@JvmName("classpathRootSelectorToSourceDefinition")
+internal fun Collection<ClasspathRootSelector>.toFeaturesDiscoveryConfiguration() =
     toClasses().flatMap { it.toFeaturesDiscoveryConfiguration() }
