@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClasspathRoots
+import org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectUri
 import org.junit.platform.engine.support.descriptor.ClassSource
 import java.lang.annotation.Inherited
@@ -36,7 +37,20 @@ class DiscoverySelectorHelpersTest {
     @Test
     fun `discover feature provides classes with a class selector - ko`() {
         val selector = selectClass(NoFeatureClass::class.java)
-        assertEquals(emptyList<Class<*>>(), selector.toFeatureProviderClasses())
+        assertEquals(emptyList<Class<*>>(), selector.toFeatureProviderClasses().toList())
+    }
+
+
+    @Test
+    fun `discover feature provides classes with a package selector - ok`() {
+        val selector = selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery")
+        assertEquals(listOf(FeatureClass::class.java), selector.toFeatureProviderClasses().toList())
+    }
+
+    @Test
+    fun `discover feature provides classes with a package selector - ko`() {
+        val selector = selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery.blah")
+        assertEquals(emptyList<Class<*>>(), selector.toFeatureProviderClasses().toList())
     }
 
     @Test
@@ -46,9 +60,17 @@ class DiscoverySelectorHelpersTest {
     }
 
     @Test
-    fun `discover feature providers classes with a list of selectors`() {
+    fun `discover feature providers classes with a list of class selectors`() {
 
         val selectors = listOf(selectClass(NoFeatureClass::class.java), selectClass(FeatureClass::class.java))
+
+        assertEquals(listOf(FeatureClass::class.java), selectors.toClasses().toList())
+    }
+
+    @Test
+    fun `discover feature providers classes with a list of package selectors`() {
+
+        val selectors = listOf(selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery"), selectPackage("com.github.lemfi.kest.gherkin.junit5.discovery.blah"))
 
         assertEquals(listOf(FeatureClass::class.java), selectors.toClasses().toList())
     }

@@ -6,10 +6,12 @@ import org.junit.platform.engine.DiscoverySelector
 import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.discovery.ClassSelector
 import org.junit.platform.engine.discovery.ClasspathRootSelector
+import org.junit.platform.engine.discovery.PackageSelector
 import org.junit.platform.engine.support.descriptor.ClassSource
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
 import org.reflections.util.ConfigurationBuilder
+import org.reflections.util.FilterBuilder
 import java.io.File
 import java.net.URI
 import java.nio.file.FileSystems
@@ -34,6 +36,10 @@ internal fun Collection<ClasspathRootSelector>.toClasses(): List<Class<*>> = fla
 @JvmName("classSelectorToClasses")
 internal fun Collection<ClassSelector>.toClasses(): List<Class<*>> = flatMap { it.toFeatureProviderClasses() }
 
+
+@JvmName("packageSelectorToClasses")
+internal fun Collection<PackageSelector>.toClasses(): List<Class<*>> = flatMap { it.toFeatureProviderClasses() }
+
 internal fun DiscoverySelector.toFeatureProviderClasses() =
     when (this) {
 
@@ -46,6 +52,13 @@ internal fun DiscoverySelector.toFeatureProviderClasses() =
         is ClasspathRootSelector -> Reflections(
             ConfigurationBuilder()
                 .addUrls(classpathRoot.toURL())
+                .setScanners(Scanners.TypesAnnotated)
+        ).getTypesAnnotatedWith(KestGherkin::class.java)
+
+        is PackageSelector -> Reflections(
+            ConfigurationBuilder()
+                .forPackage(packageName)
+                .filterInputsBy(FilterBuilder().includePackage(packageName))
                 .setScanners(Scanners.TypesAnnotated)
         ).getTypesAnnotatedWith(KestGherkin::class.java)
 
@@ -111,4 +124,8 @@ internal fun Collection<ClassSelector>.toFeaturesDiscoveryConfiguration() =
 
 @JvmName("classpathRootSelectorToSourceDefinition")
 internal fun Collection<ClasspathRootSelector>.toFeaturesDiscoveryConfiguration() =
+    toClasses().flatMap { it.toFeaturesDiscoveryConfiguration() }
+
+@JvmName("packageSelectorToSourceDefinition")
+internal fun Collection<PackageSelector>.toFeaturesDiscoveryConfiguration() =
     toClasses().flatMap { it.toFeaturesDiscoveryConfiguration() }

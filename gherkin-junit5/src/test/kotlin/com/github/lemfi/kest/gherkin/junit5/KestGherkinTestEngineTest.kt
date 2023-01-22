@@ -35,10 +35,10 @@ import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.discovery.ClassSelector
 import org.junit.platform.engine.discovery.ClasspathRootSelector
 import org.junit.platform.engine.discovery.DiscoverySelectors
+import org.junit.platform.engine.discovery.PackageSelector
 import org.junit.platform.engine.support.descriptor.ClassSource
 import org.junit.platform.engine.support.descriptor.ClasspathResourceSource
 import org.opentest4j.AssertionFailedError
-import java.net.URI
 import kotlin.io.path.Path
 
 class KestGherkinTestEngineTest {
@@ -163,6 +163,93 @@ class KestGherkinTestEngineTest {
                 )
 
                 every { Collection<ClasspathRootSelector>::toFeaturesDiscoveryConfiguration.invoke(any()) } returns fdc
+
+                val s1 =
+                    scenario(name = "s1") { nestedScenario(name = "scenario1") { }; nestedScenario(name = "scenario2") { } }
+                val s2 =
+                    scenario(name = "s2") { nestedScenario(name = "scenario3") { }; nestedScenario(name = "scenario4") { } }
+                val scenarios = listOf(s1, s2)
+
+                every { constructedWith<GherkinScenarioBuilder>(EqMatcher(listOf("s"))).resourceToScenarios(listOf("f")) } returns scenarios
+
+                val res = KestGherkinTestEngine().discover(request, UniqueId.forEngine(KestGherkinTestEngineName))
+
+                verify { constructedWith<GherkinScenarioBuilder>(EqMatcher(listOf("s"))).resourceToScenarios(listOf("f")) }
+
+                assertTrue(res.isRoot)
+                assertEquals(2, res.children.size)
+                assertTrue(res.children.all { it is FeatureTestDescriptor })
+                assertEquals("s1", res.children.first().displayName)
+                assertEquals("s2", res.children.last().displayName)
+                assertEquals("[engine:KestGherkinTestEngine]/[feature:s1]", res.children.first().uniqueId.toString())
+                assertEquals("[engine:KestGherkinTestEngine]/[feature:s2]", res.children.last().uniqueId.toString())
+
+                assertEquals(2, res.children.first().children.size)
+                assertTrue(res.children.first().children.all { it is NestedStepTestDescriptor })
+                assertEquals("scenario1", res.children.first().children.first().displayName)
+                assertEquals("scenario2", res.children.first().children.last().displayName)
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s1]/[scenario:scenario1]",
+                    res.children.first().children.first().uniqueId.toString()
+                )
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s1]/[scenario:scenario2]",
+                    res.children.first().children.last().uniqueId.toString()
+                )
+
+                assertEquals(2, res.children.last().children.size)
+                assertTrue(res.children.last().children.all { it is NestedStepTestDescriptor })
+                assertEquals("scenario3", res.children.last().children.first().displayName)
+                assertEquals("scenario4", res.children.last().children.last().displayName)
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s2]/[scenario:scenario3]",
+                    res.children.last().children.first().uniqueId.toString()
+                )
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s2]/[scenario:scenario4]",
+                    res.children.last().children.last().uniqueId.toString()
+                )
+
+            }
+
+        }
+    }
+
+    @Test
+    fun `kest gherkin test engines discovers tests from PackageSelector`() {
+
+        mockkConstructor(GherkinScenarioBuilder::class) {
+
+            mockkStatic(
+                GherkinScenarioBuilder::resourceToScenarios,
+                Collection<PackageSelector>::toFeaturesDiscoveryConfiguration
+            ) {
+
+                val request = object : EngineDiscoveryRequest {
+                    override fun <T : DiscoverySelector> getSelectorsByType(cls: Class<T>): MutableList<T> =
+                        if (cls == PackageSelector::class.java) {
+                            @Suppress("UNCHECKED_CAST")
+                            mutableListOf(DiscoverySelectors.selectPackage("com.github.lemfi.kest.gherkin.junit5")) as MutableList<T>
+                        } else mutableListOf()
+
+                    override fun <T : DiscoveryFilter<*>?> getFiltersByType(p0: Class<T>?): MutableList<T> {
+                        throw NotImplementedError("...")
+                    }
+
+                    override fun getConfigurationParameters(): ConfigurationParameters {
+                        throw NotImplementedError("...")
+                    }
+                }
+
+                val fdc = listOf(
+                    FeaturesDiscoveryConfiguration(
+                        features = listOf("f"),
+                        stepsPackages = listOf("s"),
+                        source = ClasspathResourceSource.from("...")
+                    )
+                )
+
+                every { Collection<PackageSelector>::toFeaturesDiscoveryConfiguration.invoke(any()) } returns fdc
 
                 val s1 =
                     scenario(name = "s1") { nestedScenario(name = "scenario1") { }; nestedScenario(name = "scenario2") { } }
