@@ -16,6 +16,9 @@ dependencies {
 
     implementation("org.reflections:reflections:$reflectionsVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 tasks.withType<Test> {
