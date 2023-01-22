@@ -13,10 +13,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectClasspathRoots
+import org.junit.platform.engine.discovery.DiscoverySelectors.selectDirectory
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectFile
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectUri
 import org.junit.platform.engine.support.descriptor.ClassSource
+import org.junit.platform.engine.support.descriptor.DirectorySource
 import org.junit.platform.engine.support.descriptor.FileSource
 import java.io.File
 import java.lang.annotation.Inherited
@@ -238,6 +240,52 @@ class DiscoverySelectorHelpersTest {
                             "packageFromConf2"
                         ),
                         source = FileSource.from(file),
+                    )), selectors.toFeaturesDiscoveryConfiguration())
+            }
+        }
+    }
+
+    @Test
+    fun `compute FeatureDiscoveryConfiguration from a DirectorySelector`() {
+
+        mockkConstructor(GherkinProp::class) {
+            mockkStatic(File::readText, File::getPath, File::walkTopDown) {
+
+                every { anyConstructed<GherkinProp>().getProperty("stepDefinitions") } returns listOf(
+                    "packageFromConf1",
+                    "packageFromConf2"
+                )
+                val directory = mockk<File>()
+                every { directory.isDirectory } returns true
+                every { directory.canonicalPath } returns "/dir"
+                every { directory.canonicalFile } returns File("/dir")
+                every { directory.path } returns "/dir"
+
+                val fileTreeWalk = mockk<FileTreeWalk>()
+                every { directory.walkTopDown() } returns fileTreeWalk
+
+                val f1 = mockk<File>()
+                every { f1.path } returns "/file1"
+                every { f1.isDirectory } returns false
+                every { f1.readText(any()) } returns "file content 1"
+
+                val f2 = mockk<File>()
+                every { f2.path } returns "/file2"
+                every { f2.isDirectory } returns false
+                every { f2.readText(any()) } returns "file content 2"
+
+                every { fileTreeWalk.iterator() } returns listOf(f1, f2).iterator()
+
+                val selectors = listOf(selectDirectory(directory))
+
+                assertEquals(listOf(
+                    FeaturesDiscoveryConfiguration(
+                        features = listOf("file content 1", "file content 2"),
+                        stepsPackages = listOf(
+                            "packageFromConf1",
+                            "packageFromConf2"
+                        ),
+                        source = DirectorySource.from(directory),
                     )), selectors.toFeaturesDiscoveryConfiguration())
             }
         }

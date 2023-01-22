@@ -6,9 +6,11 @@ import org.junit.platform.engine.DiscoverySelector
 import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.discovery.ClassSelector
 import org.junit.platform.engine.discovery.ClasspathRootSelector
+import org.junit.platform.engine.discovery.DirectorySelector
 import org.junit.platform.engine.discovery.FileSelector
 import org.junit.platform.engine.discovery.PackageSelector
 import org.junit.platform.engine.support.descriptor.ClassSource
+import org.junit.platform.engine.support.descriptor.DirectorySource
 import org.junit.platform.engine.support.descriptor.FileSource
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
@@ -140,5 +142,18 @@ internal fun Collection<FileSelector>.toFeaturesDiscoveryConfiguration() =
             features = listOf(it.file.readText(Charset.defaultCharset())),
             stepsPackages = gherkinProperty { stepDefinitions },
             source = FileSource.from(it.file),
+        )
+    }
+
+@JvmName("directorySelectorToSourceDefinition")
+internal fun Collection<DirectorySelector>.toFeaturesDiscoveryConfiguration() =
+    map { directorySelector ->
+        FeaturesDiscoveryConfiguration(
+            features = directorySelector.directory
+                .walkTopDown()
+                .toList()
+                .mapNotNull { if (it.isDirectory) null else it.readText(Charset.defaultCharset()) },
+            stepsPackages = gherkinProperty { stepDefinitions },
+            source = DirectorySource.from(directorySelector.directory),
         )
     }

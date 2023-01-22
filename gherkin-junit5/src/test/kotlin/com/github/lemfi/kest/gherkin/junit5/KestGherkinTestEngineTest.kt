@@ -34,7 +34,9 @@ import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.discovery.ClassSelector
 import org.junit.platform.engine.discovery.ClasspathRootSelector
+import org.junit.platform.engine.discovery.DirectorySelector
 import org.junit.platform.engine.discovery.DiscoverySelectors
+import org.junit.platform.engine.discovery.DiscoverySelectors.selectDirectory
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectFile
 import org.junit.platform.engine.discovery.FileSelector
 import org.junit.platform.engine.discovery.PackageSelector
@@ -358,6 +360,117 @@ class KestGherkinTestEngineTest {
                     "packageFromConf1",
                     "packageFromConf2"
                 ))).resourceToScenarios(listOf("file content")) }
+
+
+                assertTrue(res.isRoot)
+                assertEquals(2, res.children.size)
+                assertTrue(res.children.all { it is FeatureTestDescriptor })
+                assertEquals("s1", res.children.first().displayName)
+                assertEquals("s2", res.children.last().displayName)
+                assertEquals("[engine:KestGherkinTestEngine]/[feature:s1]", res.children.first().uniqueId.toString())
+                assertEquals("[engine:KestGherkinTestEngine]/[feature:s2]", res.children.last().uniqueId.toString())
+
+                assertEquals(2, res.children.first().children.size)
+                assertTrue(res.children.first().children.all { it is NestedStepTestDescriptor })
+                assertEquals("scenario1", res.children.first().children.first().displayName)
+                assertEquals("scenario2", res.children.first().children.last().displayName)
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s1]/[scenario:scenario1]",
+                    res.children.first().children.first().uniqueId.toString()
+                )
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s1]/[scenario:scenario2]",
+                    res.children.first().children.last().uniqueId.toString()
+                )
+
+                assertEquals(2, res.children.last().children.size)
+                assertTrue(res.children.last().children.all { it is NestedStepTestDescriptor })
+                assertEquals("scenario3", res.children.last().children.first().displayName)
+                assertEquals("scenario4", res.children.last().children.last().displayName)
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s2]/[scenario:scenario3]",
+                    res.children.last().children.first().uniqueId.toString()
+                )
+                assertEquals(
+                    "[engine:KestGherkinTestEngine]/[feature:s2]/[scenario:scenario4]",
+                    res.children.last().children.last().uniqueId.toString()
+                )
+
+
+            }
+
+        }
+    }
+
+    @Test
+    fun `kest gherkin test engines discovers tests from DirectorySelector`() {
+
+        mockkConstructor(GherkinScenarioBuilder::class, GherkinProp::class) {
+
+            every { anyConstructed<GherkinProp>().getProperty("stepDefinitions") } returns listOf(
+                "packageFromConf1",
+                "packageFromConf2"
+            )
+
+            mockkStatic(
+                GherkinScenarioBuilder::resourceToScenarios,
+                File::readText,
+                File::walkTopDown
+            ) {
+
+                val request = object : EngineDiscoveryRequest {
+                    override fun <T : DiscoverySelector> getSelectorsByType(cls: Class<T>): MutableList<T> =
+                        if (cls == DirectorySelector::class.java) {
+                            val directory = mockk<File>()
+                            every { directory.isDirectory } returns true
+                            every { directory.canonicalPath } returns "/dir"
+                            every { directory.canonicalFile } returns File("/dir")
+                            every { directory.path } returns "/dir"
+
+                            val fileTreeWalk = mockk<FileTreeWalk>()
+                            every { directory.walkTopDown() } returns fileTreeWalk
+
+                            val f1 = mockk<File>()
+                            every { f1.path } returns "/file1"
+                            every { f1.isDirectory } returns false
+                            every { f1.readText(any()) } returns "file content 1"
+
+                            val f2 = mockk<File>()
+                            every { f2.path } returns "/file2"
+                            every { f2.isDirectory } returns false
+                            every { f2.readText(any()) } returns "file content 2"
+
+                            every { fileTreeWalk.iterator() } returns listOf(f1, f2).iterator()
+                            @Suppress("UNCHECKED_CAST")
+                            mutableListOf(selectDirectory(directory)) as MutableList<T>
+                        } else mutableListOf()
+
+                    override fun <T : DiscoveryFilter<*>?> getFiltersByType(p0: Class<T>?): MutableList<T> {
+                        throw NotImplementedError("...")
+                    }
+
+                    override fun getConfigurationParameters(): ConfigurationParameters {
+                        throw NotImplementedError("...")
+                    }
+                }
+
+                val s1 =
+                    scenario(name = "s1") { nestedScenario(name = "scenario1") { }; nestedScenario(name = "scenario2") { } }
+                val s2 =
+                    scenario(name = "s2") { nestedScenario(name = "scenario3") { }; nestedScenario(name = "scenario4") { } }
+                val scenarios = listOf(s1, s2)
+
+                every { constructedWith<GherkinScenarioBuilder>(EqMatcher(listOf(
+                    "packageFromConf1",
+                    "packageFromConf2"
+                ))).resourceToScenarios(any()) } returns scenarios
+
+                val res = KestGherkinTestEngine().discover(request, UniqueId.forEngine(KestGherkinTestEngineName))
+
+                verify { constructedWith<GherkinScenarioBuilder>(EqMatcher(listOf(
+                    "packageFromConf1",
+                    "packageFromConf2"
+                ))).resourceToScenarios(listOf("file content 1", "file content 2")) }
 
 
                 assertTrue(res.isRoot)
