@@ -2,6 +2,7 @@ package com.github.lemfi.kest.core.model
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.cli.`is false`
+import com.github.lemfi.kest.core.cli.run
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions
@@ -315,5 +316,41 @@ class StepTest {
     fun `build a retry step`() {
         Assertions.assertEquals(RetryStep(10, 100), 10.times `by intervals of` 100.ms)
         Assertions.assertEquals(RetryStep(20, 1000), 20.times `by intervals of` 1.seconds)
+    }
+
+    @Test
+    fun `replay a step`() {
+
+        val step = mockk<StandaloneStep<Int>>()
+
+        every { step.name } returns object : IStepName {
+            override val value = "a step"
+        }
+        every { step.scenarioName } returns "a scenario name"
+        every { step.retry } returns null
+
+        var counter = 1
+        val stepRes = StandaloneStepResult<Int>(
+            step = step,
+            pe = null,
+            transformer = { t -> t }
+        )
+
+        every { step.postExecution } returns stepRes
+
+        every { step.execution } returns {
+            object : Execution<Int>() {
+                override fun execute() = counter
+            }
+        }
+
+        step.run()
+
+        Assertions.assertEquals(1, step.postExecution.lazy())
+
+        counter++
+        step.postExecution.replay()
+
+        Assertions.assertEquals(2, step.postExecution.lazy())
     }
 }

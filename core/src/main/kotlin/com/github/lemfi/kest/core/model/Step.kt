@@ -3,6 +3,7 @@
 package com.github.lemfi.kest.core.model
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
+import com.github.lemfi.kest.core.cli.run
 
 sealed class Step<T> {
     abstract val scenarioName: String
@@ -121,6 +122,11 @@ sealed class IStepPostExecution<T, R>(
 
     fun isFailed() = resSet && failed != null
     fun isSuccess() = resSet && failed == null
+
+    fun replay() {
+        resSet = false
+        step.run()
+    }
 }
 
 class StandaloneStepPostExecution<I : Any?, T, R>(
