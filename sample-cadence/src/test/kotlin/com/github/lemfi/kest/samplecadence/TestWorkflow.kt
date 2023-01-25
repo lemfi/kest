@@ -23,7 +23,7 @@ class TestWorkflow {
     @TestFactory
     fun `Darth Vader says hello!`() = `play scenario`(name = "Darth Vader says hello!") {
 
-        `given workflow`<String>("Say Hello Workflow") {
+        `given workflow`("Say Hello Workflow") {
 
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"

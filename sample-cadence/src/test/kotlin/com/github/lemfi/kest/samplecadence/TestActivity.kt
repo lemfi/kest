@@ -25,7 +25,7 @@ class TestActivity {
     @TestFactory
     fun `Darth Vader needs the Force`() = `play scenario`(name = "Darth Vader needs the Force") {
 
-        `given activity call`<String> {
+        `given activity call` {
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"
 
@@ -39,7 +39,7 @@ class TestActivity {
     @TestFactory
     fun `Darth Vader recruits a padawan`() = `play scenario`(name = "Darth Vader recruits a padawan") {
 
-        `given activity call`<Padawan> {
+        `given activity call` {
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"
 
