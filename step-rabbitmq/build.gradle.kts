@@ -1,4 +1,3 @@
-val coroutineVersion: String by project
 val rabbitmqVersion: String by project
 val okhttpVersion: String by project
 
@@ -8,7 +7,6 @@ dependencies {
     implementation(project(":json"))
 
     implementation("com.rabbitmq:amqp-client:$rabbitmqVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
 
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion") {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
