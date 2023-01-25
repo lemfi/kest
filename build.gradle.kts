@@ -1,26 +1,26 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
 
+val dokkaVersion: String by project
+
 group = "com.github.lemfi.kest"
 version = "0.6.14"
 
 buildscript {
     val kotlinVersion: String by project
-    val dokkaVersion: String by project
 
     repositories {
         mavenCentral()
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion")
     }
 }
 
 plugins {
     signing
     jacoco
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka")
     kotlin("jvm") version "1.8.0"
 }
 
@@ -33,7 +33,7 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.10")
+        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
     }
 
     tasks.withType(Sign::class.java) {
