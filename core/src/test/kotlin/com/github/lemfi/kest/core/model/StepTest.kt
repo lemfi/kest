@@ -12,7 +12,7 @@ class StepTest {
 
     @Test
     fun `resolve a step that was not played yet`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns object : IStepName {
             override val value = "a step"
@@ -38,7 +38,7 @@ class StepTest {
 
     @Test
     fun `resolve a step that failed`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns object : IStepName {
             override val value = "a step"
@@ -66,7 +66,7 @@ class StepTest {
 
     @Test
     fun `resolve a successful step`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
 
@@ -85,7 +85,7 @@ class StepTest {
 
     @Test
     fun `resolve and transform a successful step`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
 
@@ -104,7 +104,7 @@ class StepTest {
 
     @Test
     fun `resolve and transform with failure a successful step`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns object : IStepName {
             override val value = "a step"
@@ -132,7 +132,7 @@ class StepTest {
 
     @Test
     fun `resolve and transform a successful step with multiple levels of transformation`() {
-        val step1 = mockk<Step<String>>()
+        val step1 = mockk<StandaloneStep<String>>()
 
         every { step1.name } returns StepName("step 1")
 
@@ -157,7 +157,7 @@ class StepTest {
 
     @Test
     fun `all parents are resolved when a post execution is sucessfully resolved`() {
-        val step1 = mockk<Step<String>>()
+        val step1 = mockk<StandaloneStep<String>>()
 
         every { step1.name } returns StepName("step 1")
 
@@ -190,7 +190,7 @@ class StepTest {
 
     @Test
     fun `all parents are marked as failed when a post execution is marked as failed`() {
-        val step1 = mockk<Step<String>>()
+        val step1 = mockk<StandaloneStep<String>>()
 
         every { step1.name } returns object : IStepName {
             override val value = "step 1"
@@ -234,7 +234,7 @@ class StepTest {
 
     @Test
     fun `add assertion to standlalone step`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
         val stepRes = StepPostExecution<String>(
@@ -253,7 +253,7 @@ class StepTest {
 
     @Test
     fun `add assertion to standlalone step with a parent`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
         val stepRes2 = StepPostExecution<String>(
@@ -279,7 +279,7 @@ class StepTest {
 
     @Test
     fun `map standlalone step result`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
         val stepRes = StepPostExecution<String>(
@@ -296,7 +296,7 @@ class StepTest {
 
     @Test
     fun `map nested scenario step result`() {
-        val step = mockk<Step<String>>()
+        val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
         val stepRes = NestedScenarioStepPostExecution<String, String>(
