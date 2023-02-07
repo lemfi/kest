@@ -1,0 +1,55 @@
+= Create a custom step
+
+You are using a technology not managed by Kest, you can extend Kest with your own Steps
+
+== Build the execution
+
+You need to define what the step will have to execute, for that, create your own implementation of class `com.github.lemfi.kest.core.model.Execution`
+
+For example, let's create a step that will have to sum two integers
+
+[source,kotlin]
+----
+class SumExecution(private val operand1: Int, private val operand2: Int): Execution<Int>() {
+    override fun execute(): Int {
+        return operand1 + operand2
+    }
+}
+----
+
+== Build the execution builder
+
+However a step is not built with an `Execution` but with an `ExecutionBuilder`
+
+Let's create it for our Sum Execution
+
+[source,kotlin]
+----
+class SumExecutionBuilder: ExecutionBuilder<Int> {
+    var operand1: Int = 0
+    var operand2: Int = 0
+
+    override fun toExecution(): Execution<Int> = SumExecution(operand1, operand2)
+}
+----
+
+== Create the function in charge of building the step
+
+Your function should take 3 parameters:
+
+. `name: String`: the step name that will be displayed in report
+. `retry: RetryStep`: the configuration for retrying steps on which assertions would have failed
+. `builder: YourExecutionBuilder<...>.()->Unit`: the context to fill builder information
+
+[source, kotlin]
+----
+fun ScenarioBuilder.`given the sume of two numbers`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: SumExecutionBuilder.() -> Unit
+) =
+    createStep(
+        name = name?.let { StepName(it) } ?: DefaultStepName("Make sum"),
+        retry = retry
+    ) { SumExecutionBuilder().apply(builder) }
+----

@@ -68,11 +68,65 @@ jsonMatches(
   "number": 1,
   "boolean": true
 }""")
+
+// OR shortcuts are provided two write it without having to remember the notation
+jsonMatches(
+"""
+{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
 ----
 
 === Defining your own matchers
 
-If you want to define your own matchers, two possibilities:
+If you want to define your own matchers, several possibilities:
+
+==== Define it textually
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy """{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""
+----
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{{sample}}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+samplePattern.pattern,
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
 
 ==== Define a class
 
@@ -85,11 +139,11 @@ data class Sample(
 )
 ----
 
-Then call JsonMatcher.addMatcher function with the class and the pattern that will represent it:
+Then declare it as a pattern:
 
 [source,kotlin]
 ----
-`add json matcher`("{{sample}}", Sample::class)
+val samplePattern = pattern("sample") definedBy Sample::class
 ----
 
 To check match you can now call this:
@@ -98,13 +152,219 @@ To check match you can now call this:
 ----
 jsonMatches(
 """
-{{sample}}}
+{{sample}}
 """,
 """
 {
   "string": "a string",
   "number": 1,
   "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+samplePattern.pattern,
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+==== Define a function that will check the validity of pattern
+
+[source,kotlin]
+----
+fun checkDateFormat(data: String): Boolean {
+    val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+    return try {
+        dateFormatter.parse(data)
+        true
+    } catch (e: DateTimeParseException) {
+        false
+    }
+}
+----
+
+Then declare it as a pattern:
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy ::checkDateFormat
+----
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "date": "{{sample}}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "date": "2021-01-12",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "date": "$samplePattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "date": "2021-01-12",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+=== Lists and nullable matchers
+
+==== Lists
+What if you want to check that an array contains a list of objects validating a pattern?
+
+[source,json]
+----
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}
+----
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy """{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""
+----
+
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "data": "[[{{sample}}]]"
+}
+""",
+"""
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "data": "${jsonArrayOf(samplePattern)}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}""")
+----
+
+==== Nullable values
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy """{
+  "string": "${stringPattern.nullable}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""
+----
+
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "string": "{{string?}}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+      "string": null,
+      "number": 1,
+      "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "string": "${stringPattern.nullable}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+      "string": null,
+      "number": 1,
+      "boolean": true
 }""")
 ----
 
