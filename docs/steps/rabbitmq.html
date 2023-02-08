@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>RabbitMQ Steps :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/steps/rabbitmq.html">
+    <link rel="prev" href="http.html">
+    <link rel="next" href="mongodb.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../../kest/css/site.css">
+    <script>var uiRootPath = '../../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Kest</a></li>
+    <li><a href="../steps.html">Steps</a></li>
+    <li>Available steps</li>
+    <li><a href="rabbitmq.html">RabbitMQ Steps</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">RabbitMQ Steps</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>create a queue <code><code>`create rabbitmq queue</code>`</code></p>
+</li>
+<li>
+<p>publish a message on a queue <code><code>`publish rabbitmq message</code>`</code></p>
+</li>
+<li>
+<p>read a message from a queue <code><code>`given message from rabbitmq queue</code>`</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-a-queue-on-rabbitmq"><a class="anchor" href="#create-a-queue-on-rabbitmq"></a>Create a queue on RabbitMQ</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This step may seem useless, consider it as a helper to build scenarios</p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step"><a class="anchor" href="#parameters-to-provide-on-step"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>name: String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>retry: String // optional, give a chance for step to fail several times before passing</p>
+</li>
+<li>
+<p>builder: RabbitMQQueueCreationExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+builder parameters are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>description: () &#8594; String? // optional, describe execution</p>
+</li>
+<li>
+<p>message: QueueAndBinding // mandatory, configuration of queue to create</p>
+<div class="ulist">
+<ul>
+<li>
+<p>queue: String // mandatory, queue to create</p>
+</li>
+<li>
+<p>exchange: String? // optional, if not set no binding will be created to any exchange</p>
+</li>
+<li>
+<p>routingKey: String // optional, routing key to bind on exchange</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">// QueueAndBinding is built by a combination if three functions written as follows:
+`create queue` { "world" } `and bind it to exchange` "universe" `with routing key` "galaxy"</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672</p>
+</li>
+<li>
+<p>vhost: String // optional, defaults to /<br></p>
+<div class="paragraph">
+<p>connection and vhost can be set globally on kest configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample"><a class="anchor" href="#sample"></a>Sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
+    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" `with routing key` "Force"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-messages-from-rabbitmq"><a class="anchor" href="#read-messages-from-rabbitmq"></a>Read messages from rabbitMQ</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This step comes as a parameterized function, the parameterized type is the expected return type for the message to read.<br>
+Default return type is <code>ByteArray</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-2"><a class="anchor" href="#parameters-to-provide-on-step-2"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>name: String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>retry: String // optional, give a chance for step to fail several times before passing</p>
+</li>
+<li>
+<p>builder: RabbitMQMessageExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+builder parameters are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>queue: String // queue from which read message</p>
+</li>
+<li>
+<p>messageTransformer: String // transformer from <code>ByteArray</code> to expected return type, mandatory if other than <code>ByteArray</code></p>
+</li>
+<li>
+<p>nbMessges: Int // optional number of messages to retrieve, defaults to 1</p>
+</li>
+<li>
+<p>deleteQueue: Boolean // Should queue be deleted after reading, defaults to false</p>
+</li>
+<li>
+<p>connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672</p>
+</li>
+<li>
+<p>vhost: String // optional, defaults to /<br></p>
+<div class="paragraph">
+<p>connection and vhost can be set globally on kest configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample-2"><a class="anchor" href="#sample-2"></a>Sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given message from rabbitmq queue`&lt;String&gt; {
+        queue = "kest"
+        messageTransformer = { toString(Charsets.UTF_8) }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>N.B: For messages with Json format you may use <code>toJson</code> function, which maps <code>ByteArray</code> to a <code>JsonMap</code>.<br>
+See <a href="../json.html" class="xref page">Kest JSON</a> documentation for more details.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="publish-a-message-on-rabbitmq"><a class="anchor" href="#publish-a-message-on-rabbitmq"></a>Publish a message on RabbitMQ</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-3"><a class="anchor" href="#parameters-to-provide-on-step-3"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>name: String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>retry: String // optional, give a chance for step to fail several times before passing</p>
+</li>
+<li>
+<p>builder: RabbitMQMessageExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+builder parameters are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>message: RabbitMQMessage // mandatory, configuration of message to deliver</p>
+<div class="ulist">
+<ul>
+<li>
+<p>message: String // mandatory, message to deliver</p>
+</li>
+<li>
+<p>exchange: String? // optional, exchange on which deliver message, defaults to ""</p>
+</li>
+<li>
+<p>routingKey: String // mandatory, routing key for message</p>
+</li>
+<li>
+<p>headers: Map&lt;String, Any&gt; // optional</p>
+</li>
+<li>
+<p>properties: RabbitMQPublicationProperties // optional</p>
+<div class="ulist">
+<ul>
+<li>
+<p>contentType: String // optional</p>
+</li>
+<li>
+<p>contentEncoding: String // optional</p>
+</li>
+<li>
+<p>deliveryMode: Int // optional</p>
+</li>
+<li>
+<p>priority: Int // optional</p>
+</li>
+<li>
+<p>correlationId: String // optional</p>
+</li>
+<li>
+<p>replyTo: String // optional</p>
+</li>
+<li>
+<p>type: String // optional</p>
+</li>
+<li>
+<p>messageId: String // optional</p>
+</li>
+<li>
+<p>expiration: String // optional time in millis when message will expire</p>
+</li>
+<li>
+<p>timestamp: Date // optional</p>
+</li>
+<li>
+<p>userId: String // optional</p>
+</li>
+<li>
+<p>appId: String // optional</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">// RabbitMQMessage may be built by a combination of functions written as follows:
+publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
+    "header" to "headerValue"
+) `with properties` {
+    messageId = "my id"
+    expiration = "10000"
+}</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672</p>
+</li>
+<li>
+<p>vhost: String // optional, defaults to /</p>
+<div class="paragraph">
+<p>connection, vhost and exchange can be set globally on kest configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+  exchange: my_exchange</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample-3"><a class="anchor" href="#sample-3"></a>Sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`publish rabbitmq message`("say hello world through universe") {
+    publish { """ { "hello": "world" } """ } `to exchange` "" `with routing key` "universe"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="http.html">HTTP Steps</a></span>
+  <span class="next"><a href="mongodb.html">MongoDB Steps</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../../kest/js/site.js" data-ui-root-path="../../kest"></script>
+<script async src="../../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

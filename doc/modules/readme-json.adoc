@@ -1,0 +1,4 @@
+:includedir: ROOT/pages
+:documentation: doc/modules/ROOT/pages/
+
+include::{includedir}/json.adoc[]

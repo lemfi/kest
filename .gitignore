@@ -3,3 +3,7 @@ build
 *.iml
 out
 !.gitignore
+antora
+antora*
+ui
+*.sh

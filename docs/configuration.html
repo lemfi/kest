@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Configuration :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/configuration.html">
+    <link rel="prev" href="gherkin.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../kest/css/site.css">
+    <script>var uiRootPath = '../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="steps/create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Kest</a></li>
+    <li><a href="configuration.html">Configuration</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Configuration</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>You might want to access data from a configuration file.<br>
+Kest configuration relies on <a href="https://github.com/sksamuel/hoplite" class="bare">https://github.com/sksamuel/hoplite</a><br>
+You may add your entries in a file named kest.yaml which will be located at the root of your classpath<br>
+All data from this file has to be mapped to a kotlin data class.</p>
+</div>
+<div class="paragraph">
+<p>Then you can access your configuration by calling function <code>property</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">mykey: myvalue
+myotherkey: myothervalue
+
+domain:
+  akey: a value
+  anotherkey: anothervalue</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Configuration data class</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">data class Properties(
+    val mykey: String,
+    val myotherkey: String,
+    val domain: Domain
+)
+
+data class Domain(
+    val akey: String,
+    val anotherkey: String
+)</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Access configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">property(Properties::class) { myKey }
+property(Properties::class) { myValue }
+property(Properties::class) { domain.akey }
+property(Properties::class) { domain.anotherkey }
+
+// or with you may create your own shortcut:
+fun &lt;R&gt; props(prop: Properties.() -&gt; R) = property(Properties::class) { prop() }
+// and then use it like that:
+props { myKey }
+props { myValue }
+props { domain.akey }
+props { domain.anotherkey }</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="change-kest-yml-location"><a class="anchor" href="#change-kest-yml-location"></a>Change kest.yml location</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you need to set another location for Kest you can run tests with property <code>kest-conf</code> or environment variable <code>KEST_CONF</code> with the location you need</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="gherkin.html">Gherkin support</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../kest/js/site.js" data-ui-root-path="../kest"></script>
+<script async src="../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

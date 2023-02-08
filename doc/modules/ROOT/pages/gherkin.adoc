@@ -1,0 +1,3 @@
+= Gherkin support
+
+Scenarios can be described in Gherkin and implemented with Kest. Documentation coming soon...

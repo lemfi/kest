@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Overview :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/index.html">
+    <link rel="next" href="steps.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../kest/css/site.css">
+    <script>var uiRootPath = '../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="steps/create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Kest</a></li>
+    <li><a href="index.html">Overview</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Overview</h1>
+<div class="sect1">
+<h2 id="presentation"><a class="anchor" href="#presentation"></a>Presentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kest is a framework written in Kotlin for testing your backends.<br>
+It relies on JUnit5 to run scenarios.</p>
+</div>
+<div class="paragraph">
+<p>Easy to use, easy to extend.</p>
+</div>
+<div class="paragraph">
+<p>It was created to meet the need to test backends and to interact with the middlewares on which they are based in a very simple way, in order to be able to concentrate on the functional to be tested by avoiding difficulty or heaviness brought about by interactions with multiple components.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Use case :</p>
+</div>
+<div class="paragraph">
+<p>My backend consumes messages in a RabbitMQ queue, it exposes its data over HTTP, HTTP access is protected.
+To test the behavior of my backend I will have to:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>post messages in RabbitMQ</p>
+</li>
+<li>
+<p>provision users in my mongo database</p>
+</li>
+<li>
+<p>make HTTP requests to my backend</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>&#8658;
+I&#8217;m going to need to interact with three different technologies, with different clients to handle.<br>
+&#8658; Kest allows you to get away from it all<br>
+&#8658; Kest is an engine that will play scenarios, scenarios will be a sequence of steps<br>
+&#8658; Kest provides ready-made steps to interact with HTTP, RabbitMQ, MongoDB, Redis, and Cadence<br>
+&#8658; Kest allows you to define your own steps: you use a techno not supported by Kest? design your steps!<br></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="use-it"><a class="anchor" href="#use-it"></a>Use it</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="gradle"><a class="anchor" href="#gradle"></a>Gradle</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    implementation("com.github.lemfi.kest:core:0.7.0")
+    implementation("com.github.lemfi.kest:junit5:0.7.0")
+
+    // include the steps you need among available ones
+    implementation("com.github.lemfi.kest:step-http:0.7.0")
+    implementation("com.github.lemfi.kest:step-cadence:0.7.0")
+    implementation("com.github.lemfi.kest:step-mongodb:0.7.0")
+    implementation("com.github.lemfi.kest:step-rabbitmq:0.7.0")
+    implementation("com.github.lemfi.kest:step-redis:0.7.0")
+
+    // toolbox for Json Data
+    implementation("com.github.lemfi.kest:json:0.7.0")</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="maven"><a class="anchor" href="#maven"></a>Maven</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;core&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;junit5&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- include the steps you need among available ones --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;step-http&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;step-rabbitmq&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;step-cadence&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;step-mongodb&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;step-redis&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- toolbox for Json Data --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
+        &lt;artifactId&gt;step-json&lt;/artifactId&gt;
+        &lt;version&gt;0.7.0&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="big-picture"><a class="anchor" href="#big-picture"></a>Big picture</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="scenarios"><a class="anchor" href="#scenarios"></a>Scenarios</h3>
+<div class="paragraph">
+<p>Kest allows you to write scenarios.<br>
+One scenario is a sequence of steps.<br>
+One step defines an execution and a list of assertions to validate completed execution.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s take following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">scenario(name = "api says hello and remembers it!") {
+
+    `given http call`&lt;String&gt; {
+
+        url = "http://myapi/hello"
+        method = "POST"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = """
+            {
+                "who": "Darth Vader"
+            }
+        """
+    } `assert that` { stepResult -&gt;
+
+        eq(201, stepResult.status)
+        eq("Hello Darth Vader!", stepResult.body)
+    }
+
+    `given http call`&lt;String&gt; {
+
+        url = "http://myapi/hello"
+        method = "POST"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+        body = """
+            {
+                "who": "Han Solo"
+            }
+        """
+    } `assert that` { stepResult -&gt;
+
+        eq(201, stepResult.status)
+        eq("Hello Han Solo!", stepResult.body)
+    }
+
+    `given http call`&lt;List&lt;String&gt;&gt; {
+
+        url = "http://myapi/hello"
+        method = "GET"
+        headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+
+    } `assert that` { stepResult -&gt;
+
+        eq(200, stepResult.status)
+        eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example defines a scenario with three steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Say hello to Darth Vader</p>
+</li>
+<li>
+<p>Say hello to Han Solo</p>
+</li>
+<li>
+<p>Get list of people that were greeted</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For each step 2 assertions are done:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>check status code</p>
+</li>
+<li>
+<p>check body</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="run-a-scenario"><a class="anchor" href="#run-a-scenario"></a>Run a scenario</h3>
+<div class="paragraph">
+<p>To run a scenario Kest uses Junit5 engine:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a class to hold your test</p>
+</li>
+<li>
+<p>Create a function annotated with Junit5 <code>@TestFactory</code></p>
+</li>
+<li>
+<p>Make it call Kest function</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>play scenarios</code> to play multiple scenarios in a single junit5 test factory<br>
+&#8658; in this case you can pass <code>beforeEach</code> and <code>afterEach</code> attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
+&#8658; in this case you can pass <code>beforeEach</code> and <code>afterEach</code> attributes representing a lambda returning a scenario to be played before and after each scenario if needed.</p>
+</li>
+<li>
+<p><code>play scenario</code> to play one scenario per junit5 test factory<br>
+&#8658; in this case you can use junit5 annotations <code>@BeforeEach</code> and <code>@AfterEach</code></p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">class TestHttpServer {
+
+    @TestFactory
+    fun `http server says hello`() = `play scenarios`(
+            scenario { /*...*/ },
+            scenario { /*...*/ },
+            scenario { /*...*/ },
+
+            beforeEach = { scenario { /*...*/ }},
+            afterEach = { scenario { /*...*/ }}
+    )
+
+
+    @TestFactory
+    fun `http server says goodbye`() = `play scenarios`(
+            scenario { /*...*/ },
+            scenario { /*...*/ },
+            scenario { /*...*/ },
+
+            beforeEach = { scenario { /*...*/ }},
+            afterEach = { scenario { /*...*/ }}
+    )
+
+}
+
+class TestHttpServer {
+
+    @BeforeEach
+    fun beforeEach() {
+        /*...*/
+    }
+
+    @AfterEach
+    fun afterEach() {
+        /*...*/
+    }
+
+    @TestFactory
+    fun `http server says hello - scenario 1`() = `play scenario`(
+            scenario { /*...*/ }
+    )
+
+    @TestFactory
+    fun `http server says hello - scenario 2`() = `play scenario`(
+            scenario { /*...*/ }
+    )
+
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="focus-on-how-it-works"><a class="anchor" href="#focus-on-how-it-works"></a>Focus on how it works</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main//doc/diag/model.puml" alt="model">
+</div>
+</div>
+<div class="paragraph">
+<p>When a scenario is launched, all its steps are launched sequentially, if one step fails the scenario fails without running remaining steps.<br>
+When a step is launched its execution is played, then assertions are played against execution result.<br>
+A step returns an object . which is invokable: you may reuse its result in another step . which you may complete by your own assertions, they will be added to assertions already defined on step</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="next"><a href="steps.html">Steps</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../kest/js/site.js" data-ui-root-path="../kest"></script>
+<script async src="../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

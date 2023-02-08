@@ -1,0 +1,41 @@
+name: Build readme
+
+
+on:
+
+  push:
+    paths:
+      - doc/**
+    branches:
+      - '**'
+
+
+jobs:
+
+  build:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install asciidoctor-reducer
+        run: sudo gem install asciidoctor-reducer --pre
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Reduce main readme
+        run: asciidoctor-reducer -o README.adoc doc/modules/readme-main.adoc
+
+      - name: Reduce json readme
+        run: asciidoctor-reducer -o json/README.adoc doc/modules/readme-json.adoc
+
+      - name: Reduce http readme
+        run: asciidoctor-reducer -o step-http/README.adoc doc/modules/readme-step-http.adoc
+
+      - name: Reduce mongodb readme
+        run: asciidoctor-reducer -o step-mongodb/README.adoc doc/modules/readme-step-mongodb.adoc
+
+      - name: Reduce rabbitmq readme
+        run: asciidoctor-reducer -o step-rabbitmq/README.adoc doc/modules/readme-step-rabbitmq.adoc
+
+      - name: Commit readmes
+        uses: EndBug/add-and-commit@v8

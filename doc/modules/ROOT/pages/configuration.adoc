@@ -1,0 +1,52 @@
+= Configuration
+
+You might want to access data from a configuration file. +
+Kest configuration relies on https://github.com/sksamuel/hoplite +
+You may add your entries in a file named kest.yaml which will be located at the root of your classpath +
+All data from this file has to be mapped to a kotlin data class.
+
+Then you can access your configuration by calling function `property`:
+
+[source,yml,title=kest.yml]
+----
+mykey: myvalue
+myotherkey: myothervalue
+
+domain:
+  akey: a value
+  anotherkey: anothervalue
+----
+
+[source,kotlin,title="Configuration data class"]
+----
+
+data class Properties(
+    val mykey: String,
+    val myotherkey: String,
+    val domain: Domain
+)
+
+data class Domain(
+    val akey: String,
+    val anotherkey: String
+)
+----
+
+[source,kotlin,title="Access configuration"]
+----
+property(Properties::class) { myKey }
+property(Properties::class) { myValue }
+property(Properties::class) { domain.akey }
+property(Properties::class) { domain.anotherkey }
+
+// or with you may create your own shortcut:
+fun <R> props(prop: Properties.() -> R) = property(Properties::class) { prop() }
+// and then use it like that:
+props { myKey }
+props { myValue }
+props { domain.akey }
+props { domain.anotherkey }
+----
+
+== Change kest.yml location
+If you need to set another location for Kest you can run tests with property `kest-conf` or environment variable `KEST_CONF` with the location you need

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>HTTP Steps :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/steps/http.html">
+    <link rel="prev" href="../steps.html">
+    <link rel="next" href="rabbitmq.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../../kest/css/site.css">
+    <script>var uiRootPath = '../../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Kest</a></li>
+    <li><a href="../steps.html">Steps</a></li>
+    <li>Available steps</li>
+    <li><a href="http.html">HTTP Steps</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">HTTP Steps</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>one step is defined here : <code><code>`given http call</code>`</code></p>
+</div>
+<div class="paragraph">
+<p>This step comes as a parameterized function, the parameterized type is the expected return type for the HTTP Call.<br>
+Return type of step is HTTPResponse&lt;EXPECTED_RESULT&gt;</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main//step-http/doc/diag/model.puml" alt="model">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="parameters-to-provide-on-step"><a class="anchor" href="#parameters-to-provide-on-step"></a>Parameters to provide on step</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>name: () &#8594; String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>url: String // mandatory</p>
+</li>
+<li>
+<p>method: String // optional, default is GET</p>
+</li>
+<li>
+<p>body: Any? // optional, default is null</p>
+</li>
+<li>
+<p>headers: Map&lt;String, String&gt; // optional, default is empty this function can be used to pass result of step on another step</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sample"><a class="anchor" href="#sample"></a>Sample!!</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val stepResult = `given http call`&lt;String&gt; {
+
+    url = "http://myapi/hello"
+    method = "POST"
+    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+    body = """
+        {
+            "who": "Darth Vader"
+        }
+    """
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../steps.html">Steps</a></span>
+  <span class="next"><a href="rabbitmq.html">RabbitMQ Steps</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../../kest/js/site.js" data-ui-root-path="../../kest"></script>
+<script async src="../../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

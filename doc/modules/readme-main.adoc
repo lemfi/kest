@@ -1,0 +1,12 @@
+= Kest image:doc/modules/ROOT/images/tinylogo.svg[alt=Kest, 55]
+:toc:
+:preface-title: Overview
+
+:includedir: ROOT/pages
+:documentation: doc/modules/ROOT/pages/
+
+include::{includedir}/index.adoc[leveloffset=+1]
+include::{includedir}/steps.adoc[leveloffset=+1]
+include::{includedir}/json.adoc[leveloffset=+1]
+include::{includedir}/gherkin.adoc[leveloffset=+1]
+include::{includedir}/configuration.adoc[leveloffset=+1]

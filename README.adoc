@@ -1,9 +1,17 @@
+:includedir: ROOT/pages
+:documentation: ROOT/pages/
+
+= Kest image:doc/modules/ROOT/images/tinylogo.svg[alt=Kest, 55]
+:toc:
+:preface-title: Overview
+
+:leveloffset: +1
+
+
 :gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
 :title-logo-image: image:doc/logo.svg[]
 
-= Kest image:doc/tinylogo.svg[alt=Kest, 55]
-:toc:
-:preface-title: Presentation
+= Overview
 
 == Presentation
 
@@ -31,6 +39,9 @@ I'm going to need to interact with three different technologies, with different 
 &#8658; Kest provides ready-made steps to interact with HTTP, RabbitMQ, MongoDB, Redis, and Cadence +
 &#8658; Kest allows you to define your own steps: you use a techno not supported by Kest? design your steps! +
 ====
+
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+:title-logo-image: image:doc/logo.svg[]
 
 == Use it
 
@@ -113,7 +124,10 @@ I'm going to need to interact with three different technologies, with different 
 </dependencies>
 ----
 
-== Overview
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+:title-logo-image: image:doc/logo.svg[]
+
+== Big picture
 === Scenarios
 
 Kest allows you to write scenarios. +
@@ -257,7 +271,13 @@ When a scenario is launched, all its steps are launched sequentially, if one ste
 When a step is launched its execution is played, then assertions are played against execution result. +
 A step returns an object . which is invokable: you may reuse its result in another step . which you may complete by your own assertions, they will be added to assertions already defined on step
 
-== Steps
+:leveloffset!:
+:leveloffset: +1
+
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+:title-logo-image: image:doc/logo.svg[]
+
+= Steps
 
 A step is where interaction with your system happen, it:
 
@@ -278,15 +298,15 @@ step(
 }
 ----
 
-=== Available Steps
+== Available Steps
 
-==== link:step-http/README.adoc[HTTP]
-==== link:step-rabbitmq/README.adoc[RabbitMQ]
-==== link:step-mongodb/README.adoc[Mongo]
-==== Redis
-==== Cadence
+=== xref:{documentation}steps/http.adoc[HTTP]
+=== xref:{documentation}steps/rabbitmq.adoc[RabbitMQ]
+=== xref:{documentation}steps/mongodb.adoc[Mongo]
+=== Redis
+=== Cadence
 
-=== Create your own step
+== Create your own step
 
 You need custom steps not provided by Kest? Two options:
 
@@ -305,21 +325,468 @@ step(name = "name of my step") {
 
 }
 ----
-* link:doc/create-step.adoc[Create your own one]
+* xref:{documentation}steps/create-step.adoc[Create your own one]
 
-== Json Toolbox
+:leveloffset!:
+:leveloffset: +1
 
-A bunch of tools are available to work on Json data, `step-http` module exposes it by default.
-If not using `step-http` but still need those tools, add module json to your dependencies.
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
 
-link:json/README.adoc[Json Toolbox]
+= JSON support
 
-== Gherkin support
+JSON is a common format to interact between machines, as matter of fact, Kest comes with advanced support to that format with a bunch of assertions. +
+It also comes with two Objects: `JsonMap` and `JsonArray`
 
-Scenarios can be described in Gherkin and implemented with Kest.
-Documentation coming soon...
+* `JsonMap` is a `Map<String, Any?>`
+* `JsonArray` is an array of `JsonMap`
 
-== Configuration
+== Matchers
+
+Kest provides several function to check whether a json content matches a Json pattern.
+To do so, Kest provides by default 3 matchers:
+
+* {\{string}}
+* {\{number}}
+* {\{boolean}}
+
+For example
+
+[source,json]
+----
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}
+----
+
+is matched by
+
+[source,json]
+----
+{
+  "string": "{{string}}",
+  "number": "{{number}}",
+  "boolean": "{{boolean}}"
+}
+----
+
+or by
+
+[source,json]
+----
+{
+  "string": "{{string}}",
+  "number": 1,
+  "boolean": "{{boolean}}"
+}
+----
+
+And the function to check that with Kest would be:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "string": "{{string}}",
+  "number": "{{number}}",
+  "boolean": "{{boolean}}"
+}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR shortcuts are provided two write it without having to remember the notation
+jsonMatches(
+"""
+{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+=== Defining your own matchers
+
+If you want to define your own matchers, several possibilities:
+
+==== Define it textually
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy """{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""
+----
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{{sample}}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+samplePattern.pattern,
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+==== Define a class
+
+[source,kotlin]
+----
+data class Sample(
+        val string: String,
+        val number: Int,
+        val boolean: Boolean
+)
+----
+
+Then declare it as a pattern:
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy Sample::class
+----
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{{sample}}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+samplePattern.pattern,
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+==== Define a function that will check the validity of pattern
+
+[source,kotlin]
+----
+fun checkDateFormat(data: String): Boolean {
+    val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+    return try {
+        dateFormatter.parse(data)
+        true
+    } catch (e: DateTimeParseException) {
+        false
+    }
+}
+----
+
+Then declare it as a pattern:
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy ::checkDateFormat
+----
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "date": "{{sample}}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "date": "2021-01-12",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "date": "$samplePattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "date": "2021-01-12",
+  "number": 1,
+  "boolean": true
+}""")
+----
+
+=== Lists and nullable matchers
+
+==== Lists
+What if you want to check that an array contains a list of objects validating a pattern?
+
+[source,json]
+----
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}
+----
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy """{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""
+----
+
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "data": "[[{{sample}}]]"
+}
+""",
+"""
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "data": "${jsonArrayOf(samplePattern)}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}""")
+----
+
+==== Nullable values
+
+[source,kotlin]
+----
+val samplePattern = pattern("sample") definedBy """{
+  "string": "${stringPattern.nullable}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""
+----
+
+
+To check match you can now call this:
+
+[source,kotlin]
+----
+jsonMatches(
+"""
+{
+  "string": "{{string?}}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+      "string": null,
+      "number": 1,
+      "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "string": "${stringPattern.nullable}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+      "string": null,
+      "number": 1,
+      "boolean": true
+}""")
+----
+
+== Polymorphism
+
+To go through polyphormism, Kest allows you to define a list of matchers for a given JSON.
+
+Let's take this example:
+
+[source,json]
+----
+{
+  "common":  "{{string}}",
+  "poly1": "{{string}}"
+}
+----
+
+[source,json]
+----
+{
+  "common":  "{{string}}",
+  "poly2": "{{string}}"
+}
+
+----
+
+You can check whether your json matches one or the other of those matchers by passing a list to `jsonMatches` function:
+
+[source,kotlin]
+----
+jsonMatches(
+                listOf(
+                """{
+                      "common":  "{{string}}",
+                      "poly1": "{{string}}"
+                    }
+                """,
+                """{
+                      "common":  "{{string}}",
+                      "poly2": "{{string}}"
+                    }
+                """
+                ),
+                 """{
+                      "common":  "a string",
+                      "poly2": "another string"
+                    }
+                """
+        )
+----
+
+== Lists
+
+It works all the same for lists!
+
+== Tips
+
+For reading data easily from a JsonMap you may use function `JsonMap.getForPath(...)`
+For exemple for a JsonMap representing that Json:
+[source,json]
+----
+{
+    "star": "wars",
+    "characters": [
+        { "luke": "skywalker" },
+        { "han": "solo" },
+        { "R2": "D2" }
+    ]
+}
+----
+You may use it like that:
+[source,kotlin]
+----
+val jsonMap: JsonMap
+val name1 = jsonMap.getForPath<String>("characters[0]", "luke") // == "skywalker"
+val name2 = jsonMap.getForPath<String>("characters[1]", "han") // == "solo"
+val name3 = jsonMap.getForPath<String>("characters[2]", "R2") // == "D2"
+----
+
+:leveloffset!:
+:leveloffset: +1
+
+= Gherkin support
+
+Scenarios can be described in Gherkin and implemented with Kest. Documentation coming soon...
+
+:leveloffset!:
+:leveloffset: +1
+
+= Configuration
 
 You might want to access data from a configuration file. +
 Kest configuration relies on https://github.com/sksamuel/hoplite +
@@ -369,5 +836,7 @@ props { domain.akey }
 props { domain.anotherkey }
 ----
 
-=== Change kest.yml location
+== Change kest.yml location
 If you need to set another location for Kest you can run tests with property `kest-conf` or environment variable `KEST_CONF` with the location you need
+
+:leveloffset!:

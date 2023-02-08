@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MongoDB Steps :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/steps/mongodb.html">
+    <link rel="prev" href="rabbitmq.html">
+    <link rel="next" href="create-step.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../../kest/css/site.css">
+    <script>var uiRootPath = '../../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Kest</a></li>
+    <li><a href="../steps.html">Steps</a></li>
+    <li>Available steps</li>
+    <li><a href="mongodb.html">MongoDB Steps</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">MongoDB Steps</h1>
+<div class="sect1">
+<h2 id="configuration"><a class="anchor" href="#configuration"></a>Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to simplify steps configuration, two parameters can be set to kest global configuration :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string, if not set will default to <code>mongodb://localhost:27017</code></p>
+</li>
+<li>
+<p><code>database</code>: String // name of targeted database, if not set will default to <code>test</code></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="sample"><a class="anchor" href="#sample"></a>sample</h3>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">mongodb:
+    connection: mongodb://localhost:27017
+    database: test</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="clean-database"><a class="anchor" href="#clean-database"></a>Clean database</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>clean mongo database</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-configure-step"><a class="anchor" href="#parameters-configure-step"></a>Parameters configure step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Database name to clean.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>collections</code>: List&lt;String&gt; // Target collections to clean.
+Optional, by default all collections of DB will be cleaned</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples"><a class="anchor" href="#samples"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`clean mongo database`(name = """clean "vehicles" and "planets" collections on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collections("vehicles", "planets")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`clean mongo database`(name = """clean "vehicles" and "planets" collections on globally configured database""") {
+    collections("vehicles", "planets")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`clean mongo database`(name = "clean all collections on globally configured database")</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="insert-document"><a class="anchor" href="#insert-document"></a>Insert document</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>insert mongo document</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step"><a class="anchor" href="#parameters-to-provide-on-step"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Targeted database name.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>collection</code>: String // mandatory, collection on which insert document</p>
+</li>
+<li>
+<p><code>document</code>: String // mandatory, document to insert</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-2"><a class="anchor" href="#samples-2"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`insert mongo document`(name = """insert Endor into "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+    document = """
+        {
+            "name": "Endor",
+            "population": 7500000000
+        }
+    """
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`insert mongo document`(name = """insert Endor into "planets" collection on globally configured database""") {
+    collection = "planets"
+    document = """
+        {
+        "name": "Endor",
+        "population": 7500000000
+        }
+    """
+    }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="update-documents"><a class="anchor" href="#update-documents"></a>Update documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>update mongo document</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-2"><a class="anchor" href="#parameters-to-provide-on-step-2"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Targeted database name.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>collection</code>: String // mandatory, collection on which insert document</p>
+</li>
+<li>
+<p><code>filter</code>: Map&lt;String, Any&gt; // optional, filters documents to update</p>
+</li>
+<li>
+<p><code>update</code>: Map&lt;String, Any&gt; // mandatory, filters documents to update</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-3"><a class="anchor" href="#samples-3"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`update mongo document`(name = """update Endor planet from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+    update = mapOf("oceans" to 3)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`update mongo document`(name = """update Endor planet from "planets" collection on globally configured database""") {
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+    update = mapOf("oceans" to 3)
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-documents"><a class="anchor" href="#read-documents"></a>Read documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>given mongo documents</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-3"><a class="anchor" href="#parameters-to-provide-on-step-3"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Targeted database name.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>collection</code>: String // mandatory, collection on which insert document</p>
+</li>
+<li>
+<p><code>filter</code>: Map&lt;String, Any&gt; // optional, filters documents to retrieve</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-4"><a class="anchor" href="#samples-4"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given mongo documents`(name = """read Endor planet from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given mongo documents`(name = """read Endor planet from "planets" collection on globally configured database""") {
+    collection = "planets"
+
+    filter = mapOf("name" to "Endor")
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="count-documents"><a class="anchor" href="#count-documents"></a>Count documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>given count of mongo documents</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-4"><a class="anchor" href="#parameters-to-provide-on-step-4"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Targeted database name.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>collection</code>: String // mandatory, collection on which insert document</p>
+</li>
+<li>
+<p><code>filter</code>: Map&lt;String, Any&gt; // optional, filters documents to retrieve</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-5"><a class="anchor" href="#samples-5"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given count of mongo documents`(name = """count documents from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given count of mongo documents`(name = """count documents from "planets" collection collection on globally configured database""") {
+    collection = "planets"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delete-documents"><a class="anchor" href="#delete-documents"></a>Delete documents!</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>delete mongo documents</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-5"><a class="anchor" href="#parameters-to-provide-on-step-5"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // Mongo DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Targeted database name.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>collection</code>: String // mandatory, collection on which delete documents</p>
+</li>
+<li>
+<p><code>filter</code>: Map&lt;String, Any&gt; // optional, filters documents to delete</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-6"><a class="anchor" href="#samples-6"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    collection = "planets"
+
+    filter = mapOf("name" to "Alderaan")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on globally configured database""") {
+    collection = "planets"
+
+    filter = mapOf("name" to "Alderaan")
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="rabbitmq.html">RabbitMQ Steps</a></span>
+  <span class="next"><a href="create-step.html">Create a custom step</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../../kest/js/site.js" data-ui-root-path="../../kest"></script>
+<script async src="../../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

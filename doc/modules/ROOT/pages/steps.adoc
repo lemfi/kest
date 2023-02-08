@@ -1,0 +1,52 @@
+:gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
+:title-logo-image: image:doc/logo.svg[]
+
+= Steps
+
+A step is where interaction with your system happen, it:
+
+* has a name
+* can be retried
+* has an execution
+* has a list of assertions
+
+[source,kotlin]
+----
+step(
+    name = "a name a step has",
+    retry = 10.times `by intervals of` 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
+) {
+    // here goes the definition of the execution
+} `assert that` {
+    // here goes list of assertions
+}
+----
+
+== Available Steps
+
+=== xref:{documentation}steps/http.adoc[HTTP]
+=== xref:{documentation}steps/rabbitmq.adoc[RabbitMQ]
+=== xref:{documentation}steps/mongodb.adoc[Mongo]
+=== Redis
+=== Cadence
+
+== Create your own step
+
+You need custom steps not provided by Kest? Two options:
+
+* Use generic step `step`
++
+[source,kotlin]
+----
+step(name = "name of my step") {
+
+    // execute your need here
+    1+1
+
+} `assert that` { stepResult ->
+
+    eq(2, stepResult)
+
+}
+----
+* xref:{documentation}steps/create-step.adoc[Create your own one]

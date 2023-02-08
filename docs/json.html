@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>JSON support :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/json.html">
+    <link rel="prev" href="steps/create-step.html">
+    <link rel="next" href="gherkin.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../kest/css/site.css">
+    <script>var uiRootPath = '../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="steps/create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Kest</a></li>
+    <li><a href="json.html">JSON support</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">JSON support</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>JSON is a common format to interact between machines, as matter of fact, Kest comes with advanced support to that format with a bunch of assertions.<br>
+It also comes with two Objects: <code>JsonMap</code> and <code>JsonArray</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>JsonMap</code> is a <code>Map&lt;String, Any?&gt;</code></p>
+</li>
+<li>
+<p><code>JsonArray</code> is an array of <code>JsonMap</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="matchers"><a class="anchor" href="#matchers"></a>Matchers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kest provides several function to check whether a json content matches a Json pattern.
+To do so, Kest provides by default 3 matchers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>{{string}}</p>
+</li>
+<li>
+<p>{{number}}</p>
+</li>
+<li>
+<p>{{boolean}}</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>is matched by</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "string": "{{string}}",
+  "number": "{{number}}",
+  "boolean": "{{boolean}}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or by</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "string": "{{string}}",
+  "number": 1,
+  "boolean": "{{boolean}}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the function to check that with Kest would be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+"""
+{
+  "string": "{{string}}",
+  "number": "{{number}}",
+  "boolean": "{{boolean}}"
+}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR shortcuts are provided two write it without having to remember the notation
+jsonMatches(
+"""
+{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="defining-your-own-matchers"><a class="anchor" href="#defining-your-own-matchers"></a>Defining your own matchers</h3>
+<div class="paragraph">
+<p>If you want to define your own matchers, several possibilities:</p>
+</div>
+<div class="sect3">
+<h4 id="define-it-textually"><a class="anchor" href="#define-it-textually"></a>Define it textually</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val samplePattern = pattern("sample") definedBy """{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To check match you can now call this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+"""
+{{sample}}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+samplePattern.pattern,
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="define-a-class"><a class="anchor" href="#define-a-class"></a>Define a class</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">data class Sample(
+        val string: String,
+        val number: Int,
+        val boolean: Boolean
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then declare it as a pattern:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val samplePattern = pattern("sample") definedBy Sample::class</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To check match you can now call this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+"""
+{{sample}}
+""",
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+samplePattern.pattern,
+"""
+{
+  "string": "a string",
+  "number": 1,
+  "boolean": true
+}""")</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="define-a-function-that-will-check-the-validity-of-pattern"><a class="anchor" href="#define-a-function-that-will-check-the-validity-of-pattern"></a>Define a function that will check the validity of pattern</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">fun checkDateFormat(data: String): Boolean {
+    val dateFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd").withResolverStyle(STRICT)
+
+    return try {
+        dateFormatter.parse(data)
+        true
+    } catch (e: DateTimeParseException) {
+        false
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then declare it as a pattern:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val samplePattern = pattern("sample") definedBy ::checkDateFormat</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To check match you can now call this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+"""
+{
+  "date": "{{sample}}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "date": "2021-01-12",
+  "number": 1,
+  "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "date": "$samplePattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "date": "2021-01-12",
+  "number": 1,
+  "boolean": true
+}""")</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lists-and-nullable-matchers"><a class="anchor" href="#lists-and-nullable-matchers"></a>Lists and nullable matchers</h3>
+<div class="sect3">
+<h4 id="lists"><a class="anchor" href="#lists"></a>Lists</h4>
+<div class="paragraph">
+<p>What if you want to check that an array contains a list of objects validating a pattern?</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val samplePattern = pattern("sample") definedBy """{
+  "string": "$stringPattern",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To check match you can now call this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+"""
+{
+  "data": "[[{{sample}}]]"
+}
+""",
+"""
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "data": "${jsonArrayOf(samplePattern)}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+  "data": [
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    },
+    {
+      "string": "another string",
+      "number": 2,
+      "boolean": false
+    }
+  ]
+}""")</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="nullable-values"><a class="anchor" href="#nullable-values"></a>Nullable values</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val samplePattern = pattern("sample") definedBy """{
+  "string": "${stringPattern.nullable}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}"""</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To check match you can now call this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+"""
+{
+  "string": "{{string?}}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+      "string": null,
+      "number": 1,
+      "boolean": true
+}""")
+
+// OR
+
+jsonMatches(
+"""
+{
+  "string": "${stringPattern.nullable}",
+  "number": "$numberPattern",
+  "boolean": "$booleanPattern"
+}
+""",
+"""
+{
+      "string": null,
+      "number": 1,
+      "boolean": true
+}""")</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="polymorphism"><a class="anchor" href="#polymorphism"></a>Polymorphism</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To go through polyphormism, Kest allows you to define a list of matchers for a given JSON.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s take this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "common":  "{{string}}",
+  "poly1": "{{string}}"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "common":  "{{string}}",
+  "poly2": "{{string}}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can check whether your json matches one or the other of those matchers by passing a list to <code>jsonMatches</code> function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
+                listOf(
+                """{
+                      "common":  "{{string}}",
+                      "poly1": "{{string}}"
+                    }
+                """,
+                """{
+                      "common":  "{{string}}",
+                      "poly2": "{{string}}"
+                    }
+                """
+                ),
+                 """{
+                      "common":  "a string",
+                      "poly2": "another string"
+                    }
+                """
+        )</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lists-2"><a class="anchor" href="#lists-2"></a>Lists</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It works all the same for lists!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tips"><a class="anchor" href="#tips"></a>Tips</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For reading data easily from a JsonMap you may use function <code>JsonMap.getForPath(&#8230;&#8203;)</code>
+For exemple for a JsonMap representing that Json:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+    "star": "wars",
+    "characters": [
+        { "luke": "skywalker" },
+        { "han": "solo" },
+        { "R2": "D2" }
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may use it like that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val jsonMap: JsonMap
+val name1 = jsonMap.getForPath&lt;String&gt;("characters[0]", "luke") // == "skywalker"
+val name2 = jsonMap.getForPath&lt;String&gt;("characters[1]", "han") // == "solo"
+val name3 = jsonMap.getForPath&lt;String&gt;("characters[2]", "R2") // == "D2"</code></pre>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="steps/create-step.html">Create a custom step</a></span>
+  <span class="next"><a href="gherkin.html">Gherkin support</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../kest/js/site.js" data-ui-root-path="../kest"></script>
+<script async src="../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

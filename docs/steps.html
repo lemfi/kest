@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Steps :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/steps.html">
+    <link rel="prev" href="index.html">
+    <link rel="next" href="steps/http.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../kest/css/site.css">
+    <script>var uiRootPath = '../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="steps/mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="steps/create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Kest</a></li>
+    <li><a href="steps.html">Steps</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Steps</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>A step is where interaction with your system happen, it:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>has a name</p>
+</li>
+<li>
+<p>can be retried</p>
+</li>
+<li>
+<p>has an execution</p>
+</li>
+<li>
+<p>has a list of assertions</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">step(
+    name = "a name a step has",
+    retry = 10.times `by intervals of` 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
+) {
+    // here goes the definition of the execution
+} `assert that` {
+    // here goes list of assertions
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="available-steps"><a class="anchor" href="#available-steps"></a>Available Steps</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="http"><a class="anchor" href="#http"></a><a href="steps/http.html" class="xref page">HTTP</a></h3>
+
+</div>
+<div class="sect2">
+<h3 id="rabbitmq"><a class="anchor" href="#rabbitmq"></a><a href="steps/rabbitmq.html" class="xref page">RabbitMQ</a></h3>
+
+</div>
+<div class="sect2">
+<h3 id="mongo"><a class="anchor" href="#mongo"></a><a href="steps/mongodb.html" class="xref page">Mongo</a></h3>
+
+</div>
+<div class="sect2">
+<h3 id="redis"><a class="anchor" href="#redis"></a>Redis</h3>
+
+</div>
+<div class="sect2">
+<h3 id="cadence"><a class="anchor" href="#cadence"></a>Cadence</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-your-own-step"><a class="anchor" href="#create-your-own-step"></a>Create your own step</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You need custom steps not provided by Kest? Two options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use generic step <code>step</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">step(name = "name of my step") {
+
+    // execute your need here
+    1+1
+
+} `assert that` { stepResult -&gt;
+
+    eq(2, stepResult)
+
+}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="steps/create-step.html" class="xref page">Create your own one</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Overview</a></span>
+  <span class="next"><a href="steps/http.html">HTTP Steps</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../kest/js/site.js" data-ui-root-path="../kest"></script>
+<script async src="../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>

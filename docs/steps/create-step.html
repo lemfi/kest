@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Create a custom step :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/steps/create-step.html">
+    <link rel="prev" href="mongodb.html">
+    <link rel="next" href="../json.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../../kest/css/site.css">
+    <script>var uiRootPath = '../../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io">Kest</a>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Kest</a></li>
+    <li><a href="../steps.html">Steps</a></li>
+    <li><a href="create-step.html">Create a custom step</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Create a custom step</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>You are using a technology not managed by Kest, you can extend Kest with your own Steps</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="build-the-execution"><a class="anchor" href="#build-the-execution"></a>Build the execution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You need to define what the step will have to execute, for that, create your own implementation of class <code>com.github.lemfi.kest.core.model.Execution</code></p>
+</div>
+<div class="paragraph">
+<p>For example, let&#8217;s create a step that will have to sum two integers</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">class SumExecution(private val operand1: Int, private val operand2: Int): Execution&lt;Int&gt;() {
+    override fun execute(): Int {
+        return operand1 + operand2
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="build-the-execution-builder"><a class="anchor" href="#build-the-execution-builder"></a>Build the execution builder</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>However a step is not built with an <code>Execution</code> but with an <code>ExecutionBuilder</code></p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create it for our Sum Execution</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">class SumExecutionBuilder: ExecutionBuilder&lt;Int&gt; {
+    var operand1: Int = 0
+    var operand2: Int = 0
+
+    override fun toExecution(): Execution&lt;Int&gt; = SumExecution(operand1, operand2)
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-the-function-in-charge-of-building-the-step"><a class="anchor" href="#create-the-function-in-charge-of-building-the-step"></a>Create the function in charge of building the step</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Your function should take 3 parameters:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>name: String</code>: the step name that will be displayed in report</p>
+</li>
+<li>
+<p><code>retry: RetryStep</code>: the configuration for retrying steps on which assertions would have failed</p>
+</li>
+<li>
+<p><code>builder: YourExecutionBuilder&lt;&#8230;&#8203;&gt;.()&#8594;Unit</code>: the context to fill builder information</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">fun ScenarioBuilder.`given the sume of two numbers`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: SumExecutionBuilder.() -&gt; Unit
+) =
+    createStep(
+        name = name?.let { StepName(it) } ?: DefaultStepName("Make sum"),
+        retry = retry
+    ) { SumExecutionBuilder().apply(builder) }</code></pre>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="mongodb.html">MongoDB Steps</a></span>
+  <span class="next"><a href="../json.html">JSON support</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../../kest/js/site.js" data-ui-root-path="../../kest"></script>
+<script async src="../../kest/js/vendor/highlight.js"></script>
+  </body>
+</html>
