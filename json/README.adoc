@@ -1,5 +1,5 @@
 :includedir: ROOT/pages
-:documentation: ROOT/pages/
+:documentation: doc/modules/ROOT/pages/
 
 :gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
 

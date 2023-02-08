@@ -1,9 +1,9 @@
-:includedir: ROOT/pages
-:documentation: ROOT/pages/
-
 = Kest image:doc/modules/ROOT/images/tinylogo.svg[alt=Kest, 55]
 :toc:
 :preface-title: Overview
+
+:includedir: ROOT/pages
+:documentation: doc/modules/ROOT/pages/
 
 :leveloffset: +1
 
