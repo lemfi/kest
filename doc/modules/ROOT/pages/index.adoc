@@ -40,18 +40,18 @@ I'm going to need to interact with three different technologies, with different 
 
 [source,kotlin]
 ----
-    implementation("com.github.lemfi.kest:core:0.7.0")
-    implementation("com.github.lemfi.kest:junit5:0.7.0")
+    implementation("com.github.lemfi.kest:core:0.7.1")
+    implementation("com.github.lemfi.kest:junit5:0.7.1")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.7.0")
-    implementation("com.github.lemfi.kest:step-cadence:0.7.0")
-    implementation("com.github.lemfi.kest:step-mongodb:0.7.0")
-    implementation("com.github.lemfi.kest:step-rabbitmq:0.7.0")
-    implementation("com.github.lemfi.kest:step-redis:0.7.0")
+    implementation("com.github.lemfi.kest:step-http:0.7.1")
+    implementation("com.github.lemfi.kest:step-cadence:0.7.1")
+    implementation("com.github.lemfi.kest:step-mongodb:0.7.1")
+    implementation("com.github.lemfi.kest:step-rabbitmq:0.7.1")
+    implementation("com.github.lemfi.kest:step-redis:0.7.1")
 
     // toolbox for Json Data
-    implementation("com.github.lemfi.kest:json:0.7.0")
+    implementation("com.github.lemfi.kest:json:0.7.1")
 
 ----
 
@@ -63,13 +63,13 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>core</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>junit5</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
 
@@ -77,31 +77,31 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-rabbitmq</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-cadence</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-mongodb</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-redis</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
 
@@ -109,7 +109,7 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-json</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
