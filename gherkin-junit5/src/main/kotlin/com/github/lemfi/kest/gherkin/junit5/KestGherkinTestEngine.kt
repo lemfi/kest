@@ -222,24 +222,28 @@ class NestedStepTestDescriptor(
     override fun execute(
         context: KestGherkinEngineExecutionContext,
         dynamicTestExecutor: DynamicTestExecutor?
-    ): KestGherkinEngineExecutionContext {
+    ): KestGherkinEngineExecutionContext =
 
-        prepare(context)
+        runCatching {
+            context.listener?.dynamicTestRegistered(this)
+            context.listener?.executionStarted(this)
+            prepare(context)
+        }.onFailure {
+            context.listener?.executionFinished(this, TestExecutionResult.failed(it))
+        }.getOrNull()?.let {
 
-        context.listener?.dynamicTestRegistered(this)
-        context.listener?.executionStarted(this)
+            children.forEach { testDescriptor ->
+                if (testDescriptor is NestedStepTestDescriptor) testDescriptor.execute(it, dynamicTestExecutor)
+                else if (testDescriptor is StepTestDescriptor) testDescriptor.execute(it, dynamicTestExecutor)
+            }
+
+            runCatching { scenario!!.resolve() }
 
 
-        children.forEach {
-            if (it is NestedStepTestDescriptor) it.execute(context, dynamicTestExecutor)
-            else if (it is StepTestDescriptor) it.execute(context, dynamicTestExecutor)
-        }
+            it.listener?.executionFinished(this, TestExecutionResult.successful())
 
-        runCatching { scenario!!.resolve() }
-
-        context.listener?.executionFinished(this, TestExecutionResult.successful())
-        return context
-    }
+            it
+        } ?: context
 }
 
 
