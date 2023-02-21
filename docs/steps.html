@@ -16,7 +16,13 @@
   <nav class="navbar">
     <div class="navbar-brand">
       <a class="navbar-item" href="https://lemfi.github.io/kest">Kest</a>
+  <div class="navbar-item search hide-for-print">
+    <div id="search-field" class="field">
+      <input id="search-input" type="text" placeholder="Search">
+    </div>
+  </div>
   </nav>
+
 </header>
 <div class="body">
 <div class="nav-container" data-component="kest" data-version="">
@@ -190,5 +196,8 @@
 </div>
 <script id="site-script" src="../kest/js/site.js" data-ui-root-path="../kest"></script>
 <script async src="../kest/js/vendor/highlight.js"></script>
+<script src="../kest/js/vendor/lunr.js"></script>
+<script src="../kest/js/search-ui.js" id="search-ui-script" data-site-root-path=".." data-snippet-length="100" data-stylesheet="../kest/css/search.css"></script>
+<script async src="../search-index.js"></script>
   </body>
 </html>
