@@ -9,6 +9,7 @@ import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepResultFailure
 import com.github.lemfi.kest.gherkin.core.GherkinScenarioBuilder
+import com.github.lemfi.kest.gherkin.core.cleanGherkinContext
 import com.github.lemfi.kest.gherkin.junit5.discovery.FeaturesDiscoveryConfiguration
 import com.github.lemfi.kest.gherkin.junit5.discovery.KestGherkinDiscoverySelector
 import com.github.lemfi.kest.gherkin.junit5.discovery.toFeaturesDiscoveryConfiguration
@@ -167,7 +168,10 @@ class FeatureTestDescriptor(private val scenario: IScenario, private val classSo
         prepare(context)
 
         children.forEach {
-            if (it is NestedStepTestDescriptor) it.execute(context, dynamicTestExecutor)
+            if (it is NestedStepTestDescriptor) {
+                cleanGherkinContext()
+                it.execute(context, dynamicTestExecutor)
+            }
         }
 
         context.listener?.executionFinished(this, TestExecutionResult.successful())
