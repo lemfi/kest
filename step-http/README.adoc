@@ -21,7 +21,7 @@ image::{gitplant}/step-http/doc/diag/model.puml[]
 * body: Any? // optional, default is null
 * headers: Map<String, String> // optional, default is empty this function can be used to pass result of step on another step
 
-== Sample!!
+== Sample
 
 [source,kotlin]
 ----
