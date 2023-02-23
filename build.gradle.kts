@@ -4,7 +4,7 @@ import java.net.URL
 val dokkaVersion: String by project
 
 group = "com.github.lemfi.kest"
-version = "0.7.2"
+version = "0.7.3"
 
 buildscript {
     val kotlinVersion: String by project
