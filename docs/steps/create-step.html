@@ -164,7 +164,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">fun ScenarioBuilder.`given the sume of two numbers`(
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">fun ScenarioBuilder.`given the sum of two numbers`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: SumExecutionBuilder.() -&gt; Unit
@@ -173,6 +173,21 @@
         name = name?.let { StepName(it) } ?: DefaultStepName("Make sum"),
         retry = retry
     ) { SumExecutionBuilder().apply(builder) }</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="use-it"><a class="anchor" href="#use-it"></a>Use it</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given the sum of two numbers`(name = "addition of 1 and 2") {
+    operand1 = 1
+    operand2 = 2
+} `assert that` { res -&gt;
+    eq(3, res)
+}</code></pre>
 </div>
 </div>
 </div>
