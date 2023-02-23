@@ -155,8 +155,8 @@ internal abstract class AbstractTestListener(
                             TestReport(
                                 id = test.id,
                                 name = test.name,
-                                status = test.status,
-                                duration = test.duration,
+                                status = TestStatus.ONGOING,
+                                duration = 0,
                                 level = test.level,
                                 log = test.console,
                                 failure = test.failure,
@@ -167,9 +167,9 @@ internal abstract class AbstractTestListener(
                             ContainerTestReport(
                                 id = test.id,
                                 name = test.name,
-                                status = test.status,
+                                status = TestStatus.ONGOING,
                                 level = test.level,
-                                duration = test.duration,
+                                duration = 0,
                                 steps = emptyList()
                             )
                         )
@@ -253,7 +253,7 @@ internal abstract class AbstractTestListener(
                         report.children(test.id).any { it.status == TestStatus.FAILED } -> TestStatus.FAILED
                         report.children(testIdentifier.uniqueId)
                             .any { it.status == TestStatus.SKIPPED } -> TestStatus.SKIPPED
-
+                        testExecutionResult.status == TestExecutionResult.Status.FAILED -> TestStatus.FAILED
                         else -> TestStatus.SUCCESS
                     }
             }
