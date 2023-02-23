@@ -43,7 +43,7 @@ Your function should take 3 parameters:
 
 [source, kotlin]
 ----
-fun ScenarioBuilder.`given the sume of two numbers`(
+fun ScenarioBuilder.`given the sum of two numbers`(
     name: String? = null,
     retry: RetryStep? = null,
     builder: SumExecutionBuilder.() -> Unit
@@ -52,4 +52,16 @@ fun ScenarioBuilder.`given the sume of two numbers`(
         name = name?.let { StepName(it) } ?: DefaultStepName("Make sum"),
         retry = retry
     ) { SumExecutionBuilder().apply(builder) }
+----
+
+== Use it
+
+[source, kotlin]
+----
+`given the sum of two numbers`(name = "addition of 1 and 2") {
+    operand1 = 1
+    operand2 = 2
+} `assert that` { res ->
+    eq(3, res)
+}
 ----
