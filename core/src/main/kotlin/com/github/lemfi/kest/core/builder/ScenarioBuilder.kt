@@ -29,24 +29,24 @@ sealed class ScenarioBuilder(protected var name: String = "anonymous scenario") 
     abstract fun toScenario(): IScenario
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> createStep(
+    fun <RESULT> createStep(
         name: IStepName = DefaultStepName("generic step"),
         retry: RetryStep? = null,
-        builder: () -> ExecutionBuilder<T>
+        builder: () -> ExecutionBuilder<RESULT>
     ) =
-        StandaloneStep<T>(name = name, retry = retry, scenarioName = scenarioName)
+        StandaloneStep<RESULT>(name = name, retry = retry, scenarioName = scenarioName)
             .also { it.execution = { builder().toExecution() } }
             .apply { steps.add(this) }
-            .postExecution as StandaloneStepResult<T>
+            .postExecution as StandaloneStepResult<RESULT>
 
-    fun <T> createNestedScenarioStep(
+    fun <RESULT> createNestedScenarioStep(
         name: IStepName = DefaultStepName("generic step"),
-        builder: () -> NestedScenarioExecutionBuilder<T>
+        builder: () -> NestedScenarioExecutionBuilder<RESULT>
     ) =
-        NestedScenarioStep<T>(name = name, scenarioName = scenarioName)
+        NestedScenarioStep<RESULT>(name = name, scenarioName = scenarioName)
             .also { it.execution = { builder().apply { step = it }.toExecution() } }
             .apply { steps.add(this) }
-            .postExecution as NestedScenarioStepPostExecution<T, T>
+            .postExecution as NestedScenarioStepPostExecution<RESULT, RESULT>
 
 }
 

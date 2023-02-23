@@ -49,32 +49,32 @@ fun ScenarioBuilder.wait(time: Long, name: String? = null) =
 
     }
 
-fun <T> ScenarioBuilder.step(
+fun <RESULT> ScenarioBuilder.step(
     name: String? = null,
     retry: RetryStep? = null,
-    l: (Logger) -> T
+    l: (Logger) -> RESULT
 ) =
 
     createStep(
         name = name?.let { StepName(it) } ?: DefaultStepName("generic step"),
         retry = retry,
     ) {
-        object : ExecutionBuilder<T> {
-            override fun toExecution(): Execution<T> = object : Execution<T>() {
-                override fun execute(): T = l(LoggerFactory.getLogger("KEST"))
+        object : ExecutionBuilder<RESULT> {
+            override fun toExecution(): Execution<RESULT> = object : Execution<RESULT>() {
+                override fun execute(): RESULT = l(LoggerFactory.getLogger("KEST"))
             }
         }
     }
 
-fun <T> ScenarioBuilder.nestedScenario(
+fun <RESULT> ScenarioBuilder.nestedScenario(
     name: String? = null,
-    l: NestedScenarioExecutionBuilder<T>.() -> Unit
+    l: NestedScenarioExecutionBuilder<RESULT>.() -> Unit
 ) =
 
     createNestedScenarioStep(
         name = name?.let { StepName(it) } ?: DefaultStepName("nested scenario step"),
     ) {
-        NestedScenarioExecutionBuilder<T>(name).apply(l)
+        NestedScenarioExecutionBuilder<RESULT>(name).apply(l)
     }
 
 
@@ -102,7 +102,7 @@ fun IScenario.run() {
     steps.forEach { (it as Step<Any>).run() }
 }
 
-fun <T> Step<T>.run(): Step<T> {
+fun <RESULT> Step<RESULT>.run(): Step<RESULT> {
 
     threadLocalLogger.getOrDefault().reset()
 
@@ -124,7 +124,7 @@ fun <T> Step<T>.run(): Step<T> {
             val res = execution.execute()
             if (postExecution is StandaloneStepPostExecution<*, *, *>) {
                 @Suppress("unchecked_cast")
-                (postExecution as StandaloneStepPostExecution<T, *, *>).assertions.forEach { assert ->
+                (postExecution as StandaloneStepPostExecution<RESULT, *, *>).assertions.forEach { assert ->
                     runCatching {
                         assertion.assert(res)
                     }.onFailure {

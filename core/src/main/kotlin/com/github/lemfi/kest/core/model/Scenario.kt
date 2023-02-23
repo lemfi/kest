@@ -12,11 +12,11 @@ class StandaloneScenario(
     override val steps: MutableList<Step<*>>,
 ) : IScenario()
 
-class NestedScenario<T>(
+class NestedScenario<RESULT>(
     override val name: String,
-    private val parentStep: Step<T>,
+    private val parentStep: Step<RESULT>,
     override val steps: MutableList<Step<*>>,
-    val result: () -> T
+    val result: () -> RESULT
 ) : IScenario() {
 
     fun resolve() =

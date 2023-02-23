@@ -5,36 +5,36 @@ package com.github.lemfi.kest.core.model
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.cli.run
 
-sealed class Step<T> {
+sealed class Step<RESULT> {
     abstract val scenarioName: String
     abstract val name: IStepName
-    abstract var execution: () -> Execution<T>
+    abstract var execution: () -> Execution<RESULT>
     abstract val retry: RetryStep?
 
-    abstract var postExecution: IStepPostExecution<T, T>
+    abstract var postExecution: IStepPostExecution<RESULT, RESULT>
 }
 
-class StandaloneStep<T>(
+class StandaloneStep<RESULT>(
     override val scenarioName: String,
     override val name: IStepName,
     override val retry: RetryStep?,
-) : Step<T>() {
+) : Step<RESULT>() {
 
-    override var postExecution: IStepPostExecution<T, T> = StandaloneStepResult(this, null) { t -> t }
+    override var postExecution: IStepPostExecution<RESULT, RESULT> = StandaloneStepResult(this, null) { t -> t }
 
-    override lateinit var execution: () -> Execution<T>
+    override lateinit var execution: () -> Execution<RESULT>
 }
 
-class NestedScenarioStep<T>(
+class NestedScenarioStep<RESULT>(
     override val scenarioName: String,
     override val name: IStepName,
-) : Step<T>() {
+) : Step<RESULT>() {
 
     override val retry: RetryStep? = null
 
-    override var postExecution: IStepPostExecution<T, T> = NestedScenarioStepResult(this, null) { t -> t }
+    override var postExecution: IStepPostExecution<RESULT, RESULT> = NestedScenarioStepResult(this, null) { t -> t }
 
-    override lateinit var execution: () -> Execution<T>
+    override lateinit var execution: () -> Execution<RESULT>
 }
 
 interface IStepName {
@@ -54,26 +54,26 @@ value class DefaultStepName(override val value: String) : IStepName
         imports = ["com.github.lemfi.kest.core.model.StandaloneStepResult"]
     )
 )
-typealias StepPostExecution<T> = StandaloneStepPostExecution<T, T, T>
+typealias StepPostExecution<RESULT> = StandaloneStepPostExecution<RESULT, RESULT, RESULT>
 
-typealias StepResult<T> = IStepPostExecution<T, T>
-typealias StandaloneStepResult<T> = StandaloneStepPostExecution<T, T, T>
-typealias NestedScenarioStepResult<T> = NestedScenarioStepPostExecution<T, T>
+typealias StepResult<RESULT> = IStepPostExecution<RESULT, RESULT>
+typealias StandaloneStepResult<RESULT> = StandaloneStepPostExecution<RESULT, RESULT, RESULT>
+typealias NestedScenarioStepResult<RESULT> = NestedScenarioStepPostExecution<RESULT, RESULT>
 
-sealed class IStepPostExecution<T, R>(
+sealed class IStepPostExecution<RESULT, MAPPED_RESULT>(
     private val step: Step<*>,
-    private val pe: IStepPostExecution<*, T>?,
-    private val transformer: (T) -> R
+    private val pe: IStepPostExecution<*, RESULT>?,
+    private val transformer: (RESULT) -> MAPPED_RESULT
 ) {
 
     private var resSet = false
     private var failed: Throwable? = null
-    private var res: T? = null
+    private var res: RESULT? = null
 
     @Suppress("unchecked_cast")
-    private val result: () -> R = {
+    private val result: () -> MAPPED_RESULT = {
 
-        val tryResolveResult: (() -> R) -> R = {
+        val tryResolveResult: (() -> MAPPED_RESULT) -> MAPPED_RESULT = {
             try {
                 it()
             } catch (e: Throwable) {
@@ -89,7 +89,7 @@ sealed class IStepPostExecution<T, R>(
         if (failed != null) {
             throw failed!! orStepResultFailure StepResultAssertionFailure(step = step, cause = failed!!)
         } else if (resSet) tryResolveResult {
-            transformer(res as T)
+            transformer(res as RESULT)
         } else if (pe != null) tryResolveResult {
             transformer(pe.result())
         } else throw StepResultNotPlayedFailure(step)
@@ -98,9 +98,9 @@ sealed class IStepPostExecution<T, R>(
 
     operator fun invoke() = result()
 
-    val lazy: () -> R = { invoke() }
+    val lazy: () -> MAPPED_RESULT = { invoke() }
 
-    fun setResult(t: T) {
+    fun setResult(t: RESULT) {
         resSet = true
         var parent: IStepPostExecution<*, *>? = pe
         while (parent != null) {
@@ -129,28 +129,28 @@ sealed class IStepPostExecution<T, R>(
     }
 }
 
-class StandaloneStepPostExecution<I : Any?, T, R>(
+class StandaloneStepPostExecution<INITIAL_RESULT : Any?, RESULT, MAPPED_RESULT>(
     private val step: Step<*>,
-    private val pe: StandaloneStepPostExecution<I, *, T>?,
-    transformer: (T) -> R
-) : IStepPostExecution<T, R>(step, pe, transformer) {
+    private val pe: StandaloneStepPostExecution<INITIAL_RESULT, *, RESULT>?,
+    transformer: (RESULT) -> MAPPED_RESULT
+) : IStepPostExecution<RESULT, MAPPED_RESULT>(step, pe, transformer) {
 
-    infix fun <M> `map result to`(mapper: (R) -> M) = StandaloneStepPostExecution(step, this, mapper)
+    infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = StandaloneStepPostExecution(step, this, mapper)
 
-    val assertions: MutableList<AssertionsBuilder.(I) -> Unit> = mutableListOf()
+    val assertions: MutableList<AssertionsBuilder.(INITIAL_RESULT) -> Unit> = mutableListOf()
 
-    fun addAssertion(assertion: AssertionsBuilder.(I) -> Unit) {
+    fun addAssertion(assertion: AssertionsBuilder.(INITIAL_RESULT) -> Unit) {
         pe?.addAssertion(assertion) ?: assertions.add(assertion)
     }
 }
 
-class NestedScenarioStepPostExecution<T, R>(
+class NestedScenarioStepPostExecution<RESULT, MAPPED_RESULT>(
     private val step: Step<*>,
-    pe: NestedScenarioStepPostExecution<*, T>?,
-    transformer: (T) -> R
-) : IStepPostExecution<T, R>(step, pe, transformer) {
+    pe: NestedScenarioStepPostExecution<*, RESULT>?,
+    transformer: (RESULT) -> MAPPED_RESULT
+) : IStepPostExecution<RESULT, MAPPED_RESULT>(step, pe, transformer) {
 
-    infix fun <M> `map result to`(mapper: (R) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
+    infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
 
 }
 

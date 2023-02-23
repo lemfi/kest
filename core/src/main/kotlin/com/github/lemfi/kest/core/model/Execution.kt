@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.core.model
 
-abstract class Execution<T> {
-    abstract fun execute(): T
+abstract class Execution<RESULT> {
+    abstract fun execute(): RESULT
 
     open fun onAssertionFailedError() {}
     open fun onAssertionSuccess() {}
