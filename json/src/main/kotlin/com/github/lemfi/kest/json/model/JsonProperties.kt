@@ -8,6 +8,7 @@ internal data class JsonProperties(
 )
 
 data class JsonProp(
+    val checkExactCountOfArrayElements: Boolean = true,
     val checkArraysOrder: Boolean = true,
     val ignoreUnknownProperties: Boolean = false,
 )

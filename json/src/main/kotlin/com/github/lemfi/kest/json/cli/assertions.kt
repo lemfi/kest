@@ -222,8 +222,16 @@ fun AssertionsBuilder.jsonMatches(
     observed: JsonMap?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
     ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
 ) {
-    jsonMatches(expected, observed.toNullableJsonString(), checkArraysOrder, ignoreUnknownProperties, mutableListOf())
+    jsonMatches(
+        expected,
+        observed.toNullableJsonString(),
+        checkArraysOrder,
+        ignoreUnknownProperties,
+        checkExactCountOfArrayElements,
+        mutableListOf()
+    )
 }
 
 /**
@@ -240,9 +248,17 @@ fun AssertionsBuilder.jsonMatches(
     observed: JsonMap?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
     ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
 ) {
 
-    jsonMatches(expectedPatterns, observed.toNullableJsonString(), checkArraysOrder, ignoreUnknownProperties, listOf())
+    jsonMatches(
+        expectedPatterns,
+        observed.toNullableJsonString(),
+        checkArraysOrder,
+        ignoreUnknownProperties,
+        checkExactCountOfArrayElements,
+        listOf()
+    )
 }
 
 /**
@@ -259,9 +275,17 @@ fun AssertionsBuilder.jsonMatches(
     observed: List<*>?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
     ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
 ) {
 
-    jsonMatches(expectedPatterns, observed.toNullableJsonString(), checkArraysOrder, ignoreUnknownProperties, listOf())
+    jsonMatches(
+        expectedPatterns,
+        observed.toNullableJsonString(),
+        checkArraysOrder,
+        ignoreUnknownProperties,
+        checkExactCountOfArrayElements,
+        listOf()
+    )
 }
 
 
@@ -279,8 +303,16 @@ fun AssertionsBuilder.jsonMatches(
     observed: String?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
     ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
 ) {
-    jsonMatches(expectedPatterns, observed, checkArraysOrder, ignoreUnknownProperties, listOf())
+    jsonMatches(
+        expectedPatterns,
+        observed,
+        checkArraysOrder,
+        ignoreUnknownProperties,
+        checkExactCountOfArrayElements,
+        listOf()
+    )
 }
 
 private fun AssertionsBuilder.jsonMatches(
@@ -288,6 +320,7 @@ private fun AssertionsBuilder.jsonMatches(
     observed: String?,
     checkArraysOrder: Boolean,
     ignoreUnknownProperties: Boolean,
+    checkExactCountOfArrayElements: Boolean,
     path: List<String?>,
 ) {
 
@@ -296,7 +329,14 @@ private fun AssertionsBuilder.jsonMatches(
     val errors = expectedPatterns
         .mapNotNull { expected ->
             if (!isPatternValid) expected to runCatching {
-                jsonMatches(expected, observed, checkArraysOrder, ignoreUnknownProperties, path)
+                jsonMatches(
+                    expected,
+                    observed,
+                    checkArraysOrder,
+                    ignoreUnknownProperties,
+                    checkExactCountOfArrayElements,
+                    path
+                )
             }.exceptionOrNull().apply {
                 isPatternValid = this == null
             }
@@ -325,9 +365,17 @@ fun AssertionsBuilder.jsonMatches(
     observed: Collection<*>?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
     ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
 ) {
 
-    jsonMatches(expected, observed, checkArraysOrder, ignoreUnknownProperties, mutableListOf())
+    jsonMatches(
+        expected,
+        observed,
+        checkArraysOrder,
+        ignoreUnknownProperties,
+        checkExactCountOfArrayElements,
+        mutableListOf()
+    )
 }
 
 private fun AssertionsBuilder.jsonMatches(
@@ -335,10 +383,18 @@ private fun AssertionsBuilder.jsonMatches(
     observed: Collection<*>?,
     checkArraysOrder: Boolean,
     ignoreUnknownProperties: Boolean,
+    checkExactCountOfArrayElements: Boolean,
     path: List<String?>,
 ) {
 
-    jsonMatches(expected, observed.toNullableJsonString(), checkArraysOrder, ignoreUnknownProperties, path)
+    jsonMatches(
+        expected,
+        observed.toNullableJsonString(),
+        checkArraysOrder,
+        ignoreUnknownProperties,
+        checkExactCountOfArrayElements,
+        path
+    )
 }
 
 /**
@@ -354,8 +410,9 @@ fun AssertionsBuilder.jsonMatches(
     observed: String?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
     ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
 ) {
-    jsonMatches(expected, observed, checkArraysOrder, ignoreUnknownProperties, listOf())
+    jsonMatches(expected, observed, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements, listOf())
 }
 
 private fun AssertionsBuilder.jsonMatches(
@@ -363,14 +420,36 @@ private fun AssertionsBuilder.jsonMatches(
     observed: String?,
     checkArraysOrder: Boolean,
     ignoreUnknownProperties: Boolean,
+    checkExactCountOfArrayElements: Boolean,
     path: List<String?>,
 ) {
     if (isPattern(expected, path)) {
-        jsonMatchesPattern(getMatcher(expected, path), observed, checkArraysOrder, ignoreUnknownProperties, path)
+        jsonMatchesPattern(
+            getMatcher(expected, path),
+            observed,
+            checkArraysOrder,
+            ignoreUnknownProperties,
+            checkExactCountOfArrayElements,
+            path
+        )
     } else if (expected.isObject()) {
-        jsonMatchesObject(expected, observed, checkArraysOrder, ignoreUnknownProperties, path)
+        jsonMatchesObject(
+            expected,
+            observed,
+            checkArraysOrder,
+            ignoreUnknownProperties,
+            checkExactCountOfArrayElements,
+            path
+        )
     } else if (expected.isArray()) {
-        jsonMatchesArray(expected, observed, checkArraysOrder, ignoreUnknownProperties, path)
+        jsonMatchesArray(
+            expected,
+            observed,
+            checkArraysOrder,
+            ignoreUnknownProperties,
+            checkExactCountOfArrayElements,
+            path
+        )
     } else if (expected != observed) {
         throw FilteredAssertionFailedError("expected $expected, got $observed at ${path.path()}", expected, observed)
     }
@@ -381,6 +460,7 @@ private fun AssertionsBuilder.jsonMatchesObject(
     observed: String?,
     checkArraysOrder: Boolean,
     ignoreUnknownProperties: Boolean,
+    checkExactCountOfArrayElements: Boolean,
     path: List<String?>
 ) {
 
@@ -429,6 +509,7 @@ private fun AssertionsBuilder.jsonMatchesObject(
                     observedValue.toNullableJsonString(),
                     checkArraysOrder,
                     ignoreUnknownProperties,
+                    checkExactCountOfArrayElements,
                     path.copyAdd(key)
                 )
             else {
@@ -449,6 +530,7 @@ private fun AssertionsBuilder.jsonMatchesArray(
     observed: String?,
     checkArraysOrder: Boolean,
     ignoreUnknownProperties: Boolean,
+    checkExactCountOfArrayElements: Boolean,
     path: List<String?>
 ) {
 
@@ -468,6 +550,7 @@ private fun AssertionsBuilder.jsonMatchesArray(
                     observedArray[index].toNullableJsonString(),
                     true,
                     ignoreUnknownProperties,
+                    checkExactCountOfArrayElements,
                     path.copyAddIndex(index)
                 )
             }.exceptionOrNull()
@@ -482,6 +565,7 @@ private fun AssertionsBuilder.jsonMatchesArray(
                             observedValue.toNullableJsonString(),
                             false,
                             ignoreUnknownProperties,
+                            checkExactCountOfArrayElements,
                             path
                         )
                     }.exceptionOrNull() == null
@@ -532,6 +616,7 @@ private fun AssertionsBuilder.jsonMatchesPattern(
     observed: String?,
     checkArraysOrder: Boolean,
     ignoreUnknownProperties: Boolean,
+    checkExactCountOfArrayElements: Boolean,
     path: List<String?>,
 ) {
 
@@ -552,13 +637,22 @@ private fun AssertionsBuilder.jsonMatchesPattern(
                         element,
                         checkArraysOrder,
                         ignoreUnknownProperties,
+                        checkExactCountOfArrayElements,
                         path.copyAddIndex(index)
                     )
                 }
             }
         }
     } else {
-        with(matcher) { matchElement(observed, checkArraysOrder, ignoreUnknownProperties, path) }
+        with(matcher) {
+            matchElement(
+                observed,
+                checkArraysOrder,
+                ignoreUnknownProperties,
+                checkExactCountOfArrayElements,
+                path
+            )
+        }
     }
 }
 
@@ -625,6 +719,7 @@ private data class StringPatternJsonMatcher(
         observed: String?,
         checkArraysOrder: Boolean,
         ignoreUnknownProperties: Boolean,
+        checkExactCountOfArrayElements: Boolean,
         path: List<String?>
     ) {
 
@@ -634,6 +729,7 @@ private data class StringPatternJsonMatcher(
                 observed,
                 checkArraysOrder,
                 ignoreUnknownProperties,
+                checkExactCountOfArrayElements,
                 path
             )
         } else {
@@ -642,6 +738,7 @@ private data class StringPatternJsonMatcher(
                 observed,
                 checkArraysOrder,
                 ignoreUnknownProperties,
+                checkExactCountOfArrayElements,
                 path
             )
         }
@@ -660,6 +757,7 @@ private data class ClassPatternJsonMatcher(
         observed: String?,
         checkArraysOrder: Boolean,
         ignoreUnknownProperties: Boolean,
+        checkExactCountOfArrayElements: Boolean,
         path: List<String?>
     ) {
         if (observed == null) {
@@ -703,6 +801,7 @@ private data class FunctionJsonMatcher<T : Any>(
         observed: String?,
         checkArraysOrder: Boolean,
         ignoreUnknownProperties: Boolean,
+        checkExactCountOfArrayElements: Boolean,
         path: List<String?>
     ) {
         if (observed == null) {
@@ -792,6 +891,7 @@ sealed class JsonMatcher {
         observed: String?,
         checkArraysOrder: Boolean,
         ignoreUnknownProperties: Boolean,
+        checkExactCountOfArrayElements: Boolean,
         path: List<String?>
     )
 }

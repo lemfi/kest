@@ -140,6 +140,260 @@ class JsonAssertionsTest {
     }
 
     @Test
+    fun `check array content without checking exact number of elements`() {
+
+        assertionBuilder().jsonMatches("""[1, 2]""", """[1, 2, 3]""", checkExactCountOfArrayElements = false)
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": ["val1", "val3"],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": ["val1", "val2", "val3"],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkExactCountOfArrayElements = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "hello": "hello"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "world": "hello"
+                    },
+                     {
+                        "hello": "hello"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkExactCountOfArrayElements = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [2, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "blah": "blah"
+                    },
+                    {
+                        "data": [1, 2, 3]
+                    }
+                    
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkExactCountOfArrayElements = false
+        )
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [1, 2, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [3, 3, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkArraysOrder = true, checkExactCountOfArrayElements = false,
+            )
+        }
+        assertEquals(
+            """{data=[1, 2, 3]} not found in array at "array"""",
+            exception.message
+        )
+    }
+
+    @Test
+    fun `check array content without checking exact number of elements nor order of elements`() {
+
+        assertionBuilder().jsonMatches("""[1, 2]""", """[1, 2, 3]""", checkExactCountOfArrayElements = false, checkArraysOrder = false)
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": ["val1", "val3"],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": ["val2", "val3", "val1"],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkExactCountOfArrayElements = false, checkArraysOrder = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "hello": "hello"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "hello"
+                    },
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "world": "hello"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkExactCountOfArrayElements = false, checkArraysOrder = false
+        )
+
+        assertionBuilder().jsonMatches(
+            """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [2, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "blah": "blah"
+                    },
+                    {
+                        "data": [1, 3, 2]
+                    }
+                    
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkExactCountOfArrayElements = false, checkArraysOrder = false
+        )
+
+
+
+        val exception = assertThrows<AssertionFailedError> {
+
+            assertionBuilder().jsonMatches(
+                """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "data": [1, 2, 3]
+                    },
+                    {
+                        "hello": "world"
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), """
+            {
+                "data1": 12,
+                "array": [
+                    {
+                        "hello": "world"
+                    },
+                    {
+                        "data": [3, 3, 3]
+                    }
+                ],
+                "data2": "a string"
+            }
+        """.trimIndent(), checkArraysOrder = false, checkExactCountOfArrayElements = false,
+            )
+        }
+        assertEquals(
+            """{data=[1, 2, 3]} not found in array at "array"""",
+            exception.message
+        )
+    }
+
+    @Test
     fun `additional fields on observed json may be ignored - expected is a json object`() {
         val expected = """
                 {
@@ -1004,7 +1258,6 @@ PATTERN
                                             "level11233": {
                                                 "level112334": "level112324"
                                             }
-                        
                                         }
                                     ]
                                 }
