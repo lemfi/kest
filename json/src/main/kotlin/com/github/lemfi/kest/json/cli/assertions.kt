@@ -537,23 +537,48 @@ private fun AssertionsBuilder.jsonMatchesArray(
     val expectedArray = expected.toJsonArray(path)
     val observedArray = observed.toJsonArray(path).toMutableList()
 
-    eq(
-        expectedArray.size,
-        observedArray.size
-    ) { "missing entries for $observedArray, expected ${expectedArray.size} entries, got ${observedArray.size} entries at ${path.path()}" }
+    if (checkExactCountOfArrayElements) {
+        eq(
+            expectedArray.size,
+            observedArray.size
+        ) { "missing entries for $observedArray, expected ${expectedArray.size} entries, got ${observedArray.size} entries at ${path.path()}" }
+    }
 
     if (checkArraysOrder) {
         expectedArray.foldIndexed(null as Throwable?) { index, acc, expectedValue ->
-            acc ?: runCatching {
-                jsonMatches(
-                    expectedValue.toJsonStringOrPattern(path),
-                    observedArray[index].toNullableJsonString(),
-                    true,
-                    ignoreUnknownProperties,
-                    checkExactCountOfArrayElements,
-                    path.copyAddIndex(index)
-                )
-            }.exceptionOrNull()
+            acc ?: if (checkExactCountOfArrayElements) {
+                runCatching {
+                    jsonMatches(
+                        expected = expectedValue.toJsonStringOrPattern(path),
+                        observed = observedArray[index].toNullableJsonString(),
+                        checkArraysOrder = true,
+                        ignoreUnknownProperties = ignoreUnknownProperties,
+                        checkExactCountOfArrayElements = true,
+                        path = path.copyAddIndex(index)
+                    )
+                }.exceptionOrNull()
+            } else {
+                observedArray
+                    .indexOfFirst { observedValue ->
+                        runCatching {
+                            jsonMatches(
+                                expected = expectedValue.toJsonStringOrPattern(path),
+                                observed = observedValue.toNullableJsonString(),
+                                checkArraysOrder = false,
+                                ignoreUnknownProperties = ignoreUnknownProperties,
+                                checkExactCountOfArrayElements = false,
+                                path = path
+                            )
+                        }.exceptionOrNull() == null
+                    }.let {
+                        if (it == -1)
+                            IllegalArgumentException("$expectedValue not found in array at ${path.path()}")
+                        else run {
+                            repeat((0..it).count()) { observedArray.remove(0) }
+                            null
+                        }
+                    }
+            }
         }
     } else {
         expectedArray.fold(null as Throwable?) { errorFound, expectedValue ->
