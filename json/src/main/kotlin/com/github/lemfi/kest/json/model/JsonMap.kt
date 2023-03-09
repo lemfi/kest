@@ -31,17 +31,4 @@ inline fun <reified T> JsonMap.getForPath(vararg keys: String): T {
     }
 }
 
-/**
- * get a value from its path in json
- *
- * For picking nth element of an array use &#91;n&#93; notation
- */
-@JvmName("getAnyForPath")
-@Deprecated(
-    message = "Consider using typed function",
-    replaceWith = ReplaceWith("this.getForPath<Any?>(*keys)"),
-    level = DeprecationLevel.WARNING
-)
-fun JsonMap.getForPath(vararg keys: String): Any? = getForPath<Any?>(*keys)
-
 typealias JsonArray = ArrayList<JsonMap>
