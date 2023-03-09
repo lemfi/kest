@@ -124,7 +124,7 @@ class JsonAssertionsTest {
                     {
                         "data": [3, 3, 3]
                     },
-                     {
+                    {
                         "hello": "world"
                     }
                 ],
@@ -134,7 +134,7 @@ class JsonAssertionsTest {
             )
         }
         assertEquals(
-            """{data=[3, 3, 3]} is not an expected element of array at "array"""",
+            """{data=[1, 2, 3]} not found in array at "array"""",
             exception.message
         )
     }

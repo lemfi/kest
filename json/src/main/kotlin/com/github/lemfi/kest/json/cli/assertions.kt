@@ -452,8 +452,8 @@ private fun AssertionsBuilder.jsonMatchesArray(
     path: List<String?>
 ) {
 
-    val expectedArray = expected.toJsonArray(path).toMutableList()
-    val observedArray = observed.toJsonArray(path)
+    val expectedArray = expected.toJsonArray(path)
+    val observedArray = observed.toJsonArray(path).toMutableList()
 
     eq(
         expectedArray.size,
@@ -461,11 +461,11 @@ private fun AssertionsBuilder.jsonMatchesArray(
     ) { "missing entries for $observedArray, expected ${expectedArray.size} entries, got ${observedArray.size} entries at ${path.path()}" }
 
     if (checkArraysOrder) {
-        observedArray.foldIndexed(null as Throwable?) { index, acc, observedValue ->
+        expectedArray.foldIndexed(null as Throwable?) { index, acc, expectedValue ->
             acc ?: runCatching {
                 jsonMatches(
-                    expectedArray[index].toJsonStringOrPattern(path),
-                    observedValue.toNullableJsonString(),
+                    expectedValue.toJsonStringOrPattern(path),
+                    observedArray[index].toNullableJsonString(),
                     true,
                     ignoreUnknownProperties,
                     path.copyAddIndex(index)
@@ -473,9 +473,9 @@ private fun AssertionsBuilder.jsonMatchesArray(
             }.exceptionOrNull()
         }
     } else {
-        observedArray.fold(null as Throwable?) { errorFound, observedValue ->
-            errorFound ?: expectedArray
-                .firstOrNull { expectedValue ->
+        expectedArray.fold(null as Throwable?) { errorFound, expectedValue ->
+            errorFound ?: observedArray
+                .firstOrNull { observedValue ->
                     runCatching {
                         jsonMatches(
                             expectedValue.toJsonStringOrPattern(path),
@@ -487,9 +487,9 @@ private fun AssertionsBuilder.jsonMatchesArray(
                     }.exceptionOrNull() == null
                 }.let {
                     if (it == null)
-                        IllegalArgumentException("$observedValue is not an expected element of array at ${path.path()}")
+                        IllegalArgumentException("$expectedValue not found in array at ${path.path()}")
                     else run {
-                        expectedArray.remove(it)
+                        observedArray.remove(it)
                         null
                     }
                 }
