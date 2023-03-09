@@ -24,18 +24,23 @@ class HttpCallExecutionBuilder<T>(private val typeReference: TypeReference<T>) :
     var followRedirect = false
 
     @Suppress("MemberVisibilityCanBePrivate")
+    var logResponseBody = true
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var timeout: Long? = httpProperty { timeout }
 
     override fun toExecution(): Execution<HttpResponse<T>> {
+        @Suppress("MemberVisibilityCanBePrivate")
         return HttpExecution(
-            url,
-            method,
-            typeReference,
-            body,
-            headers,
-            contentType,
-            followRedirect,
-            timeout
+            url = url,
+            method = method,
+            returnType = typeReference,
+            body = body,
+            headers = headers,
+            contentType = contentType,
+            followRedirect = followRedirect,
+            logBody = logResponseBody,
+            timeout = timeout,
         )
     }
 }

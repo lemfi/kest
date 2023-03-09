@@ -31,19 +31,19 @@ object KestHttp {
      * @param contentType Content-Type for decoder
      * @param transformer function to decode InputStream with given Content-Type into an Object
      */
-    fun registerContentTypeDecoder(contentType: String, transformer: InputStream?.(cls: TypeReference<*>) -> Any?) =
-        HttpExecution.addMapper(contentType) { cls ->
+    fun registerContentTypeDecoder(contentType: String, logResponseBody: Boolean = true, transformer: InputStream?.(cls: TypeReference<*>) -> Any?) =
+        HttpExecution.addMapper(contentType) { cls, logBody ->
             this?.run {
                 ByteArrayInputStream(readAllBytes()).run {
                     use { inputStream ->
-                        inputStream.transformer(cls) to inputStream.let {
+                        inputStream.transformer(cls) to if (logBody && logResponseBody) inputStream.let {
                             try {
                                 it.reset()
                                 it.readAllBytes().toString(Charsets.UTF_8).trim()
                             } catch (e: Throwable) {
                                 ""
                             }
-                        }
+                        } else null
                     }
                 }
             } ?: (null to "null")
@@ -58,33 +58,34 @@ internal data class HttpExecution<T>(
     val headers: MutableMap<String, String>,
     val contentType: String?,
     val followRedirect: Boolean,
+    val logBody: Boolean,
     val timeout: Long?,
 ) : Execution<HttpResponse<T>>() {
 
     private val accept = headers.getOrDefault("Accept", null)
 
     companion object {
-        private val mappers = mutableMapOf<String, InputStream?.(cls: TypeReference<*>) -> Pair<Any?, String?>>()
+        private val mappers = mutableMapOf<String, InputStream?.(cls: TypeReference<*>, logBody: Boolean) -> Pair<Any?, String?>>()
             .apply {
-                put("application/json") {
+                put("application/json") {cls, logBody ->
                     this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
                         try {
-                            jacksonObjectMapper().readValue(data, it)
+                            jacksonObjectMapper().readValue(data, cls)
                         } catch (e: Throwable) {
-                            throw DeserializeException(it.type.javaClass, data, e)
-                        } to data
+                            throw DeserializeException(cls.type.javaClass, data, e)
+                        } to if (logBody) data else null
                     } ?: (null to null)
                 }
-                put("text") {
-                    readText()
+                put("text") {_, logBody ->
+                    readText(logBody)
                 }
             }
 
-        private fun InputStream?.readText() = this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
-            data to data
+        private fun InputStream?.readText(logBody: Boolean) = this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
+            data to if (logBody) data else null
         } ?: (null to null)
 
-        fun addMapper(contentType: String, mapper: InputStream?.(cls: TypeReference<*>) -> Pair<Any?, String?>) {
+        fun addMapper(contentType: String, mapper: InputStream?.(cls: TypeReference<*>, logBody: Boolean) -> Pair<Any?, String?>) {
             mappers[contentType] = mapper
         }
 
@@ -93,7 +94,6 @@ internal data class HttpExecution<T>(
             ?: throw IllegalArgumentException("""no decoder found for content type "$contentType", please register one by calling `KestHttp.registerContentTypeDecoder("$contentType") { ... }""")
     }
 
-    @Suppress("unchecked_cast")
     override fun execute(): HttpResponse<T> {
 
         LoggerFactory.getLogger("HTTP-kest").info(
@@ -173,7 +173,7 @@ internal data class HttpExecution<T>(
         return try {
             (header("Content-Type") ?: accept ?: "text/plain")
                 .let { contentType ->
-                    (getMapper(contentType).invoke(body?.byteStream(), returnType))
+                    (getMapper(contentType).invoke(body?.byteStream(), returnType, logBody))
                 }.let { body ->
                     HttpResponse(
                         body = body.first as T,
@@ -193,7 +193,7 @@ internal data class HttpExecution<T>(
                 | $code
                 | ${headers.joinToString("\n") { "${it.first}: ${it.second}" }}
                 | 
-                | $content
+                | ${if (content != null) content else ""}
                 |
                 |""".trimMargin()
             )
