@@ -148,6 +148,7 @@ internal abstract class AbstractTestListener(
             .let { test ->
 
                 test.duration = Date().time
+                test.console = logs.invoke(null) as String
 
                 kestListener?.also {
                     when (test) {
@@ -170,6 +171,7 @@ internal abstract class AbstractTestListener(
                                 status = TestStatus.ONGOING,
                                 level = test.level,
                                 duration = 0,
+                                log = test.console,
                                 steps = emptyList()
                             )
                         )
@@ -213,6 +215,7 @@ internal abstract class AbstractTestListener(
                             name = test.name,
                             status = test.status,
                             duration = test.duration,
+                            log = test.console,
                             level = test.level,
                             steps = emptyList()
                         )
@@ -280,6 +283,7 @@ internal abstract class AbstractTestListener(
                             status = test.status,
                             duration = test.duration,
                             level = test.level,
+                            log = test.console,
                             steps = emptyList()
                         )
                     )

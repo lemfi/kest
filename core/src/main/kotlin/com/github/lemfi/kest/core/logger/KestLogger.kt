@@ -9,7 +9,7 @@ import kotlin.concurrent.getOrSet
 
 class LoggerFactory {
     companion object {
-        fun getLogger(name: String): Logger {
+        fun getLogger(name: String = "Kest"): Logger {
             return Proxy.newProxyInstance(
                 object {}::class.java.classLoader,
                 arrayOf(Logger::class.java),
@@ -19,10 +19,10 @@ class LoggerFactory {
     }
 }
 
-internal val threadLocalLogger: ThreadLocal<ByteArrayOutputStream> = ThreadLocal<ByteArrayOutputStream>()
-internal fun ThreadLocal<ByteArrayOutputStream>.getOrDefault() = getOrSet { ByteArrayOutputStream() }
+private val threadLocalLogger: ThreadLocal<ByteArrayOutputStream> = ThreadLocal<ByteArrayOutputStream>()
+private fun ThreadLocal<ByteArrayOutputStream>.getOrDefault() = getOrSet { ByteArrayOutputStream() }
 
-internal class LoggerInvocationHandler(private val logger: Logger) : InvocationHandler {
+private class LoggerInvocationHandler(private val logger: Logger) : InvocationHandler {
 
     override fun invoke(proxy: Any?, method: Method, args: Array<Any?>?): Any {
         return method
@@ -77,5 +77,8 @@ internal interface KestLogs {
     companion object {
         @JvmStatic
         fun getLog() = threadLocalLogger.getOrDefault().toString()
+
+        @JvmStatic
+        fun resetLog() = threadLocalLogger.getOrDefault().reset()
     }
 }

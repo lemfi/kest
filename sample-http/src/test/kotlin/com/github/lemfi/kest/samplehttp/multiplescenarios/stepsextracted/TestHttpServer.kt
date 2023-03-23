@@ -4,6 +4,7 @@ import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
+import com.github.lemfi.kest.core.logger.LoggerFactory
 import com.github.lemfi.kest.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
 import com.github.lemfi.kest.json.model.JsonMap
@@ -62,6 +63,15 @@ class TestHttpServer {
             val generateOtps = `generate otps`()
 
             nestedScenario("validate OTPs") {
+
+                LoggerFactory.getLogger("kfodps").info("""
+                    
+                    
+                    HELLO !!!!
+                    
+                    
+                """.trimIndent())
+
                 val otps = generateOtps()
                 `validate otp` { generateOtps().first() }
                 `validate otp` { generateOtps().last() }

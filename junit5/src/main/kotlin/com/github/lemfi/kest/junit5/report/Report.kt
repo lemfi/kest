@@ -49,6 +49,7 @@ internal data class InternalReport(
             status = status,
             duration = duration,
             level = level,
+            log = console,
             steps = children(id).map {
                 it.toTestReport()
             },
@@ -293,6 +294,13 @@ pre.err {
                 <dl class="${status.toCSS()}">
                     <dt><span class="status"></span><a href="javascript:void(0)" onclick="javascript:showHide('$htmlId')">${this.name} <span class="time">${this.duration.duration()}</span></a></dt>
                     <dd id="$htmlId" class="hidden">
+                    ${
+                            if (console.isNotBlank()) "<pre class=\"out\">${
+                                console
+                                    .replace("<", "&lt;")
+                                    .replace(">", "&gt;")
+                            }</pre>" else ""
+                        }
                         ${buildTests(children(id))}
                     </dd>
                 </dl>
@@ -333,6 +341,7 @@ sealed class ATestReport {
     abstract val status: TestStatus
     abstract val duration: Long
     abstract val level: Int
+    abstract val log: String
 }
 
 data class TestReport(
@@ -341,7 +350,7 @@ data class TestReport(
     override val status: TestStatus,
     override val duration: Long,
     override val level: Int,
-    val log: String,
+    override val log: String,
     val failure: String,
 ) : ATestReport()
 
@@ -351,6 +360,7 @@ data class ContainerTestReport(
     override val status: TestStatus,
     override val duration: Long,
     override val level: Int,
+    override val log: String,
     val steps: List<ATestReport>,
 ) : ATestReport()
 
@@ -361,6 +371,7 @@ internal sealed class AInternalTestReport {
     abstract var duration: Long
     abstract val parent: String?
     abstract val level: Int
+    abstract var console: String
 }
 
 enum class TestStatus {
@@ -373,6 +384,7 @@ internal data class InternalContainerTestReport(
     override val level: Int,
     override var status: TestStatus = TestStatus.NOT_STARTED,
     override var duration: Long = 0,
+    override var console: String = "",
     override val parent: String? = null,
 ) : AInternalTestReport()
 
@@ -382,7 +394,7 @@ internal data class InternalTestReport(
     override val level: Int,
     override var status: TestStatus = TestStatus.NOT_STARTED,
     override var duration: Long = 0,
-    var console: String = "",
+    override var console: String = "",
     var failure: String = "",
     override val parent: String? = null,
 ) : AInternalTestReport()

@@ -15,6 +15,12 @@ import org.opentest4j.TestAbortedException
 
 private val logger = LoggerFactory.getLogger("JUNIT-RUNNER-Kest")
 
+private val resetLogs by lazy {
+    Class
+        .forName("com.github.lemfi.kest.core.logger.KestLogs")
+        .getMethod("resetLog")
+}
+
 internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator<DynamicNode>, Iterable<DynamicNode> {
 
     private val steps = scenario.steps.iterator()
@@ -40,6 +46,9 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
     private fun Step<*>.toDynamicNode(): DynamicNode =
         if (this is NestedScenarioStep<*>) {
             runCatching {
+
+                resetLogs.invoke(null)
+
                 execution() as NestedScenarioStepExecution
             }
                 .let {
@@ -65,4 +74,6 @@ internal class ScenarioStepsIterator(private val scenario: IScenario) : Iterator
                 throw TestAbortedException(e.message, e)
             }
         }
+
+
 }
