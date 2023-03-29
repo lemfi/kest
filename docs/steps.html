@@ -186,6 +186,108 @@
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="nested-scenario"><a class="anchor" href="#nested-scenario"></a>Nested scenario</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to group some steps together to make your scenario clearer you may use a particular step that allows that</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">nestedScenario("group steps") {
+    step(name = "step1") { /*...*/ }
+    step(name = "step2") { /*...*/ }
+    step(name = "step3") { /*...*/ }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reuse-result-of-one-step-in-another-one"><a class="anchor" href="#reuse-result-of-one-step-in-another-one"></a>Reuse result of one step in another one</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you create a step, you call a function that will return a <code>StepResult</code><br>
+It&#8217;s on that <code>StepResult</code> that make assertions.<br>
+It&#8217;s also on that <code>StepResult</code> that you can retrieve the result of the step.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1: StepResult&lt;Int&gt; = step { 1+1 } `assert that` { eq(2, it) }
+
+val step2: StepResult&lt;Double&gt; = step { step1() + 1.5 } `assert that` { eq(3.5, it) }
+
+step { step2.invoke().toString() } `assert that` { eq("3.5", it) }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see on the example, to get the result of a step you may invoke it.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+you may use the result of a step only in the execution of another step, if you try to invoke it outside an execution then the step will probably not have been played yet so no result will be available.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="special-case-of-a-nestedscenario"><a class="anchor" href="#special-case-of-a-nestedscenario"></a>Special case of a nestedScenario</h3>
+<div class="paragraph">
+<p><code>nestedScenario</code> step is a particular step that does not return any result by default.<br>
+It is still possible to return a result from a <code>nestedScenario</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1 = nestedScenario&lt;Double&gt; {
+
+    val step11: StepResult&lt;Int&gt; = step { 1+1 } `assert that` { eq(2, it) }
+
+    val step12: StepResult&lt;Double&gt; = step { step11() + 1.5 } `assert that` { eq(3.5, it) }
+
+    returns { step12() }
+}
+
+step { step1() + 4 } `assert that` { eq(7.5, it) }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="transform-the-result-of-a-step"><a class="anchor" href="#transform-the-result-of-a-step"></a>Transform the result of a step</h3>
+<div class="paragraph">
+<p>You may transform a result of a step so that later steps reusing the result will reuse transformed result instead of initial one</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { eq(2, it) }
+
+step { step1() * 3 } `assert that` { eq(6.0, it) }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here step1 result was transformed from an Int to a Double<br>
+Then when second step invoked step1 result it got a Double<br></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Take care, when you use <code>map result to</code> it will not transform the result for the assertions of the step, assertions are always done on step initial result.<br>
+Moreover,  <code>map result to</code> lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then <code>map result to</code> lambda will never be executed.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 <nav class="pagination">
   <span class="prev"><a href="index.html">Overview</a></span>
   <span class="next"><a href="steps/http.html">HTTP Steps</a></span>
