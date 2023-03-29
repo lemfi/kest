@@ -328,6 +328,74 @@ step(name = "name of my step") {
 ----
 * xref:{documentation}steps/create-step.adoc[Create your own one]
 
+== Nested scenario
+
+If you want to group some steps together to make your scenario clearer you may use a particular step that allows that
+
+[source,kotlin,]
+----
+nestedScenario("group steps") {
+    step(name = "step1") { /*...*/ }
+    step(name = "step2") { /*...*/ }
+    step(name = "step3") { /*...*/ }
+}
+----
+
+== Reuse result of one step in another one
+
+When you create a step, you call a function that will return a `StepResult` +
+It's on that `StepResult` that make assertions. +
+It's also on that `StepResult` that you can retrieve the result of the step.
+
+[source,kotlin,]
+----
+val step1: StepResult<Int> = step { 1+1 } `assert that` { eq(2, it) }
+
+val step2: StepResult<Double> = step { step1() + 1.5 } `assert that` { eq(3.5, it) }
+
+step { step2.invoke().toString() } `assert that` { eq("3.5", it) }
+----
+
+As you can see on the example, to get the result of a step you may invoke it.
+
+CAUTION: you may use the result of a step only in the execution of another step, if you try to invoke it outside an execution then the step will probably not have been played yet so no result will be available.
+
+=== Special case of a nestedScenario
+
+`nestedScenario` step is a particular step that does not return any result by default. +
+It is still possible to return a result from a `nestedScenario`
+
+[source,kotlin,]
+----
+val step1 = nestedScenario<Double> {
+
+    val step11: StepResult<Int> = step { 1+1 } `assert that` { eq(2, it) }
+
+    val step12: StepResult<Double> = step { step11() + 1.5 } `assert that` { eq(3.5, it) }
+
+    returns { step12() }
+}
+
+step { step1() + 4 } `assert that` { eq(7.5, it) }
+----
+
+=== Transform the result of a step
+
+You may transform a result of a step so that later steps reusing the result will reuse transformed result instead of initial one
+
+[source,kotlin,]
+----
+val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { eq(2, it) }
+
+step { step1() * 3 } `assert that` { eq(6.0, it) }
+----
+
+Here step1 result was transformed from an Int to a Double +
+Then when second step invoked step1 result it got a Double +
+
+NOTE: Take care, when you use `map result to` it will not transform the result for the assertions of the step, assertions are always done on step initial result. +
+Moreover,  `map result to` lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then `map result to` lambda will never be executed.
+
 :leveloffset!:
 :leveloffset: +1
 
