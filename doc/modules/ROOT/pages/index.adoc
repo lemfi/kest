@@ -144,8 +144,8 @@ scenario(name = "api says hello and remembers it!") {
         """
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
-        eq("Hello Darth Vader!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body  isEqualTo "Hello Darth Vader!"
     }
 
     `given http call`<String> {
@@ -160,8 +160,8 @@ scenario(name = "api says hello and remembers it!") {
         """
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
-        eq("Hello Han Solo!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body isEqualTo "Hello Han Solo!"
     }
 
     `given http call`<List<String>> {
@@ -172,8 +172,8 @@ scenario(name = "api says hello and remembers it!") {
 
     } `assert that` { stepResult ->
 
-        eq(200, stepResult.status)
-        eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+        stepResult.status isEqualTo 200
+        stepResult.body  isEqualTo listOf("Darth Vader", "Han Solo")
     }
 }
 ----

@@ -2,7 +2,6 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.http.cli.`given http call`
 import com.github.lemfi.kest.json.cli.jsonMatches
@@ -21,8 +20,8 @@ fun ScenarioBuilder.`say hello`(who: String) {
             """
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
-        eq("Hello $who!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body isEqualTo "Hello $who!"
     }
 }
 
@@ -35,8 +34,8 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
 
     } `assert that` { stepResult ->
 
-        eq(200, stepResult.status)
-        eq(expectedGreeted.toList(), stepResult.body)
+        stepResult.status isEqualTo 200
+        stepResult.body isEqualTo expectedGreeted.toList()
     }
 }
 
@@ -49,7 +48,7 @@ fun ScenarioBuilder.`get otp`() =
 
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
+        stepResult.status isEqualTo 201
         jsonMatches(
             """
                         {
@@ -71,7 +70,7 @@ fun ScenarioBuilder.`validate otp`(otp: String) =
 
     } `assert that` { stepResult ->
 
-        eq(204, stepResult.status)
+        stepResult.status isEqualTo 204
     }
 
 fun ScenarioBuilder.`generate otps`() = nestedScenario<List<String>>("generate 3 OTPs") {

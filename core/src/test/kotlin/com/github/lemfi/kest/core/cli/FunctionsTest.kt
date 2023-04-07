@@ -6,7 +6,6 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
 import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.IStepName
 import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.model.StandaloneScenario
@@ -70,13 +69,13 @@ class FunctionsTest {
         every { stepResult.addAssertion(capture(l)) } returns Unit
 
         val res = stepResult `assert that` {
-            `is false`(true) { "fail message" }
+            true isFalse { "fail message" }
         }
 
         verify { stepResult.addAssertion(any()) }
 
         val assertionsResult = assertThrows<AssertionFailedError> {
-            l.invoke(mockk(), "step res")
+            l.invoke(AssertionsBuilder("", null), "step res")
         }
 
         assertEquals("fail message", assertionsResult.message)
@@ -191,7 +190,7 @@ this step will fail on execution!
         val standaloneStandaloneStepResult: StandaloneStepResult<String> =
             StandaloneStepResult<String>(step, null) { it }
                 .apply {
-                    assertions.add { `is true`(false) { "hahaha" } }
+                    assertions.add { false isTrue { "hahaha" } }
                 }
 
         var onAssertionFailedCalled = false
@@ -252,7 +251,7 @@ hahaha
         every { step.execution } returns { execution }
         every { execution.execute() } throws IllegalAccessException("first call fails") andThen "success"
         every { step.postExecution } returns postExecution
-        every { postExecution.assertions } returns mutableListOf({ `is true`(true) })
+        every { postExecution.assertions } returns mutableListOf({ true.isTrue })
 
         val res = step.run()
 
@@ -292,7 +291,7 @@ hahaha
         }
         every { step.execution } returns { execution }
         every { step.postExecution } returns postExecution
-        every { postExecution.assertions } returns mutableListOf({ `is true`(true) })
+        every { postExecution.assertions } returns mutableListOf({ true.isTrue })
 
         assertThrows<StepResultFailure> { step.run() }
 
@@ -315,7 +314,7 @@ hahaha
         every { step.execution } returns { execution }
         every { execution.execute() } returns "success"
         every { step.postExecution } returns postExecution
-        every { postExecution.assertions } returns mutableListOf({ `is true`(true) })
+        every { postExecution.assertions } returns mutableListOf({ true.isTrue })
 
         val res = step.run()
 

@@ -2,7 +2,6 @@ package com.github.lemfi.kest.samplecadence
 
 import com.github.lemfi.kest.cadence.cli.`given activity call`
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.junit5.runner.`play scenario`
 import com.github.lemfi.kest.samplecadence.sampleapi.IMayTheForceBeWithYouActivity
 import com.github.lemfi.kest.samplecadence.sampleapi.IRecruitPadawansActivity
@@ -31,7 +30,7 @@ class TestActivity {
 
             activity(IMayTheForceBeWithYouActivity::mayTheForceBeWithYou, MayTheForceBeWithYou("Darth Vader"))
         } `assert that` {
-            eq("May the Force be with you Darth Vader!", it)
+            it isEqualTo "May the Force be with you Darth Vader!"
         }
 
     }
@@ -45,7 +44,7 @@ class TestActivity {
 
             activity(IRecruitPadawansActivity::recruitOne, "Darth Vader")
         } `assert that` {
-            eq(Padawan("Ahsoka Tano"), it)
+            it isEqualTo Padawan("Ahsoka Tano")
         }
 
     }
@@ -59,7 +58,7 @@ class TestActivity {
 
             activity(IRecruitPadawansActivity::recruitThemAll, "Darth Vader")
         } `assert that` {
-            eq(listOf(Padawan("Ahsoka Tano")), it)
+            it isEqualTo listOf(Padawan("Ahsoka Tano"))
         }
 
     }

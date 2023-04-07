@@ -4,7 +4,6 @@ package com.github.lemfi.kest.rabbitmq.cli
 
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.DefaultStepName
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.StepName
@@ -45,10 +44,7 @@ inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
         }
             .apply {
                 `assert that` {
-                    eq(
-                        executionBuilder.nbMessages,
-                        it.size
-                    ) { "Expected ${executionBuilder.nbMessages} messages in queue, got ${it.size}" }
+                    it.size isEqualTo executionBuilder.nbMessages { "Expected ${executionBuilder.nbMessages} messages in queue, got ${it.size}" }
                 }
             }
     }

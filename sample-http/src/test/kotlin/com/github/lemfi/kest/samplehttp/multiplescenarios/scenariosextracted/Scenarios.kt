@@ -3,7 +3,6 @@
 package com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted
 
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.http.cli.`given http call`
@@ -31,8 +30,8 @@ val `api says goodbye and forgets people!` = scenario(name = "api says goodbye a
 
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
-        eq("Goodbye Darth Vader!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body isEqualTo "Goodbye Darth Vader!"
     }
 
     `get greeted`("Han Solo")
@@ -63,7 +62,7 @@ val `get and validate wrong otp` = scenario(name = "get and validate wrong otp")
 
     } `assert that` { stepResult ->
 
-        eq(201, stepResult.status)
+        stepResult.status isEqualTo 201
         jsonMatches(
             """
                         {
@@ -83,7 +82,7 @@ val `get and validate wrong otp` = scenario(name = "get and validate wrong otp")
 
     } `assert that` { stepResult ->
 
-        eq(400, stepResult.status)
+        stepResult.status isEqualTo 400
         jsonMatches("{{error}}", stepResult.body)
     }
 

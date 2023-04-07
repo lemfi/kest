@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.core.model
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
-import com.github.lemfi.kest.core.cli.`is false`
 import com.github.lemfi.kest.core.cli.run
 import io.mockk.every
 import io.mockk.mockk
@@ -245,7 +244,7 @@ class StepTest {
         )
 
         val assertion: AssertionsBuilder.(String) -> Unit =
-            { true.`is false` }
+            { true.isFalse }
 
         stepRes.addAssertion(assertion)
 
@@ -269,7 +268,7 @@ class StepTest {
         )
 
         val assertion: AssertionsBuilder.(String) -> Unit =
-            { true.`is false` }
+            { true.isFalse }
 
         stepRes1.addAssertion(assertion)
 

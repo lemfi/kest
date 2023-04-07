@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.FilteredAssertionFailedError
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
@@ -538,10 +537,7 @@ private fun AssertionsBuilder.jsonMatchesArray(
     val observedArray = observed.toJsonArray(path).toMutableList()
 
     if (checkExactCountOfArrayElements) {
-        eq(
-            expectedArray.size,
-            observedArray.size
-        ) { "missing entries for $observedArray, expected ${expectedArray.size} entries, got ${observedArray.size} entries at ${path.path()}" }
+        observedArray.size isEqualTo expectedArray.size { "missing entries for $observedArray, expected ${expectedArray.size} entries, got ${observedArray.size} entries at ${path.path()}" }
     }
 
     if (checkArraysOrder) {

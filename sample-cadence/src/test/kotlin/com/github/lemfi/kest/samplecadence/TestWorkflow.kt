@@ -2,7 +2,6 @@ package com.github.lemfi.kest.samplecadence
 
 import com.github.lemfi.kest.cadence.cli.`given workflow`
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.junit5.runner.`play scenario`
 import com.github.lemfi.kest.samplecadence.sampleapi.Hello
 import com.github.lemfi.kest.samplecadence.sampleapi.IHelloWorldWorkflow
@@ -31,12 +30,11 @@ class TestWorkflow {
             workflow(IHelloWorldWorkflow::hello, Hello("Darth Vader"))
 
         } `assert that` {
-            eq(
-                """
-                        Hello Darth Vader!
-                        How are you doing Darth Vader?
-                    """.trimIndent(), it
-            )
+
+            it isEqualTo """
+                            Hello Darth Vader!
+                            How are you doing Darth Vader?
+                        """.trimIndent()
         }
     }
 

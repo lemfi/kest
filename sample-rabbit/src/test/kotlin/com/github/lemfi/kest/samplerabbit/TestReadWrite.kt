@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.samplerabbit
 
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.seconds
@@ -34,7 +33,7 @@ class TestReadWrite {
         `given number of messages in rabbitmq queue`(retry = 20.times `by intervals of` 200.ms) {
             queue = "obi-wan_kenobi"
         } `assert that` {
-            eq(0L, it.total)
+            it.total isEqualTo 0L
         }
 
         `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
@@ -49,14 +48,14 @@ class TestReadWrite {
             messageTransformer = { toString(Charsets.UTF_8) }
             nbMessages = 2
         } `assert that` {
-            eq("Au secours obi-wan_kenobi, vous êtes notre seul espoir !", it.first().message)
-            eq("Au secours obi-wan_kenobi, vous êtes notre seul espoir !", it.last().message)
+            it.first().message isEqualTo "Au secours obi-wan_kenobi, vous êtes notre seul espoir !"
+            it.last().message isEqualTo "Au secours obi-wan_kenobi, vous êtes notre seul espoir !"
         }
 
         `given number of messages in rabbitmq queue` {
             queue = "obi-wan_kenobi"
         } `assert that` {
-            eq(0L, it.total)
+            it.total isEqualTo 0L
         }
     }
 
@@ -79,13 +78,13 @@ class TestReadWrite {
                 queue = "obi-wan_kenobi"
                 messageTransformer = { toString(Charsets.UTF_8) }
             } `assert that` {
-                eq("Au secours obi-wan_kenobi, vous êtes notre seul espoir !", it.message)
+                it.message isEqualTo "Au secours obi-wan_kenobi, vous êtes notre seul espoir !"
             }
 
             `given number of messages in rabbitmq queue` {
                 queue = "obi-wan_kenobi"
             } `assert that` {
-                eq(0L, it.total)
+                it.total isEqualTo 0L
             }
 
         }

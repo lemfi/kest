@@ -45,7 +45,7 @@ step(name = "name of my step") {
 
 } `assert that` { stepResult ->
 
-    eq(2, stepResult)
+    stepResult isEqualTo 2
 
 }
 ----
@@ -72,11 +72,11 @@ It's also on that `StepResult` that you can retrieve the result of the step.
 
 [source,kotlin,]
 ----
-val step1: StepResult<Int> = step { 1+1 } `assert that` { eq(2, it) }
+val step1: StepResult<Int> = step { 1+1 } `assert that` { it isEqualTo 2 }
 
-val step2: StepResult<Double> = step { step1() + 1.5 } `assert that` { eq(3.5, it) }
+val step2: StepResult<Double> = step { step1() + 1.5 } `assert that` { it isEqualTo 3.5 }
 
-step { step2.invoke().toString() } `assert that` { eq("3.5", it) }
+step { step2.invoke().toString() } `assert that` { it isEqualTo "3.5" }
 ----
 
 As you can see on the example, to get the result of a step you may invoke it.
@@ -92,14 +92,14 @@ It is still possible to return a result from a `nestedScenario`
 ----
 val step1 = nestedScenario<Double> {
 
-    val step11: StepResult<Int> = step { 1+1 } `assert that` { eq(2, it) }
+    val step11: StepResult<Int> = step { 1+1 } `assert that` { it isEqualTo 2 }
 
-    val step12: StepResult<Double> = step { step11() + 1.5 } `assert that` { eq(3.5, it) }
+    val step12: StepResult<Double> = step { step11() + 1.5 } `assert that` { it isEqualTo 3.5 }
 
     returns { step12() }
 }
 
-step { step1() + 4 } `assert that` { eq(7.5, it) }
+step { step1() + 4 } `assert that` { it isEqualTo 7.5 }
 ----
 
 === Transform the result of a step
@@ -108,12 +108,13 @@ You may transform a result of a step so that later steps reusing the result will
 
 [source,kotlin,]
 ----
-val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { eq(2, it) }
+val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { it isEqualTo 2 }
 
-step { step1() * 3 } `assert that` { eq(6.0, it) }
+step { step1() * 3 } `assert that` { it isEqualTo 18.0 }
 ----
 
-Here step1 result was transformed from an Int to a Double +
+Here step1 result was transformed from an Int to a Double  +
+Even though in assertions of step 1 the result is still an Int: Assertions are always done on initial result, not transformed one. +
 Then when second step invoked step1 result it got a Double +
 
 NOTE: Take care, when you use `map result to` it will not transform the result for the assertions of the step, assertions are always done on step initial result. +

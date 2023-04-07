@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.samplehttp.multiplescenarios.allinone
 
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
@@ -36,8 +35,8 @@ class TestHttpServer {
                         """
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status) { "Saying Hello should return a 201, was ${stepResult.status}!" }
-                eq("Hello Darth Vader!", stepResult.body)
+                stepResult.status isEqualTo 201 { "Saying Hello should return a 201, was ${stepResult.status}!" }
+                stepResult.body isEqualTo "Hello Darth Vader!"
             }
 
             `given http call`<String>("Han Solo says hello") {
@@ -52,8 +51,8 @@ class TestHttpServer {
                     """
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
-                eq("Hello Han Solo!", stepResult.body)
+                stepResult.status isEqualTo 201
+                stepResult.body isEqualTo "Hello Han Solo!"
             }
 
             `given http call`<List<String>>("get list of greeted people") {
@@ -64,8 +63,8 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(200, stepResult.status)
-                eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+                stepResult.status isEqualTo 200
+                stepResult.body isEqualTo listOf("Darth Vader", "Han Solo")
             }
 
             `given http call`<List<String>>("when a redirect happens it can be avoided") {
@@ -77,8 +76,8 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(302, stepResult.status)
-                eq(listOf("http://localhost:8080/hello"), stepResult.headers["Location"])
+                stepResult.status isEqualTo 302
+                stepResult.headers["Location"] isEqualTo listOf("http://localhost:8080/hello")
             }
 
             `given http call`<List<String>>("when a redirect happens it can be followed") {
@@ -90,8 +89,8 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(200, stepResult.status)
-                eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+                stepResult.status isEqualTo 200
+                stepResult.body isEqualTo listOf("Darth Vader", "Han Solo")
             }
         },
         beforeAll = ::startSampleApi,
@@ -114,8 +113,8 @@ class TestHttpServer {
                         """
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
-                eq("Hello Darth Vader!", stepResult.body)
+                stepResult.status isEqualTo 201
+                stepResult.body isEqualTo "Hello Darth Vader!"
             }
 
             `given http call`<String>("Han Solo says hello") {
@@ -130,8 +129,8 @@ class TestHttpServer {
                     """
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
-                eq("Hello Han Solo!", stepResult.body)
+                stepResult.status isEqualTo 201
+                stepResult.body isEqualTo "Hello Han Solo!"
             }
 
             `given http call`<String>("Darth Vader says goodbye") {
@@ -142,8 +141,8 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
-                eq("Goodbye Darth Vader!", stepResult.body)
+                stepResult.status isEqualTo 201
+                stepResult.body isEqualTo "Goodbye Darth Vader!"
             }
 
             `given http call`<List<String>>("Han Solo is on his own") {
@@ -154,8 +153,8 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(200, stepResult.status)
-                eq(listOf("Han Solo"), stepResult.body)
+                stepResult.status isEqualTo 200
+                stepResult.body isEqualTo listOf("Han Solo")
             }
         },
         beforeAll = ::startSampleApi,
@@ -178,7 +177,7 @@ class TestHttpServer {
                         """
             } `assert that` { stepResult ->
 
-                eq(405, stepResult.status)
+                stepResult.status isEqualTo 405
                 jsonMatches("{{error}}", stepResult.body)
             }
 
@@ -201,7 +200,7 @@ class TestHttpServer {
                 it.body["otp"] as String
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
+                stepResult.status isEqualTo 201
                 jsonMatches(
                     """
                         {
@@ -221,7 +220,7 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(204, stepResult.status)
+                stepResult.status isEqualTo 204
             }
 
         },
@@ -235,7 +234,7 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
+                stepResult.status isEqualTo 201
                 jsonMatches(
                     """
                         {
@@ -255,7 +254,7 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(400, stepResult.status)
+                stepResult.status isEqualTo 400
                 jsonMatches("{{error}}", stepResult.body)
             }
 
@@ -275,7 +274,7 @@ class TestHttpServer {
                 url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
                 method = "GET"
             } `assert that` {
-                eq("You called me 98 times!", it.body)
+                it.body isEqualTo "You called me 98 times!"
             }
 
         },
@@ -296,7 +295,7 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(200, stepResult.status)
+                stepResult.status isEqualTo 200
                 jsonMatches(
                     """
                         [
@@ -325,12 +324,10 @@ class TestHttpServer {
 
             } `assert that` { stepResult ->
 
-                eq(200, stepResult.status)
-                eq(
-                    listOf(
-                        Inventory("weapon", "lightsaber"),
-                        Inventory("vehicle", "landspeeder"),
-                    ), stepResult.body
+                stepResult.status isEqualTo 200
+                stepResult.body isEqualTo listOf (
+                    Inventory("weapon", "lightsaber"),
+                    Inventory("vehicle", "landspeeder"),
                 )
             }
         },
@@ -349,8 +346,8 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
             } `assert that` {
-                eq(404, it.status)
-                eq("Waiting for Rogue one...", it.body)
+                it.status isEqualTo 404
+                it.body isEqualTo "Waiting for Rogue one..."
             }
 
             `given http call`<String>("give death star plans") {
@@ -364,6 +361,7 @@ class TestHttpServer {
                         filename = "death_star_plan.txt"
                         contentType = "text/plain"
                         data = """
+                            
                             █  ██████████████████████████████████████████████████████████
                             █     █        █           █  █     █     █           █  █  █
                             ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
@@ -411,8 +409,8 @@ class TestHttpServer {
                 )
             } `assert that` { stepResult ->
 
-                eq(201, stepResult.status)
-                eq("May the Force be with you!", stepResult.body)
+                stepResult.status isEqualTo 201
+                stepResult.body isEqualTo "May the Force be with you!"
             }
 
             `given http call`<String>("death star plans are available") {
@@ -421,9 +419,9 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
             } `assert that` {
-                eq(200, it.status)
-                eq(
-                    """ 
+                it.status isEqualTo 200
+                it.body isEqualTo """ 
+                    
                         █  ██████████████████████████████████████████████████████████
                         █     █        █           █  █     █     █           █  █  █
                         ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
@@ -465,8 +463,7 @@ class TestHttpServer {
                         █  ███████  █  █  █  ████  █  █  █  ████  █  █  █  ███████  █
                         █              █  █           █     █     █     █     █     
                         █████████████████████████████████████████████████████████████  
-                        """.trimIndent().trim(), it.body
-                )
+                        """.trimIndent().trim()
             }
         },
         beforeAll = ::startSampleApi,

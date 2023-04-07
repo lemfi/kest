@@ -1,7 +1,6 @@
 package com.github.lemfi.kest.sampleredis
 
 import com.github.lemfi.kest.core.cli.`assert that`
-import com.github.lemfi.kest.core.cli.eq
 import com.github.lemfi.kest.junit5.runner.`play scenario`
 import com.github.lemfi.kest.redis.cli.`redis delete key`
 import com.github.lemfi.kest.redis.cli.`redis get key`
@@ -36,13 +35,13 @@ class RedisSample {
         `redis get key`(name = "find Luke Skywalker") {
             `read key` { "ls" } `from namespace` "light"
         } `assert that` {
-            eq("Luke Skywalker", it)
+            it isEqualTo "Luke Skywalker"
         }
 
         `redis get key`(name = "find Anakin Skywalker") {
             `read key` { "as" } `from namespace` "dark"
         } `assert that` {
-            eq("Anakin Skywalker", it)
+            it isEqualTo "Anakin Skywalker"
         }
 
         `redis delete key`(name = "delete vilains") {
