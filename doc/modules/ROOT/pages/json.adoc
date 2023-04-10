@@ -54,36 +54,41 @@ And the function to check that with Kest would be:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "string": "{{string}}",
-  "number": "{{number}}",
-  "boolean": "{{boolean}}"
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "{{string}}",
+      "number": "{{number}}",
+      "boolean": "{{boolean}}"
+    }
+    """
 }
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
 
 // OR shortcuts are provided two write it without having to remember the notation
-jsonMatches(
-"""
-{
-  "string": "$stringPattern",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "$stringPattern",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+
 ----
 
 === Defining your own matchers
@@ -105,27 +110,29 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{{sample}}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {{sample}}
+    """
+}
 
 // OR
 
-jsonMatches(
-samplePattern.pattern,
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches samplePattern
 ----
 
 ==== Define a class
@@ -150,27 +157,29 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{{sample}}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {{sample}}
+    """
+}
 
 // OR
 
-jsonMatches(
-samplePattern.pattern,
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches samplePattern
 ----
 
 ==== Define a function that will check the validity of pattern
@@ -200,37 +209,40 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "date": "{{sample}}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+      "date": "2021-01-12",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "date": "{{sample}}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "date": "2021-01-12",
-  "number": 1,
-  "boolean": true
-}""")
-
 // OR
 
-jsonMatches(
-"""
-{
-  "date": "$samplePattern",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+      "date": "2021-01-12",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "date": "$samplePattern",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "date": "2021-01-12",
-  "number": 1,
-  "boolean": true
-}""")
 ----
 
 === Lists and nullable matchers
@@ -270,53 +282,57 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "data": "[[{{sample}}]]"
-}
-""",
-"""
-{
-  "data": [
+json(
+    """
     {
-      "string": "a string",
-      "number": 1,
-      "boolean": true
-    },
+      "data": [
+        {
+          "string": "a string",
+          "number": 1,
+          "boolean": true
+        },
+        {
+          "string": "another string",
+          "number": 2,
+          "boolean": false
+        }
+      ]
+    }"""
+) matches validator {
+    """
     {
-      "string": "another string",
-      "number": 2,
-      "boolean": false
+      "data": "[[{{sample}}]]"
     }
-  ]
-}""")
+    """
+}
 
 // OR
 
-jsonMatches(
-"""
-{
-  "data": "${jsonArrayOf(samplePattern)}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
-}
-""",
-"""
-{
-  "data": [
+json(
+    """
     {
-      "string": "a string",
-      "number": 1,
-      "boolean": true
-    },
+      "data": [
+        {
+          "string": "a string",
+          "number": 1,
+          "boolean": true
+        },
+        {
+          "string": "another string",
+          "number": 2,
+          "boolean": false
+        }
+      ]
+    }"""
+) matches validator {
+    """
     {
-      "string": "another string",
-      "number": 2,
-      "boolean": false
+      "data": "${jsonArrayOf(samplePattern)}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
     }
-  ]
-}""")
+    """
+}
 ----
 
 ==== Nullable values
@@ -335,37 +351,41 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "string": "{{string?}}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+          "string": null,
+          "number": 1,
+          "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "{{string?}}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-      "string": null,
-      "number": 1,
-      "boolean": true
-}""")
 
 // OR
 
-jsonMatches(
-"""
-{
-  "string": "${stringPattern.nullable}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+          "string": null,
+          "number": 1,
+          "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "${stringPattern.nullable}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-      "string": null,
-      "number": 1,
-      "boolean": true
-}""")
 ----
 
 == Polymorphism
@@ -391,29 +411,30 @@ Let's take this example:
 
 ----
 
-You can check whether your json matches one or the other of those matchers by passing a list to `jsonMatches` function:
+You can check whether your json matches one or the other of those matchers by passing a list to `validator` this way:
 
 [source,kotlin]
 ----
-jsonMatches(
-                listOf(
-                """{
-                      "common":  "{{string}}",
-                      "poly1": "{{string}}"
-                    }
-                """,
-                """{
-                      "common":  "{{string}}",
-                      "poly2": "{{string}}"
-                    }
-                """
-                ),
-                 """{
-                      "common":  "a string",
-                      "poly2": "another string"
-                    }
-                """
-        )
+json(
+    """{
+          "common":  "a string",
+          "poly2": "another string"
+        }
+    """
+) matches validator(
+    listOf(
+        """{
+              "common":  "{{string}}",
+              "poly1": "{{string}}"
+            }
+        """,
+        """{
+              "common":  "{{string}}",
+              "poly2": "{{string}}"
+            }
+        """
+    )
+)
 ----
 
 == Lists

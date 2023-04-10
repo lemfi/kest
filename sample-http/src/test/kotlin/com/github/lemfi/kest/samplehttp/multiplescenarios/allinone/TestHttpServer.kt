@@ -8,7 +8,9 @@ import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.http.cli.`given http call`
 import com.github.lemfi.kest.http.model.fileDataPart
 import com.github.lemfi.kest.http.model.multipartBody
-import com.github.lemfi.kest.json.cli.jsonMatches
+import com.github.lemfi.kest.json.cli.json
+import com.github.lemfi.kest.json.cli.matches
+import com.github.lemfi.kest.json.cli.validator
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
@@ -178,7 +180,7 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 stepResult.status isEqualTo 405
-                jsonMatches("{{error}}", stepResult.body)
+                json(stepResult.body) matches validator { "{{error}}" }
             }
 
         },
@@ -201,13 +203,13 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 stepResult.status isEqualTo 201
-                jsonMatches(
+                json(stepResult.body) matches validator {
                     """
                         {
                             "otp": "{{string}}" 
                         }
-                    """.trimIndent(), stepResult.body
-                )
+                    """
+                }
             }
 
             `given http call`<JsonMap>("validate an OTP") {
@@ -235,13 +237,13 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 stepResult.status isEqualTo 201
-                jsonMatches(
+                json(stepResult.body) matches validator {
                     """
                         {
                             "otp": "{{string}}" 
                         }
-                    """.trimIndent(), stepResult.body
-                )
+                    """.trimIndent()
+                }
             }
 
             `given http call`<JsonMap>("validate an invalid OTP") {
@@ -255,7 +257,7 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 stepResult.status isEqualTo 400
-                jsonMatches("{{error}}", stepResult.body)
+                json(stepResult.body) matches validator { "{{error}}" }
             }
 
         },
@@ -296,7 +298,7 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 stepResult.status isEqualTo 200
-                jsonMatches(
+                json(stepResult.body) matches validator {
                     """
                         [
                             {
@@ -308,8 +310,8 @@ class TestHttpServer {
                                 "name": "landspeeder"
                             }
                         ]
-                    """.trimIndent(), stepResult.body
-                )
+                    """.trimIndent()
+                }
             }
 
 

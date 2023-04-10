@@ -4,7 +4,9 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.http.cli.`given http call`
-import com.github.lemfi.kest.json.cli.jsonMatches
+import com.github.lemfi.kest.json.cli.json
+import com.github.lemfi.kest.json.cli.matches
+import com.github.lemfi.kest.json.cli.validator
 import com.github.lemfi.kest.json.model.JsonMap
 
 fun ScenarioBuilder.`say hello`(who: String) {
@@ -49,13 +51,13 @@ fun ScenarioBuilder.`get otp`() =
     } `assert that` { stepResult ->
 
         stepResult.status isEqualTo 201
-        jsonMatches(
+        json(stepResult.body) matches validator {
             """
                         {
                             "otp": "{{string}}"
                         }
-                    """.trimIndent(), stepResult.body
-        )
+                    """.trimIndent()
+        }
     }
 
 fun ScenarioBuilder.`validate otp`(otp: String) =

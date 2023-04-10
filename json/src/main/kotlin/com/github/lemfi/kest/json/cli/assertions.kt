@@ -208,6 +208,72 @@ fun <T : Any> `add json matcher`(pattern: Pattern, cls: KClass<T>, validator: (T
     matchers[pattern(pattern.name).pattern] = FunctionJsonMatcherKind(cls, validator)
 }
 
+fun AssertionsBuilder.json(json: String?) = JsonHolder(json, this)
+fun AssertionsBuilder.json(json: JsonMap?) = JsonHolder(json.toNullableJsonString(), this)
+fun AssertionsBuilder.json(json: Collection<*>?) = JsonHolder(json.toNullableJsonString(), this)
+
+
+infix fun JsonHolder.matches(validator: JsonValidator) {
+    with(assertionBuilder) {
+        if (validator.expectedJson.size == 1) {
+            jsonMatches(
+                expected = validator.expectedJson.first(),
+                observed = json,
+                checkArraysOrder = validator.constraints.checkArraysOrder,
+                checkExactCountOfArrayElements = validator.constraints.checkNumberOfArrayElements,
+                ignoreUnknownProperties = validator.constraints.ignoreExtraProperties,
+                path = emptyList()
+            )
+        } else {
+            jsonMatches(
+                expectedPatterns = validator.expectedJson,
+                observed = json,
+                checkArraysOrder = validator.constraints.checkArraysOrder,
+                checkExactCountOfArrayElements = validator.constraints.checkNumberOfArrayElements,
+                ignoreUnknownProperties = validator.constraints.ignoreExtraProperties,
+                path = emptyList()
+            )
+        }
+    }
+}
+
+infix fun JsonHolder.matches(pattern: Pattern) {
+    with(assertionBuilder) {
+        jsonMatches(
+            expected = pattern.pattern,
+            observed = json,
+            checkArraysOrder = true,
+            checkExactCountOfArrayElements = true,
+            ignoreUnknownProperties = false,
+            path = emptyList()
+        )
+    }
+}
+
+data class JsonConstraints(
+    val checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
+    val ignoreExtraProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    val checkNumberOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
+)
+fun validator(
+    checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
+    json: ()->String,
+) = JsonValidator(listOf(json()), JsonConstraints(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements))
+
+fun validator(
+    json: List<String>,
+    checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
+) = JsonValidator(json, JsonConstraints(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements))
+
+
+class JsonHolder internal constructor(val json: String?, val assertionBuilder: AssertionsBuilder)
+data class JsonValidator(val expectedJson: List<String>, val constraints: JsonConstraints)
+
+
 /**
  * Check whether a JsonMap matches a pattern
  *
@@ -216,12 +282,13 @@ fun <T : Any> `add json matcher`(pattern: Pattern, cls: KClass<T>, validator: (T
  * @param checkArraysOrder order in arrays should be checked or not (default is true)
  * @param ignoreUnknownProperties unknown properties on observed json should be ignored or not (default is false)
  */
+@Deprecated("json(observed) matches validator(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements) { expected }", replaceWith = ReplaceWith("json(observed) matches validator(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements) { expected }"))
 fun AssertionsBuilder.jsonMatches(
     expected: String,
     observed: JsonMap?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
-    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
-    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
 ) {
     jsonMatches(
         expected,
@@ -242,12 +309,13 @@ fun AssertionsBuilder.jsonMatches(
  * @param checkArraysOrder order in arrays should be checked or not (default is true)
  * @param ignoreUnknownProperties unknown properties on observed json should be ignored or not (default is false)
  */
+@Deprecated("replace with json(observed) matches validator(expectedPatterns, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements)", replaceWith = ReplaceWith("json(observed) matches validator(expectedPatterns, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements)"))
 fun AssertionsBuilder.jsonMatches(
     expectedPatterns: List<String>,
     observed: JsonMap?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
-    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
-    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
 ) {
 
     jsonMatches(
@@ -265,16 +333,17 @@ fun AssertionsBuilder.jsonMatches(
  * To use for polyphormism
  *
  * @param expectedPatterns expected patterns
- * @param observed KestArray object
+ * @param observed List<*> object
  * @param checkArraysOrder order in arrays should be checked or not (default is true)
  * @param ignoreUnknownProperties unknown properties on observed json should be ignored or not (default is false)
  */
+@Deprecated("json(observed) matches validator(expectedPatterns, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements)", replaceWith = ReplaceWith("json(observed) matches validator(expectedPatterns, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements)"))
 fun AssertionsBuilder.jsonMatches(
     expectedPatterns: List<String>,
     observed: List<*>?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
-    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
-    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
 ) {
 
     jsonMatches(
@@ -297,12 +366,13 @@ fun AssertionsBuilder.jsonMatches(
  * @param checkArraysOrder order in arrays should be checked or not (default is true)
  * @param ignoreUnknownProperties unknown properties on observed json should be ignored or not (default is false)
  */
+@Deprecated("json(observed) matches validator(expectedPatterns, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements)", replaceWith = ReplaceWith("json(observed) matches validator(expectedPatterns, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements)"))
 fun AssertionsBuilder.jsonMatches(
     expectedPatterns: List<String>,
     observed: String?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
-    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
-    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
 ) {
     jsonMatches(
         expectedPatterns,
@@ -359,12 +429,13 @@ private fun AssertionsBuilder.jsonMatches(
  * @param checkArraysOrder order in arrays should be checked or not (default is true)
  * @param ignoreUnknownProperties unknown properties on observed json should be ignored or not (default is false)
  */
+@Deprecated("json(observed) matches validator(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements) { expected }", replaceWith = ReplaceWith("json(observed) matches validator(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements) { expected }"))
 fun AssertionsBuilder.jsonMatches(
     expected: String,
     observed: Collection<*>?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
-    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
-    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
 ) {
 
     jsonMatches(
@@ -404,12 +475,13 @@ private fun AssertionsBuilder.jsonMatches(
  * @param checkArraysOrder order in arrays should be checked or not (default is true)additional fields
  * @param ignoreUnknownProperties unknown properties on observed json should be ignored or not (default is false)
  */
+@Deprecated("json(observed) matches validator(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements) { expected }", replaceWith = ReplaceWith("json(observed) matches validator(checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements) { expected }"))
 fun AssertionsBuilder.jsonMatches(
     expected: String,
     observed: String?,
     checkArraysOrder: Boolean = jsonProperty { this.checkArraysOrder },
-    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreUnknownProperties },
-    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkExactCountOfArrayElements },
+    ignoreUnknownProperties: Boolean = jsonProperty { this.ignoreExtraProperties },
+    checkExactCountOfArrayElements: Boolean = jsonProperty { this.checkNumberOfArrayElements },
 ) {
     jsonMatches(expected, observed, checkArraysOrder, ignoreUnknownProperties, checkExactCountOfArrayElements, listOf())
 }

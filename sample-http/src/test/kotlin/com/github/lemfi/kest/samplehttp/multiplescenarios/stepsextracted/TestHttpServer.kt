@@ -4,7 +4,9 @@ import com.github.lemfi.kest.core.cli.`assert that`
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.http.cli.`given http call`
-import com.github.lemfi.kest.json.cli.jsonMatches
+import com.github.lemfi.kest.json.cli.json
+import com.github.lemfi.kest.json.cli.matches
+import com.github.lemfi.kest.json.cli.validator
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.junit5.runner.`play scenarios`
 import com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted.`validate otp`
@@ -84,7 +86,7 @@ class TestHttpServer {
             } `assert that` { stepResult ->
 
                 stepResult.status isEqualTo 400
-                jsonMatches("{{error}}", stepResult.body)
+                json(stepResult.body) matches validator { "{{error}}" }
             }
 
         },
