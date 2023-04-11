@@ -29,6 +29,8 @@ Optional, defaults to connection configured in kest.yml
 Optional, defaults to database configured in kest.yml
 * `collections`: List<String> // Target collections to clean.
 Optional, by default all collections of DB will be cleaned
+* `except`: List<String> // Target collections KEEP.
+Optional, by default no collections of DB will be kept
 
 === Samples
 
@@ -38,6 +40,15 @@ Optional, by default all collections of DB will be cleaned
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collections("vehicles", "planets")
+}
+----
+
+[source,kotlin]
+----
+`clean mongo database`(name = """clean all collections except "vehicles" and "planets" collections on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    except("vehicles", "planets")
 }
 ----
 

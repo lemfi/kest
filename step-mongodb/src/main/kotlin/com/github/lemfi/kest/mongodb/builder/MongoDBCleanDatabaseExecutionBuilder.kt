@@ -16,8 +16,12 @@ class MongoDBCleanDatabaseExecutionBuilder : ExecutionBuilder<Unit> {
     var database = mongoDBProperty { database }
 
     private val collections: MutableList<String> = mutableListOf()
+    private val except: MutableList<String> = mutableListOf()
     fun collections(vararg collection: String) {
         collections.addAll(collection)
+    }
+    fun except(vararg collection: String) {
+        except.addAll(collection)
     }
 
 
@@ -25,7 +29,8 @@ class MongoDBCleanDatabaseExecutionBuilder : ExecutionBuilder<Unit> {
         return MongoDBCleanDatabaseExecution(
             connection = connection,
             database = database,
-            collections = collections
+            collections = collections,
+            except = except,
         )
     }
 }
