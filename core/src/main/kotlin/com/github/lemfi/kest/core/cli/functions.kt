@@ -4,6 +4,7 @@ package com.github.lemfi.kest.core.cli
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
+import com.github.lemfi.kest.core.builder.GenericStepBuilder
 import com.github.lemfi.kest.core.builder.NestedScenarioExecutionBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
@@ -52,7 +53,7 @@ fun ScenarioBuilder.wait(time: Long, name: String? = null) =
 fun <RESULT> ScenarioBuilder.step(
     name: String? = null,
     retry: RetryStep? = null,
-    l: (Logger) -> RESULT
+    l: GenericStepBuilder.(Logger) -> RESULT
 ) =
 
     createStep(
@@ -61,7 +62,7 @@ fun <RESULT> ScenarioBuilder.step(
     ) {
         object : ExecutionBuilder<RESULT> {
             override fun toExecution(): Execution<RESULT> = object : Execution<RESULT>() {
-                override fun execute(): RESULT = l(LoggerFactory.getLogger("KEST"))
+                override fun execute(): RESULT = with(GenericStepBuilder()) { l(LoggerFactory.getLogger("KEST")) }
             }
         }
     }
