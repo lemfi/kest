@@ -68,7 +68,14 @@ fun ScenarioBuilder.`given count of mongo documents`(
         retry = retryStep
     ) { MongoDBCountDocumentExecutionBuilder().apply(h) }
 
+@Deprecated("use cleanMongoDatabase instead")
 fun ScenarioBuilder.`clean mongo database`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBCleanDatabaseExecutionBuilder.() -> Unit = {}
+) = cleanMongoDatabase(name, retryStep, h)
+
+fun ScenarioBuilder.cleanMongoDatabase(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBCleanDatabaseExecutionBuilder.() -> Unit = {}

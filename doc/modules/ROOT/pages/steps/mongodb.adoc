@@ -19,7 +19,7 @@ mongodb:
 
 == Clean database
 
-`clean mongo database`
+`cleanMongoDatabase`
 
 === Parameters configure step
 
@@ -36,7 +36,7 @@ Optional, by default no collections of DB will be kept
 
 [source,kotlin]
 ----
-`clean mongo database`(name = """clean "vehicles" and "planets" collections on "starwars" DB""") {
+cleanMongoDatabase(name = """clean "vehicles" and "planets" collections on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collections("vehicles", "planets")
@@ -45,7 +45,7 @@ Optional, by default no collections of DB will be kept
 
 [source,kotlin]
 ----
-`clean mongo database`(name = """clean all collections except "vehicles" and "planets" collections on "starwars" DB""") {
+cleanMongoDatabase(name = """clean all collections except "vehicles" and "planets" collections on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     except("vehicles", "planets")
@@ -54,14 +54,14 @@ Optional, by default no collections of DB will be kept
 
 [source,kotlin]
 ----
-`clean mongo database`(name = """clean "vehicles" and "planets" collections on globally configured database""") {
+cleanMongoDatabase(name = """clean "vehicles" and "planets" collections on globally configured database""") {
     collections("vehicles", "planets")
 }
 ----
 
 [source,kotlin]
 ----
-`clean mongo database`(name = "clean all collections on globally configured database")
+cleanMongoDatabase(name = "clean all collections on globally configured database")
 ----
 
 == Insert document
