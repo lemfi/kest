@@ -147,7 +147,7 @@ Optional, defaults to database configured in kest.yml
 
 == Read documents
 
-`given mongo documents`
+`givenMongoDocuments`
 
 === Parameters to provide on step
 
@@ -162,7 +162,7 @@ Optional, defaults to database configured in kest.yml
 
 [source,kotlin]
 ----
-`given mongo documents`(name = """read Endor planet from "planets" collection on "starwars" DB""") {
+givenMongoDocuments(name = """read Endor planet from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -173,7 +173,7 @@ Optional, defaults to database configured in kest.yml
 
 [source,kotlin]
 ----
-`given mongo documents`(name = """read Endor planet from "planets" collection on globally configured database""") {
+givenMongoDocuments(name = """read Endor planet from "planets" collection on globally configured database""") {
     collection = "planets"
 
     filter = mapOf("name" to "Endor")
