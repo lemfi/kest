@@ -4,7 +4,7 @@
 
 * create a queue `createRabbitmqQueue`
 * delete a queue `deleteRabbitmqQueue`
-* publish a message on a queue ````publish rabbitmq message````
+* publish a message on a queue `publishRabbitmqMessage`
 * read a message from a queue ````given message from rabbitmq queue````
 
 == Create a queue on RabbitMQ
@@ -175,7 +175,7 @@ rabbitmq:
 
 [source,kotlin]
 ----
-`publish rabbitmq message`("say hello world through universe") {
+publishRabbitmqMessage("say hello world through universe") {
     publish { """ { "hello": "world" } """ } toExchange "" withRoutingKey "universe"
 }
 ----

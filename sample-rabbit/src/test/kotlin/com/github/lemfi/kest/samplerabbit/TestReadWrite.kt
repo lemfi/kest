@@ -10,7 +10,7 @@ import com.github.lemfi.kest.rabbitmq.cli.createRabbitmqQueue
 import com.github.lemfi.kest.rabbitmq.cli.`given message from rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given messages from rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given number of messages in rabbitmq queue`
-import com.github.lemfi.kest.rabbitmq.cli.`publish rabbitmq message`
+import com.github.lemfi.kest.rabbitmq.cli.publishRabbitmqMessage
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestFactory
@@ -36,7 +36,7 @@ class TestReadWrite {
             it.total isEqualTo 0L
         }
 
-        `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
+        publishRabbitmqMessage("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
             publish { "obi-wan kenobi" } toExchange "" withRoutingKey "R2D2"
         }
 
@@ -67,7 +67,7 @@ class TestReadWrite {
                 createQueue { "obi-wan kenobi" }
             }
 
-            `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
+            publishRabbitmqMessage("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
                 publish { "obi-wan kenobi" } toExchange "" withRoutingKey "R2D2"
             }
 

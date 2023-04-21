@@ -14,7 +14,13 @@ import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueDeletionExecutionBuil
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueMultipleMessagesReaderExecutionBuilder
 import com.github.lemfi.kest.rabbitmq.builder.RabbitMQQueueSingleReaderExecutionBuilder
 
+@Deprecated("use publishRabbitmqMessage instead")
 fun ScenarioBuilder.`publish rabbitmq message`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RabbitMQMessageExecutionBuilder.() -> Unit
+) = publishRabbitmqMessage(name, retry, builder)
+fun ScenarioBuilder.publishRabbitmqMessage(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQMessageExecutionBuilder.() -> Unit
