@@ -16,7 +16,10 @@ class RedisInsertExecutionBuilder : ExecutionBuilder<Unit> {
     private lateinit var insert: RedisInsert
 
     fun insert(data: () -> String) = RedisInsert(data = data()).apply { insert = this }
-    infix fun RedisInsert.`with key`(key: String) = also { it.key = key }
+
+    @Deprecated("use withKey instead", replaceWith = ReplaceWith("this withKey key"))
+    infix fun RedisInsert.`with key`(key: String) = withKey(key)
+    infix fun RedisInsert.withKey(key: String) = also { it.key = key }
 
     @Deprecated("use inNamespace instead", replaceWith = ReplaceWith("this inNamespace namespace"))
     infix fun RedisInsert.`in namespace`(namespace: String) = inNamespace(namespace)
