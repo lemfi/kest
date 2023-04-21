@@ -13,7 +13,14 @@ import com.github.lemfi.kest.mongodb.builder.MongoDBInsertDocumentExecutionBuild
 import com.github.lemfi.kest.mongodb.builder.MongoDBReadDocumentExecutionBuilder
 import com.github.lemfi.kest.mongodb.builder.MongoDBUpdateDocumentExecutionBuilder
 
+@Deprecated("use insertMongoDocument instead")
 fun ScenarioBuilder.`insert mongo document`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBInsertDocumentExecutionBuilder.() -> Unit
+) = insertMongoDocument(name, retryStep, h)
+
+fun ScenarioBuilder.insertMongoDocument(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBInsertDocumentExecutionBuilder.() -> Unit
