@@ -7,6 +7,7 @@
 * publish a message on a queue `publishRabbitmqMessage`
 * read a message from a queue `givenMessageFromRabbitmqQueue`
 * read multiple messages from a queue `givenMessagesFromRabbitmqQueue`
+* count number of messages in a queue `givenNumberOfMessagesInRabbitmqQueue
 
 == Create a queue on RabbitMQ
 
@@ -218,5 +219,44 @@ rabbitmq:
 ----
 publishRabbitmqMessage("say hello world through universe") {
     publish { """ { "hello": "world" } """ } toExchange "" withRoutingKey "universe"
+}
+----
+
+
+
+== count number of messages in a queue
+
+NOTE: This step uses RabbitMQ management api, results are not instantaneous, this step should be used carefully regarding of that.
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQCountMessagesExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** queue: String // queue from which count messages
+** connection: String // optional, connection string to rabbitmq management api, defaults to http://localhost:15672
+** user: String // optional, user to connect to management api, defaults to guest
+** password: String // optional, password to connect to management api, defaults to guest
+** vhost: String // optional, defaults to / +
++
+connection, user, password and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  managementapi:
+    connection: http://my_host:15672
+    user: my_user
+    password: my_password
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+givenNumberOfMessagesInRabbitmqQueue {
+    queue = "kest"
 }
 ----

@@ -121,7 +121,14 @@ fun ScenarioBuilder.createRabbitmqQueue(
         retry = retry
     ) { RabbitMQQueueCreationExecutionBuilder().apply(builder) }
 
+@Deprecated("use givenNumberOfMessagesInRabbitmqQueue instead")
 fun ScenarioBuilder.`given number of messages in rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RabbitMQCountMessagesExecutionBuilder.() -> Unit
+) = givenNumberOfMessagesInRabbitmqQueue(name, retry, builder)
+
+fun ScenarioBuilder.givenNumberOfMessagesInRabbitmqQueue(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQCountMessagesExecutionBuilder.() -> Unit

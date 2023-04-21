@@ -9,7 +9,7 @@ import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.rabbitmq.cli.createRabbitmqQueue
 import com.github.lemfi.kest.rabbitmq.cli.givenMessageFromRabbitmqQueue
 import com.github.lemfi.kest.rabbitmq.cli.givenMessagesFromRabbitmqQueue
-import com.github.lemfi.kest.rabbitmq.cli.`given number of messages in rabbitmq queue`
+import com.github.lemfi.kest.rabbitmq.cli.givenNumberOfMessagesInRabbitmqQueue
 import com.github.lemfi.kest.rabbitmq.cli.publishRabbitmqMessage
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +30,7 @@ class TestReadWrite {
             createQueue { "obi-wan kenobi" }
         }
 
-        `given number of messages in rabbitmq queue`(retry = 20.times byIntervalsOf 200.ms) {
+        givenNumberOfMessagesInRabbitmqQueue(retry = 20.times byIntervalsOf 200.ms) {
             queue = "obi-wan kenobi"
         } assertThat {
             it.total isEqualTo 0L
@@ -52,7 +52,7 @@ class TestReadWrite {
             it.last().message isEqualTo "Au secours obi-wan kenobi, vous êtes notre seul espoir !"
         }
 
-        `given number of messages in rabbitmq queue` {
+        givenNumberOfMessagesInRabbitmqQueue {
             queue = "obi-wan kenobi"
         } assertThat {
             it.total isEqualTo 0L
@@ -81,7 +81,7 @@ class TestReadWrite {
                 it.message isEqualTo "Au secours obi-wan kenobi, vous êtes notre seul espoir !"
             }
 
-            `given number of messages in rabbitmq queue` {
+            givenNumberOfMessagesInRabbitmqQueue {
                 queue = "obi-wan kenobi"
             } assertThat {
                 it.total isEqualTo 0L
