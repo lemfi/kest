@@ -49,14 +49,14 @@ data class BasePattern internal constructor(
      * Define json structure represented by pattern
      */
     infix fun definedBy(value: String) = apply {
-        `add json matcher`(this, value)
+        addJsonMatcher(this, value)
     }
 
     /**
      * Define list of json structures represented by pattern
      */
     infix fun definedBy(value: List<String>) = apply {
-        `add json matcher`(this, value)
+        addJsonMatcher(this, value)
     }
 
     /**
@@ -191,11 +191,11 @@ fun `add json matcher`(pattern: Pattern, value: KClass<*>) {
     matchers[pattern(pattern.name).pattern] = ClassPatternJsonMatcherKind(value)
 }
 
-private fun `add json matcher`(p: Pattern, pattern: String) {
+private fun addJsonMatcher(p: Pattern, pattern: String) {
     matchers[pattern(p.name).pattern] = StringPatternJsonMatcherKind(listOf(pattern))
 }
 
-private fun `add json matcher`(pattern: Pattern, patterns: List<String>) {
+private fun addJsonMatcher(pattern: Pattern, patterns: List<String>) {
     matchers[pattern(pattern.name).toString()] = StringPatternJsonMatcherKind(patterns)
 }
 
