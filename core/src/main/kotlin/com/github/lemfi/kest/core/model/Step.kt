@@ -166,4 +166,6 @@ data class RetryStep(
 val Int.times: RetryStep get() = RetryStep(retries = this)
 val Int.ms: Long get() = this.toLong()
 val Int.seconds: Long get() = this * 1000L
+@Deprecated("use byIntervalsOf instead", replaceWith = ReplaceWith("this byIntervalsOf milliseconds"))
 infix fun RetryStep.`by intervals of`(milliseconds: Long) = copy(delay = milliseconds)
+infix fun RetryStep.byIntervalsOf(milliseconds: Long) = copy(delay = milliseconds)

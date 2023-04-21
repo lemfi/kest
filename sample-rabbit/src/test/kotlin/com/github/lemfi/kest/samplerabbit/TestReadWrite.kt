@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.samplerabbit
 
 import com.github.lemfi.kest.core.cli.assertThat
-import com.github.lemfi.kest.core.model.`by intervals of`
+import com.github.lemfi.kest.core.model.byIntervalsOf
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
@@ -30,7 +30,7 @@ class TestReadWrite {
             `create queue` { "obi-wan kenobi" }
         }
 
-        `given number of messages in rabbitmq queue`(retry = 20.times `by intervals of` 200.ms) {
+        `given number of messages in rabbitmq queue`(retry = 20.times byIntervalsOf 200.ms) {
             queue = "obi-wan kenobi"
         } assertThat {
             it.total isEqualTo 0L
@@ -42,7 +42,7 @@ class TestReadWrite {
 
         `given messages from rabbitmq queue`<String>(
             name = "message from Leia was broadcasted twice",
-            retry = 10.times `by intervals of` 1.seconds
+            retry = 10.times byIntervalsOf 1.seconds
         ) {
             queue = "obi-wan kenobi"
             messageTransformer = { toString(Charsets.UTF_8) }
@@ -73,7 +73,7 @@ class TestReadWrite {
 
             `given message from rabbitmq queue`<String>(
                 name = "message from Leia was broadcasted",
-                retry = 10.times `by intervals of` 1.seconds
+                retry = 10.times byIntervalsOf 1.seconds
             ) {
                 queue = "obi-wan kenobi"
                 messageTransformer = { toString(Charsets.UTF_8) }

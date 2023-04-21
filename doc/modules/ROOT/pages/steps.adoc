@@ -14,7 +14,7 @@ A step is where interaction with your system happen, it:
 ----
 step(
     name = "a name a step has",
-    retry = 10.times `by intervals of` 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
+    retry = 10.times byIntervalsOf 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
 ) {
     // here goes the definition of the execution
 } assertThat {

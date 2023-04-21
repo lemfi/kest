@@ -313,8 +313,8 @@ class StepTest {
 
     @Test
     fun `build a retry step`() {
-        Assertions.assertEquals(RetryStep(10, 100), 10.times `by intervals of` 100.ms)
-        Assertions.assertEquals(RetryStep(20, 1000), 20.times `by intervals of` 1.seconds)
+        Assertions.assertEquals(RetryStep(10, 100), 10.times byIntervalsOf 100.ms)
+        Assertions.assertEquals(RetryStep(20, 1000), 20.times byIntervalsOf 1.seconds)
     }
 
     @Test

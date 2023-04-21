@@ -15,7 +15,7 @@ import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepResultFailure
-import com.github.lemfi.kest.core.model.`by intervals of`
+import com.github.lemfi.kest.core.model.byIntervalsOf
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
 import io.mockk.every
@@ -242,7 +242,7 @@ hahaha
         val step = mockk<StandaloneStep<String>>(relaxUnitFun = true)
         val postExecution = mockk<StandaloneStepResult<String>>(relaxUnitFun = true)
 
-        every { step.retry } returns 2.times.`by intervals of`(10.ms)
+        every { step.retry } returns (2.times byIntervalsOf 10.ms)
         every { step.scenarioName } returns "the scenario name"
         every { step.name } returns object : IStepName {
             override val value = "the step name"
@@ -277,7 +277,7 @@ hahaha
         val step = mockk<StandaloneStep<Unit>>(relaxUnitFun = true)
         val postExecution = mockk<StandaloneStepResult<Unit>>(relaxUnitFun = true)
 
-        every { step.retry } returns 2.times.`by intervals of`(10.ms)
+        every { step.retry } returns (2.times byIntervalsOf 10.ms)
         every { step.scenarioName } returns "the scenario name"
         every { step.name } returns object : IStepName {
             override val value = "the step name"
