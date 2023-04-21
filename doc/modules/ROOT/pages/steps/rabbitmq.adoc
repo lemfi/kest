@@ -2,7 +2,7 @@
 
 = RabbitMQ Steps
 
-* create a queue ````create rabbitmq queue````
+* create a queue `createRabbitmqQueue`
 * publish a message on a queue ````publish rabbitmq message````
 * read a message from a queue ````given message from rabbitmq queue````
 
@@ -43,7 +43,7 @@ rabbitmq:
 
 [source,kotlin]
 ----
-`create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
+createRabbitmqQueue("Obi-Wan Kenobi should be born before he can receive a message") {
     createQueue { "obi-wan_kenobi" } andBindItToExchange "StarWars" withRoutingKey "Force"
 }
 ----

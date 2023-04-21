@@ -74,7 +74,14 @@ fun ScenarioBuilder.`given messages from rabbitmq queue`(
 ) = `given messages from rabbitmq queue`<ByteArray>(name, retry, h)
 
 
+@Deprecated("use createRabbitmqQueue instead")
 fun ScenarioBuilder.`create rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RabbitMQQueueCreationExecutionBuilder.() -> Unit
+) = createRabbitmqQueue(name, retry, builder)
+
+fun ScenarioBuilder.createRabbitmqQueue(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQQueueCreationExecutionBuilder.() -> Unit
