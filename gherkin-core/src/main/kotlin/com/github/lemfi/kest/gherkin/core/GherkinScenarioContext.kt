@@ -1,6 +1,9 @@
 package com.github.lemfi.kest.gherkin.core
 
 import com.github.lemfi.kest.core.model.IStepPostExecution
+import com.github.lemfi.kest.core.model.StandaloneStep
+import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.StepName
 
 interface GherkinContext
 
@@ -26,7 +29,16 @@ infix fun <STEP_POST_EXECUTION: IStepPostExecution<*, RESULT>, RESULT, GHERKIN_C
     }
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("use getGherkinScenarioContext()", replaceWith = ReplaceWith("getGherkinScenarioContext()"))
 fun <GHERKIN_CONTEXT : GherkinContext?> `get gherkin scenario context`() = gherkinContextThreadLocal
+    .get()
+    .context
+    .fold(null as GHERKIN_CONTEXT) { acc, context ->
+        context(acc) as GHERKIN_CONTEXT
+    }
+
+@Suppress("UNCHECKED_CAST")
+fun <GHERKIN_CONTEXT : GherkinContext?> getGherkinScenarioContext() = gherkinContextThreadLocal
     .get()
     .context
     .fold(null as GHERKIN_CONTEXT) { acc, context ->
