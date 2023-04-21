@@ -9,7 +9,9 @@ import com.github.lemfi.kest.rabbitmq.model.rabbitMQProperty
 
 class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
 
-    fun `create queue`(name: () -> String) = QueueAndBinding(name()).also { queue = it }
+    @Deprecated("use createQueue instead", replaceWith = ReplaceWith("createQueue (name)"))
+    fun `create queue`(name: () -> String) = createQueue(name)
+    fun createQueue(name: () -> String) = QueueAndBinding(name()).also { queue = it }
 
     @Deprecated("use andBindItToExchange instead", replaceWith = ReplaceWith("this andBindItToExchange exchange"))
     infix fun QueueAndBinding.`and bind it to exchange`(exchange: String) = andBindItToExchange(exchange)

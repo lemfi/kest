@@ -28,7 +28,7 @@ class TestReadWrite {
     fun `Leia asks for help`() = playScenario(name = "Leia asks for help via RabbitMQ") {
 
         `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
-            `create queue` { "obi-wan kenobi" }
+            createQueue { "obi-wan kenobi" }
         }
 
         `given number of messages in rabbitmq queue`(retry = 20.times byIntervalsOf 200.ms) {
@@ -65,7 +65,7 @@ class TestReadWrite {
         playScenario(name = "Leia asks for help via RabbitMQ, check broadcast once") {
 
             `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
-                `create queue` { "obi-wan kenobi" }
+                createQueue { "obi-wan kenobi" }
             }
 
             `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
