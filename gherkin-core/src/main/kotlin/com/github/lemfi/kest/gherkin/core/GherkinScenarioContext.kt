@@ -7,7 +7,17 @@ interface GherkinContext
 private val gherkinContextThreadLocal = ThreadLocal.withInitial { ContextHolder() }
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("use setGherkinScenarioContext instead", replaceWith = ReplaceWith("this setGherkinScenarioContext l"))
 infix fun <STEP_POST_EXECUTION: IStepPostExecution<*, RESULT>, RESULT, GHERKIN_CONTEXT : GherkinContext> STEP_POST_EXECUTION.`set gherkin scenario context`(l: (GHERKIN_CONTEXT?, RESULT) -> GHERKIN_CONTEXT): STEP_POST_EXECUTION =
+    apply {
+
+        gherkinContextThreadLocal.get().context.add { gherkinContext ->
+            runCatching { this() }.getOrNull()?.let { l(gherkinContext as GHERKIN_CONTEXT?, it) } ?: gherkinContext
+        }
+    }
+
+@Suppress("UNCHECKED_CAST")
+infix fun <STEP_POST_EXECUTION: IStepPostExecution<*, RESULT>, RESULT, GHERKIN_CONTEXT : GherkinContext> STEP_POST_EXECUTION.setGherkinScenarioContext(l: (GHERKIN_CONTEXT?, RESULT) -> GHERKIN_CONTEXT): STEP_POST_EXECUTION =
     apply {
 
         gherkinContextThreadLocal.get().context.add { gherkinContext ->
