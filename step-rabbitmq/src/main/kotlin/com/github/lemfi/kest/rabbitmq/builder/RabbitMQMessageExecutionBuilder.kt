@@ -16,7 +16,10 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
     @Deprecated("use toExchange instead", replaceWith = ReplaceWith("this toExchange exchange"))
     infix fun RabbitMQMessage.`to exchange`(exchange: String) = toExchange(exchange)
     infix fun RabbitMQMessage.toExchange(exchange: String) = also { it.exchange = exchange }
-    infix fun RabbitMQMessage.`with routing key`(routingKey: String?) = also { it.routingKey = routingKey }
+
+    @Deprecated("use withRoutingKey instead", replaceWith = ReplaceWith("this withRoutingKey routingKey"))
+    infix fun RabbitMQMessage.`with routing key`(routingKey: String?) = withRoutingKey(routingKey)
+    infix fun RabbitMQMessage.withRoutingKey(routingKey: String?) = also { it.routingKey = routingKey }
 
     @Deprecated("use withHeaders instead", replaceWith = ReplaceWith("this withHeaders headers"))
     infix fun RabbitMQMessage.`with headers`(headers: Map<String, Any>) = withHeaders(headers)

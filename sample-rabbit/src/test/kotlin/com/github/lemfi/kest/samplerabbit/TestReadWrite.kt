@@ -38,7 +38,7 @@ class TestReadWrite {
         }
 
         `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
-            publish { "obi-wan kenobi" } toExchange "" `with routing key` "R2D2"
+            publish { "obi-wan kenobi" } toExchange "" withRoutingKey "R2D2"
         }
 
         `given messages from rabbitmq queue`<String>(
@@ -69,7 +69,7 @@ class TestReadWrite {
             }
 
             `publish rabbitmq message`("declare that R2D2 might deliver a message to Obi-Wan Kenobi") {
-                publish { "obi-wan kenobi" } toExchange "" `with routing key` "R2D2"
+                publish { "obi-wan kenobi" } toExchange "" withRoutingKey "R2D2"
             }
 
             `given message from rabbitmq queue`<String>(

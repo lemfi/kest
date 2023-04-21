@@ -25,7 +25,7 @@ builder parameters are:
 [source,kotlin]
 ----
 // QueueAndBinding is built by a combination if three functions written as follows:
-`create queue` { "world" } `and bind it to exchange` "universe" `with routing key` "galaxy"
+`create queue` { "world" } `and bind it to exchange` "universe" withRoutingKey "galaxy"
 ----
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to / +
@@ -44,7 +44,7 @@ rabbitmq:
 [source,kotlin]
 ----
 `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
-    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" `with routing key` "Force"
+    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" withRoutingKey "Force"
 }
 ----
 
@@ -118,7 +118,7 @@ builder parameters are:
 [source,kotlin]
 ----
 // RabbitMQMessage may be built by a combination of functions written as follows:
-publish { "message_to_publish" } toExchange "target_exchange" `with routing key` "routing_key" withHeaders mapOf(
+publish { "message_to_publish" } toExchange "target_exchange" withRoutingKey "routing_key" withHeaders mapOf(
     "header" to "headerValue"
 ) withProperties {
     messageId = "my id"
@@ -143,6 +143,6 @@ rabbitmq:
 [source,kotlin]
 ----
 `publish rabbitmq message`("say hello world through universe") {
-    publish { """ { "hello": "world" } """ } toExchange "" `with routing key` "universe"
+    publish { """ { "hello": "world" } """ } toExchange "" withRoutingKey "universe"
 }
 ----
