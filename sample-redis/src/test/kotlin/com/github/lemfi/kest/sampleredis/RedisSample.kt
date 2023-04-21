@@ -13,23 +13,23 @@ class RedisSample {
     fun `redis is a planet in a galaxy far far away`() = playScenario(name = "Starwars characters", unwrap = false) {
 
         `redis insert data`(name = "declare Luke Skywalker") {
-            insert { "Luke Skywalker" } `with key` "ls" `in namespace` "light"
+            insert { "Luke Skywalker" } `with key` "ls" inNamespace "light"
         }
 
         `redis insert data`(name = "declare Han Solo") {
-            insert { "Han Solo" } `with key` "hs" `in namespace` "light"
+            insert { "Han Solo" } `with key` "hs" inNamespace "light"
         }
 
         `redis insert data`(name = "declare Leia Organa (Skywalker) Solo") {
-            insert { "Leia Organa (Skywalker) Solo" } `with key` "lo" `in namespace` "light"
+            insert { "Leia Organa (Skywalker) Solo" } `with key` "lo" inNamespace "light"
         }
 
         `redis insert data`(name = "declare Anakin Skywalker") {
-            insert { "Anakin Skywalker" } `with key` "as" `in namespace` "dark"
+            insert { "Anakin Skywalker" } `with key` "as" inNamespace "dark"
         }
 
         `redis insert data`(name = "declare Senator Palpatine") {
-            insert { "Senator Palpatine" } `with key` "sp" `in namespace` "dark"
+            insert { "Senator Palpatine" } `with key` "sp" inNamespace "dark"
         }
 
         `redis get key`(name = "find Luke Skywalker") {

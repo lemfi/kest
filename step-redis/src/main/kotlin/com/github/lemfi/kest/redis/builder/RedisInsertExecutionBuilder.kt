@@ -17,7 +17,10 @@ class RedisInsertExecutionBuilder : ExecutionBuilder<Unit> {
 
     fun insert(data: () -> String) = RedisInsert(data = data()).apply { insert = this }
     infix fun RedisInsert.`with key`(key: String) = also { it.key = key }
-    infix fun RedisInsert.`in namespace`(namespace: String) = also { it.namespace = namespace }
+
+    @Deprecated("use inNamespace instead", replaceWith = ReplaceWith("this inNamespace namespace"))
+    infix fun RedisInsert.`in namespace`(namespace: String) = inNamespace(namespace)
+    infix fun RedisInsert.inNamespace(namespace: String) = also { it.namespace = namespace }
 
     override fun toExecution(): Execution<Unit> {
         return RedisInsertKeyExecution(
