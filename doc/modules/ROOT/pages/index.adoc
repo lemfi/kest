@@ -142,7 +142,7 @@ scenario(name = "api says hello and remembers it!") {
                 "who": "Darth Vader"
             }
         """
-    } `assert that` { stepResult ->
+    } assertThat { stepResult ->
 
         stepResult.status isEqualTo 201
         stepResult.body  isEqualTo "Hello Darth Vader!"
@@ -158,7 +158,7 @@ scenario(name = "api says hello and remembers it!") {
                 "who": "Han Solo"
             }
         """
-    } `assert that` { stepResult ->
+    } assertThat { stepResult ->
 
         stepResult.status isEqualTo 201
         stepResult.body isEqualTo "Hello Han Solo!"
@@ -170,7 +170,7 @@ scenario(name = "api says hello and remembers it!") {
         method = "GET"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-    } `assert that` { stepResult ->
+    } assertThat { stepResult ->
 
         stepResult.status isEqualTo 200
         stepResult.body  isEqualTo listOf("Darth Vader", "Han Solo")

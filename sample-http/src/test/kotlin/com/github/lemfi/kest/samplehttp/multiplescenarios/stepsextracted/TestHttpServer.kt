@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted
 
-import com.github.lemfi.kest.core.cli.`assert that`
+import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.http.cli.`given http call`
@@ -42,7 +42,7 @@ class TestHttpServer {
                 method = "DELETE"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 stepResult.body isEqualTo "Goodbye Darth Vader!"
@@ -83,7 +83,7 @@ class TestHttpServer {
                 body = "whatever"
                 contentType = "text/plain"
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 400
                 json(stepResult.body) matches validator { "{{error}}" }

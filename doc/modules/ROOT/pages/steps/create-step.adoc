@@ -61,7 +61,7 @@ fun ScenarioBuilder.`given the sum of two numbers`(
 `given the sum of two numbers`(name = "addition of 1 and 2") {
     operand1 = 1
     operand2 = 2
-} `assert that` { res ->
+} assertThat { res ->
     res isEqualTo 3
 }
 ----

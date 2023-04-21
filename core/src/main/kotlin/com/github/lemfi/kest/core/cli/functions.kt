@@ -28,12 +28,17 @@ fun scenario(name: String = "anonymous scenario", s: ScenarioBuilder.() -> Unit)
     return StandaloneScenarioBuilder(name).apply(s).toScenario()
 }
 
-infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(l: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
+@Deprecated("use assertThat instead")
+infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(message: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
+    addAssertion(message)
+    return this
+}
+
+infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.assertThat(l: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
     addAssertion(l)
     return this
 }
 
-@Suppress("BlockingMethodInNonBlockingContext")
 fun ScenarioBuilder.wait(time: Long, name: String? = null) =
 
     createStep(

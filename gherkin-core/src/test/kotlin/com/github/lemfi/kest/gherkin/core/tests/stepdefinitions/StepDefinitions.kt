@@ -4,7 +4,7 @@ package com.github.lemfi.kest.gherkin.core.tests.stepdefinitions
 
 import com.github.lemfi.kest.core.builder.ExecutionBuilder
 import com.github.lemfi.kest.core.builder.ScenarioBuilder
-import com.github.lemfi.kest.core.cli.`assert that`
+import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.model.Execution
 import com.github.lemfi.kest.core.model.StandaloneStepResult
@@ -26,7 +26,7 @@ class StepDefinitions {
     fun ScenarioBuilder.step3() = step { /* do things, or not, whatever... */ }
 
     @Then("I can check another thing, whatever, that scenario is boring!")
-    fun ScenarioBuilder.step4() = step { "a boring scenario" } `assert that` {
+    fun ScenarioBuilder.step4() = step { "a boring scenario" } assertThat {
         it isEqualTo "a boring scenario"
     }
 }
@@ -49,7 +49,7 @@ object OtherStepDefinitions {
     }
 
     @Then("the result is")
-    fun ScenarioBuilder.theResultIs(stepResult: StandaloneStepResult<String>) = step { stepResult() } `assert that` {
+    fun ScenarioBuilder.theResultIs(stepResult: StandaloneStepResult<String>) = step { stepResult() } assertThat {
         it isEqualTo "a static stringanother static string"
     }
 
@@ -65,13 +65,13 @@ class YetOtherStepDefinitions {
 
     @Then("it becomes (.*)")
     fun ScenarioBuilder.checkString(previousStep: StandaloneStepResult<String>, expectedString: String) =
-        step { previousStep() } `assert that` {
+        step { previousStep() } assertThat {
             it isEqualTo expectedString
         }
 
     @Then("it becomes")
     fun ScenarioBuilder.checkString2(previousStep: StandaloneStepResult<String>, expectedString: String) =
-        step { previousStep() } `assert that` {
+        step { previousStep() } assertThat {
             it isEqualTo expectedString
         }
 
@@ -87,7 +87,7 @@ class YetOtherStepDefinitions {
 
     @Then("the result is (.*)")
     fun ScenarioBuilder.operationResult(previousStep: StandaloneStepResult<Double>, expectedResult: Double) =
-        step { previousStep() } `assert that` {
+        step { previousStep() } assertThat {
             it isEqualTo expectedResult
         }
 
@@ -104,7 +104,7 @@ class YetOtherStepDefinitions {
 
     @Then("the boolean result is (.*)")
     fun ScenarioBuilder.booleanResult(previousStep: StandaloneStepResult<Boolean>, expectedResult: Boolean) =
-        step { previousStep() } `assert that` {
+        step { previousStep() } assertThat {
             it isEqualTo expectedResult
         }
 }

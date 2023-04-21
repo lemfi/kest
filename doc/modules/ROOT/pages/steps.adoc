@@ -17,7 +17,7 @@ step(
     retry = 10.times `by intervals of` 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
 ) {
     // here goes the definition of the execution
-} `assert that` {
+} assertThat {
     // here goes list of assertions
 }
 ----
@@ -43,7 +43,7 @@ step(name = "name of my step") {
     // execute your need here
     1+1
 
-} `assert that` { stepResult ->
+} assertThat { stepResult ->
 
     stepResult isEqualTo 2
 
@@ -72,11 +72,11 @@ It's also on that `StepResult` that you can retrieve the result of the step.
 
 [source,kotlin,]
 ----
-val step1: StepResult<Int> = step { 1+1 } `assert that` { it isEqualTo 2 }
+val step1: StepResult<Int> = step { 1+1 } assertThat { it isEqualTo 2 }
 
-val step2: StepResult<Double> = step { step1() + 1.5 } `assert that` { it isEqualTo 3.5 }
+val step2: StepResult<Double> = step { step1() + 1.5 } assertThat { it isEqualTo 3.5 }
 
-step { step2.invoke().toString() } `assert that` { it isEqualTo "3.5" }
+step { step2.invoke().toString() } assertThat { it isEqualTo "3.5" }
 ----
 
 As you can see on the example, to get the result of a step you may invoke it.
@@ -92,14 +92,14 @@ It is still possible to return a result from a `nestedScenario`
 ----
 val step1 = nestedScenario<Double> {
 
-    val step11: StepResult<Int> = step { 1+1 } `assert that` { it isEqualTo 2 }
+    val step11: StepResult<Int> = step { 1+1 } assertThat { it isEqualTo 2 }
 
-    val step12: StepResult<Double> = step { step11() + 1.5 } `assert that` { it isEqualTo 3.5 }
+    val step12: StepResult<Double> = step { step11() + 1.5 } assertThat { it isEqualTo 3.5 }
 
     returns { step12() }
 }
 
-step { step1() + 4 } `assert that` { it isEqualTo 7.5 }
+step { step1() + 4 } assertThat { it isEqualTo 7.5 }
 ----
 
 === Transform the result of a step
@@ -108,9 +108,9 @@ You may transform a result of a step so that later steps reusing the result will
 
 [source,kotlin,]
 ----
-val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { it isEqualTo 2 }
+val step1 = step { 1 + 1 } `map result to` { it * 1.0 } assertThat { it isEqualTo 2 }
 
-step { step1() * 3 } `assert that` { it isEqualTo 18.0 }
+step { step1() * 3 } assertThat { it isEqualTo 18.0 }
 ----
 
 Here step1 result was transformed from an Int to a Double  +

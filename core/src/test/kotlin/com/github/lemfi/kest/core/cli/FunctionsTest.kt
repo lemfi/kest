@@ -68,7 +68,7 @@ class FunctionsTest {
         val l = slot<AssertionsBuilder.(stepResult: String) -> Unit>()
         every { stepResult.addAssertion(capture(l)) } returns Unit
 
-        val res = stepResult `assert that` {
+        val res = stepResult assertThat {
             true isFalse { "fail message" }
         }
 

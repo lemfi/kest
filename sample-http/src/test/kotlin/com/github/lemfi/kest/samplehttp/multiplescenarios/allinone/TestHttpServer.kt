@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.samplehttp.multiplescenarios.allinone
 
-import com.github.lemfi.kest.core.cli.`assert that`
+import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
@@ -35,7 +35,7 @@ class TestHttpServer {
                             "who": "Darth Vader"
                         }
                         """
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201 { "Saying Hello should return a 201, was ${stepResult.status}!" }
                 stepResult.body isEqualTo "Hello Darth Vader!"
@@ -51,7 +51,7 @@ class TestHttpServer {
                             "who": "Han Solo"
                         }
                     """
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 stepResult.body isEqualTo "Hello Han Solo!"
@@ -63,7 +63,7 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 200
                 stepResult.body isEqualTo listOf("Darth Vader", "Han Solo")
@@ -76,7 +76,7 @@ class TestHttpServer {
                 followRedirect = false
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 302
                 stepResult.headers["Location"] isEqualTo listOf("http://localhost:8080/hello")
@@ -89,7 +89,7 @@ class TestHttpServer {
                 followRedirect = true
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 200
                 stepResult.body isEqualTo listOf("Darth Vader", "Han Solo")
@@ -113,7 +113,7 @@ class TestHttpServer {
                             "who": "Darth Vader"
                         }
                         """
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 stepResult.body isEqualTo "Hello Darth Vader!"
@@ -129,7 +129,7 @@ class TestHttpServer {
                             "who": "Han Solo"
                         }
                     """
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 stepResult.body isEqualTo "Hello Han Solo!"
@@ -141,7 +141,7 @@ class TestHttpServer {
                 method = "DELETE"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 stepResult.body isEqualTo "Goodbye Darth Vader!"
@@ -153,7 +153,7 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 200
                 stepResult.body isEqualTo listOf("Han Solo")
@@ -177,7 +177,7 @@ class TestHttpServer {
                             "who": "Darth Vader"
                         }
                         """
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 405
                 json(stepResult.body) matches validator { "{{error}}" }
@@ -200,7 +200,7 @@ class TestHttpServer {
 
             } `map result to` {
                 it.body["otp"] as String
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 json(stepResult.body) matches validator {
@@ -220,7 +220,7 @@ class TestHttpServer {
                 body = otp()
                 contentType = "text/plain"
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 204
             }
@@ -234,7 +234,7 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 json(stepResult.body) matches validator {
@@ -254,7 +254,7 @@ class TestHttpServer {
                 body = "whatever"
                 contentType = "text/plain"
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 400
                 json(stepResult.body) matches validator { "{{error}}" }
@@ -275,7 +275,7 @@ class TestHttpServer {
             ) {
                 url = "http://localhost:8080/oh-if-you-retry-it-shall-pass"
                 method = "GET"
-            } `assert that` {
+            } assertThat {
                 it.body isEqualTo "You called me 98 times!"
             }
 
@@ -295,7 +295,7 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 200
                 json(stepResult.body) matches validator {
@@ -324,7 +324,7 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 200
                 stepResult.body isEqualTo listOf (
@@ -347,7 +347,7 @@ class TestHttpServer {
                 url = "http://localhost:8080/death-star-secret-plans"
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-            } `assert that` {
+            } assertThat {
                 it.status isEqualTo 404
                 it.body isEqualTo "Waiting for Rogue one..."
             }
@@ -409,7 +409,7 @@ class TestHttpServer {
                         """.trimIndent().toByteArray(Charset.defaultCharset())
                     }
                 )
-            } `assert that` { stepResult ->
+            } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
                 stepResult.body isEqualTo "May the Force be with you!"
@@ -420,7 +420,7 @@ class TestHttpServer {
                 url = "http://localhost:8080/death-star-secret-plans"
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-            } `assert that` {
+            } assertThat {
                 it.status isEqualTo 200
                 it.body isEqualTo """ 
                     

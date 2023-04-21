@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.samplerabbit
 
-import com.github.lemfi.kest.core.cli.`assert that`
+import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.model.`by intervals of`
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.seconds
@@ -32,7 +32,7 @@ class TestReadWrite {
 
         `given number of messages in rabbitmq queue`(retry = 20.times `by intervals of` 200.ms) {
             queue = "obi-wan kenobi"
-        } `assert that` {
+        } assertThat {
             it.total isEqualTo 0L
         }
 
@@ -47,14 +47,14 @@ class TestReadWrite {
             queue = "obi-wan kenobi"
             messageTransformer = { toString(Charsets.UTF_8) }
             nbMessages = 2
-        } `assert that` {
+        } assertThat {
             it.first().message isEqualTo "Au secours obi-wan kenobi, vous êtes notre seul espoir !"
             it.last().message isEqualTo "Au secours obi-wan kenobi, vous êtes notre seul espoir !"
         }
 
         `given number of messages in rabbitmq queue` {
             queue = "obi-wan kenobi"
-        } `assert that` {
+        } assertThat {
             it.total isEqualTo 0L
         }
     }
@@ -77,13 +77,13 @@ class TestReadWrite {
             ) {
                 queue = "obi-wan kenobi"
                 messageTransformer = { toString(Charsets.UTF_8) }
-            } `assert that` {
+            } assertThat {
                 it.message isEqualTo "Au secours obi-wan kenobi, vous êtes notre seul espoir !"
             }
 
             `given number of messages in rabbitmq queue` {
                 queue = "obi-wan kenobi"
-            } `assert that` {
+            } assertThat {
                 it.total isEqualTo 0L
             }
 

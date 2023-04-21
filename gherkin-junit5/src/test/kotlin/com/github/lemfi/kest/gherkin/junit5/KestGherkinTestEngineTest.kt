@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.gherkin.junit5
 
-import com.github.lemfi.kest.core.cli.`assert that`
+import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.cli.step
@@ -953,7 +953,7 @@ class KestGherkinTestEngineTest {
 
         val feature =
             scenario(name = "s1") {
-                step(name = "step1") { "HELLO" } `assert that` { false.isTrue }
+                step(name = "step1") { "HELLO" } assertThat { false.isTrue }
             }
 
         val descriptor = StepTestDescriptor(
@@ -997,8 +997,8 @@ Expected true, was false
 
         val feature =
             scenario(name = "s1") {
-                val step1 = step(name = "step1") { } `assert that` { false.isTrue }
-                step(name = "step2") { step1(); "HELLO" } `assert that` { true.isTrue }
+                val step1 = step(name = "step1") { } assertThat { false.isTrue }
+                step(name = "step2") { step1(); "HELLO" } assertThat { true.isTrue }
             }
 
         val descriptor = StepTestDescriptor(
