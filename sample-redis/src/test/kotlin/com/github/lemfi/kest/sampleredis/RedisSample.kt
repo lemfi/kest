@@ -45,7 +45,7 @@ class RedisSample {
         }
 
         `redis delete key`(name = "delete vilains") {
-            `delete key` { "*" } `from namespace` "dark"
+            deleteKey { "*" } `from namespace` "dark"
         }
 
     }

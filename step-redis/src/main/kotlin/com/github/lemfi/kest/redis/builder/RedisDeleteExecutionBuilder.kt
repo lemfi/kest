@@ -15,7 +15,9 @@ class RedisDeleteExecutionBuilder : ExecutionBuilder<Unit> {
 
     private lateinit var delete: RedisDelete
 
-    fun `delete key`(key: () -> String) = RedisDelete(key = key()).apply { delete = this }
+    @Deprecated("use deleteKey instead", replaceWith = ReplaceWith("deleteKey (key)"))
+    fun `delete key`(key: () -> String) = deleteKey(key)
+    fun deleteKey(key: () -> String) = RedisDelete(key = key()).apply { delete = this }
     infix fun RedisDelete.`from namespace`(namespace: String) = also { it.namespace = namespace }
 
     override fun toExecution(): Execution<Unit> {
