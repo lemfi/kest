@@ -2,7 +2,7 @@ package com.github.lemfi.kest.sampleredis
 
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.junit5.runner.playScenario
-import com.github.lemfi.kest.redis.cli.`redis delete key`
+import com.github.lemfi.kest.redis.cli.redisDeleteKey
 import com.github.lemfi.kest.redis.cli.`redis get key`
 import com.github.lemfi.kest.redis.cli.`redis insert data`
 import org.junit.jupiter.api.TestFactory
@@ -44,7 +44,7 @@ class RedisSample {
             it isEqualTo "Anakin Skywalker"
         }
 
-        `redis delete key`(name = "delete vilains") {
+        redisDeleteKey(name = "delete vilains") {
             deleteKey { "*" } fromNamespace "dark"
         }
 

@@ -10,7 +10,14 @@ import com.github.lemfi.kest.redis.builder.RedisDeleteExecutionBuilder
 import com.github.lemfi.kest.redis.builder.RedisInsertExecutionBuilder
 import com.github.lemfi.kest.redis.builder.RedisReadExecutionBuilder
 
+@Deprecated("use redisDeleteKey instead")
 fun ScenarioBuilder.`redis delete key`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RedisDeleteExecutionBuilder.() -> Unit
+) = redisDeleteKey(name, retry, builder)
+
+fun ScenarioBuilder.redisDeleteKey(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RedisDeleteExecutionBuilder.() -> Unit
