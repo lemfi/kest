@@ -46,7 +46,14 @@ fun ScenarioBuilder.`given mongo documents`(
         retry = retryStep
     ) { MongoDBReadDocumentExecutionBuilder().apply(h) }
 
+@Deprecated("use deleteMongoDocuments instead")
 fun ScenarioBuilder.`delete mongo documents`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBDeleteDocumentExecutionBuilder.() -> Unit
+) = deleteMongoDocuments(name, retryStep, h)
+
+fun ScenarioBuilder.deleteMongoDocuments(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBDeleteDocumentExecutionBuilder.() -> Unit

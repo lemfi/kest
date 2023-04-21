@@ -213,7 +213,7 @@ Optional, defaults to database configured in kest.yml
 
 == Delete documents!
 
-`delete mongo documents`
+`deleteMongoDocuments`
 
 === Parameters to provide on step
 
@@ -228,7 +228,7 @@ Optional, defaults to database configured in kest.yml
 
 [source,kotlin]
 ----
-`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on "starwars" DB""") {
+deleteMongoDocuments(name = """remove planet Alderaan from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -239,7 +239,7 @@ Optional, defaults to database configured in kest.yml
 
 [source,kotlin]
 ----
-`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on globally configured database""") {
+deleteMongoDocuments(name = """remove planet Alderaan from "planets" collection on globally configured database""") {
     collection = "planets"
 
     filter = mapOf("name" to "Alderaan")
