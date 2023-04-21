@@ -118,7 +118,7 @@ builder parameters are:
 [source,kotlin]
 ----
 // RabbitMQMessage may be built by a combination of functions written as follows:
-publish { "message_to_publish" } toExchange "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
+publish { "message_to_publish" } toExchange "target_exchange" `with routing key` "routing_key" withHeaders mapOf(
     "header" to "headerValue"
 ) `with properties` {
     messageId = "my id"
