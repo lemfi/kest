@@ -20,8 +20,8 @@ internal data class RabbitMQCountMessagesExecution(
     val queue: String,
 ) : Execution<RabbitMQMessageCount>() {
 
-    private val encodedVhost: String = URLEncoder.encode(vhost, Charsets.UTF_8)
-    private val encodedQueue: String = URLEncoder.encode(queue, Charsets.UTF_8)
+    private val encodedVhost: String = URLEncoder.encode(vhost, Charsets.UTF_8).replace("+", "%20")
+    private val encodedQueue: String = URLEncoder.encode(queue, Charsets.UTF_8).replace("+", "%20")
     private val bass64Credentials: String = Base64.getEncoder().encodeToString("$user:$password".toByteArray())
 
     override fun execute(): RabbitMQMessageCount {
