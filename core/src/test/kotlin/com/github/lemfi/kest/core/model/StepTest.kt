@@ -289,7 +289,7 @@ class StepTest {
         )
         stepRes.setResult("successful step")
 
-        val res = stepRes `map result to` { "$it is transformed" }
+        val res = stepRes mapResultTo { "$it is transformed" }
 
         Assertions.assertEquals("successful step is transformed", res())
     }
@@ -306,7 +306,7 @@ class StepTest {
         )
         stepRes.setResult("successful step")
 
-        val res = stepRes `map result to` { "$it is transformed" }
+        val res = stepRes mapResultTo { "$it is transformed" }
 
         Assertions.assertEquals("successful step is transformed", res())
     }

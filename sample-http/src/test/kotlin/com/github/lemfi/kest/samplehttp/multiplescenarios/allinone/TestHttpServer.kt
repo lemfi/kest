@@ -198,7 +198,7 @@ class TestHttpServer {
                 method = "GET"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-            } `map result to` {
+            } mapResultTo {
                 it.body["otp"] as String
             } assertThat { stepResult ->
 

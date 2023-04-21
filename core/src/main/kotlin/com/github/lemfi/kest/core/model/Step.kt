@@ -135,7 +135,9 @@ class StandaloneStepPostExecution<INITIAL_RESULT : Any?, RESULT, MAPPED_RESULT>(
     transformer: (RESULT) -> MAPPED_RESULT
 ) : IStepPostExecution<RESULT, MAPPED_RESULT>(step, pe, transformer) {
 
+    @Deprecated("use `mapResultTo` instead", replaceWith = ReplaceWith("this mapResultTo mapper"))
     infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = StandaloneStepPostExecution(step, this, mapper)
+    infix fun <M> mapResultTo(mapper: (MAPPED_RESULT) -> M) = StandaloneStepPostExecution(step, this, mapper)
 
     val assertions: MutableList<AssertionsBuilder.(INITIAL_RESULT) -> Unit> = mutableListOf()
 
@@ -150,7 +152,9 @@ class NestedScenarioStepPostExecution<RESULT, MAPPED_RESULT>(
     transformer: (RESULT) -> MAPPED_RESULT
 ) : IStepPostExecution<RESULT, MAPPED_RESULT>(step, pe, transformer) {
 
+    @Deprecated("use `mapResultTo` instead", replaceWith = ReplaceWith("this mapResultTo mapper"))
     infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
+    infix fun <M> mapResultTo(mapper: (MAPPED_RESULT) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
 
 }
 

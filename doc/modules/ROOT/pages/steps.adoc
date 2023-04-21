@@ -108,7 +108,7 @@ You may transform a result of a step so that later steps reusing the result will
 
 [source,kotlin,]
 ----
-val step1 = step { 1 + 1 } `map result to` { it * 1.0 } assertThat { it isEqualTo 2 }
+val step1 = step { 1 + 1 } mapResultTo { it * 1.0 } assertThat { it isEqualTo 2 }
 
 step { step1() * 3 } assertThat { it isEqualTo 18.0 }
 ----
@@ -117,5 +117,5 @@ Here step1 result was transformed from an Int to a Double  +
 Even though in assertions of step 1 the result is still an Int: Assertions are always done on initial result, not transformed one. +
 Then when second step invoked step1 result it got a Double +
 
-NOTE: Take care, when you use `map result to` it will not transform the result for the assertions of the step, assertions are always done on step initial result. +
-Moreover,  `map result to` lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then `map result to` lambda will never be executed.
+NOTE: Take care, when you use `mapResultTo` it will not transform the result for the assertions of the step, assertions are always done on step initial result. +
+Moreover,  `mapResultTo` lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then `mapResultTo` lambda will never be executed.

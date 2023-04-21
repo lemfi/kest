@@ -77,9 +77,9 @@ fun ScenarioBuilder.`validate otp`(otp: String) =
 
 fun ScenarioBuilder.`generate otps`() = nestedScenario<List<String>>("generate 3 OTPs") {
 
-    val otp1 = `get otp`().`map result to` { it.body["otp"] as String }
-    val otp2 = `get otp`().`map result to` { it.body["otp"] as String }
-    val otp3 = `get otp`().`map result to` { it.body["otp"] as String }
+    val otp1 = `get otp`() mapResultTo { it.body["otp"] as String }
+    val otp2 = `get otp`() mapResultTo { it.body["otp"] as String }
+    val otp3 = `get otp`() mapResultTo { it.body["otp"] as String }
 
     returns { listOf(otp1(), otp2(), otp3()) }
 }
