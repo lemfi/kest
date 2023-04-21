@@ -30,7 +30,14 @@ fun ScenarioBuilder.redisDeleteKey(
         RedisDeleteExecutionBuilder().apply(builder)
     }
 
+@Deprecated("use redisGetKey instead")
 fun ScenarioBuilder.`redis get key`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RedisReadExecutionBuilder.() -> Unit
+) = redisGetKey(name, retry, builder)
+
+fun ScenarioBuilder.redisGetKey(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RedisReadExecutionBuilder.() -> Unit

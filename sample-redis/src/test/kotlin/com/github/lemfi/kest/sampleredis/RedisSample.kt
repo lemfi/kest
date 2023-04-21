@@ -3,7 +3,7 @@ package com.github.lemfi.kest.sampleredis
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.redis.cli.redisDeleteKey
-import com.github.lemfi.kest.redis.cli.`redis get key`
+import com.github.lemfi.kest.redis.cli.redisGetKey
 import com.github.lemfi.kest.redis.cli.`redis insert data`
 import org.junit.jupiter.api.TestFactory
 
@@ -32,13 +32,13 @@ class RedisSample {
             insert { "Senator Palpatine" } withKey "sp" inNamespace "dark"
         }
 
-        `redis get key`(name = "find Luke Skywalker") {
+        redisGetKey(name = "find Luke Skywalker") {
             readKey { "ls" } fromNamespace "light"
         } assertThat {
             it isEqualTo "Luke Skywalker"
         }
 
-        `redis get key`(name = "find Anakin Skywalker") {
+        redisGetKey(name = "find Anakin Skywalker") {
             readKey { "as" } fromNamespace "dark"
         } assertThat {
             it isEqualTo "Anakin Skywalker"
