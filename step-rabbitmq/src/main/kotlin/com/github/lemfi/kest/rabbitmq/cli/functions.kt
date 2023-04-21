@@ -31,7 +31,14 @@ fun ScenarioBuilder.publishRabbitmqMessage(
         retry = retry
     ) { RabbitMQMessageExecutionBuilder().apply(builder) }
 
+@Deprecated("use givenMessagesFromRabbitmqQueue instead")
 inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    noinline builder: RabbitMQQueueMultipleMessagesReaderExecutionBuilder<T>.() -> Unit
+) = givenMessagesFromRabbitmqQueue(name, retry, builder)
+
+inline fun <reified T> ScenarioBuilder.givenMessagesFromRabbitmqQueue(
     name: String? = null,
     retry: RetryStep? = null,
     noinline builder: RabbitMQQueueMultipleMessagesReaderExecutionBuilder<T>.() -> Unit
@@ -79,12 +86,21 @@ inline fun <reified T> ScenarioBuilder.givenMessageFromRabbitmqQueue(
         }.apply(builder)
     }
 
-@JvmName("readRabbitMQMessageAsByteArray")
+@Deprecated("use givenMessagesFromRabbitmqQueue instead")
+@JvmName("readRabbitMQMessageAsByteArrayDeprecated")
 fun ScenarioBuilder.`given messages from rabbitmq queue`(
     name: String? = null,
     retry: RetryStep? = null,
     h: RabbitMQQueueMultipleMessagesReaderExecutionBuilder<ByteArray>.() -> Unit
-) = `given messages from rabbitmq queue`<ByteArray>(name, retry, h)
+) = givenMessagesFromRabbitmqQueue(name, retry, h)
+
+
+@JvmName("readRabbitMQMessageAsByteArray")
+fun ScenarioBuilder.givenMessagesFromRabbitmqQueue(
+    name: String? = null,
+    retry: RetryStep? = null,
+    h: RabbitMQQueueMultipleMessagesReaderExecutionBuilder<ByteArray>.() -> Unit
+) = givenMessagesFromRabbitmqQueue<ByteArray>(name, retry, h)
 
 
 @Deprecated("use createRabbitmqQueue instead")

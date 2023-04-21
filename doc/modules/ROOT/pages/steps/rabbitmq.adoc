@@ -6,6 +6,7 @@
 * delete a queue `deleteRabbitmqQueue`
 * publish a message on a queue `publishRabbitmqMessage`
 * read a message from a queue `givenMessageFromRabbitmqQueue`
+* read multiple messages from a queue `givenMessagesFromRabbitmqQueue`
 
 == Create a queue on RabbitMQ
 
@@ -81,7 +82,7 @@ deleteRabbitmqQueue("Obi-Wan Kenobi no longer wants to use his powers") {
 }
 ----
 
-== Read messages from rabbitMQ
+== Read one message from rabbitMQ queue
 
 This step comes as a parameterized function, the parameterized type is the expected return type for the message to read. +
 Default return type is `ByteArray`
@@ -94,7 +95,6 @@ Default return type is `ByteArray`
 builder parameters are:
 ** queue: String // queue from which read message
 ** messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
-** nbMessges: Int // optional number of messages to retrieve, defaults to 1
 ** deleteQueue: Boolean // Should queue be deleted after reading, defaults to false
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to / +
@@ -115,6 +115,47 @@ rabbitmq:
 givenMessageFromRabbitmqQueue<String> {
         queue = "kest"
         messageTransformer = { toString(Charsets.UTF_8) }
+}
+----
+
+N.B: For messages with Json format you may use `toJson` function, which maps `ByteArray` to a `JsonMap`. +
+See xref:json.adoc[Kest JSON] documentation for more details.
+
+== Read multiple messages from rabbitMQ
+
+This step comes as a parameterized function, the parameterized type is the expected return type for the message to read. +
+Default return type is `ByteArray`
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQMessagesExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** queue: String // queue from which read message
+** messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
+** nbMessages: Int // optional number of messages to retrieve, defaults to 1
+** deleteQueue: Boolean // Should queue be deleted after reading, defaults to false
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to / +
++
+connection and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+givenMessagesFromRabbitmqQueue<String> {
+        queue = "kest"
+        messageTransformer = { toString(Charsets.UTF_8) }
+        nbMessages = 2
 }
 ----
 
