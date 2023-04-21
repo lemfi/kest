@@ -38,7 +38,14 @@ inline fun <reified R> ScenarioBuilder.givenActivityCall(
         retry = retryStep,
     ) { ActivityCallExecutionBuilder<R>(object : TypeToken<R>() {}.type).apply(h) }
 
+@Suppress("unused")
 fun <R> ScenarioBuilder.`given workflow`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: WorkflowExecutionBuilder<R>.() -> Unit
+) = givenWorkflow(name, retryStep, h)
+
+fun <R> ScenarioBuilder.givenWorkflow(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: WorkflowExecutionBuilder<R>.() -> Unit

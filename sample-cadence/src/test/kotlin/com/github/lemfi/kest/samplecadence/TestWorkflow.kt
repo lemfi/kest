@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.samplecadence
 
-import com.github.lemfi.kest.cadence.cli.`given workflow`
+import com.github.lemfi.kest.cadence.cli.givenWorkflow
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.samplecadence.sampleapi.Hello
@@ -22,7 +22,7 @@ class TestWorkflow {
     @TestFactory
     fun `Darth Vader says hello!`() = playScenario(name = "Darth Vader says hello!") {
 
-        `given workflow`("Say Hello Workflow") {
+        givenWorkflow("Say Hello Workflow") {
 
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"
