@@ -109,7 +109,7 @@ insertMongoDocument(name = """insert Endor into "planets" collection on globally
 
 == Update documents
 
-`update mongo document`
+`updateMongoDocument`
 
 === Parameters to provide on step
 
@@ -125,7 +125,7 @@ Optional, defaults to database configured in kest.yml
 
 [source,kotlin]
 ----
-`update mongo document`(name = """update Endor planet from "planets" collection on "starwars" DB""") {
+updateMongoDocument(name = """update Endor planet from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -137,7 +137,7 @@ Optional, defaults to database configured in kest.yml
 
 [source,kotlin]
 ----
-`update mongo document`(name = """update Endor planet from "planets" collection on globally configured database""") {
+updateMongoDocument(name = """update Endor planet from "planets" collection on globally configured database""") {
     collection = "planets"
 
     filter = mapOf("name" to "Endor")

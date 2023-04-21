@@ -31,7 +31,14 @@ fun ScenarioBuilder.insertMongoDocument(
         retry = retryStep
     ) { MongoDBInsertDocumentExecutionBuilder().apply(h) }
 
+@Deprecated("use updateMongoDocument instead")
 fun ScenarioBuilder.`update mongo document`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBUpdateDocumentExecutionBuilder.() -> Unit
+) = updateMongoDocument(name, retryStep, h)
+
+fun ScenarioBuilder.updateMongoDocument(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBUpdateDocumentExecutionBuilder.() -> Unit
