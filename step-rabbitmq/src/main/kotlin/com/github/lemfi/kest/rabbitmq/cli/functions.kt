@@ -55,7 +55,14 @@ inline fun <reified T> ScenarioBuilder.`given messages from rabbitmq queue`(
             }
     }
 
+@Deprecated("use givenMessageFromRabbitmqQueue instead")
 inline fun <reified T> ScenarioBuilder.`given message from rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    noinline builder: RabbitMQQueueSingleReaderExecutionBuilder<T>.() -> Unit
+) = givenMessageFromRabbitmqQueue(name, retry, builder)
+
+inline fun <reified T> ScenarioBuilder.givenMessageFromRabbitmqQueue(
     name: String? = null,
     retry: RetryStep? = null,
     noinline builder: RabbitMQQueueSingleReaderExecutionBuilder<T>.() -> Unit

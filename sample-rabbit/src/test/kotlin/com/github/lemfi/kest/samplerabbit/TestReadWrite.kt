@@ -7,7 +7,7 @@ import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.rabbitmq.cli.createRabbitmqQueue
-import com.github.lemfi.kest.rabbitmq.cli.`given message from rabbitmq queue`
+import com.github.lemfi.kest.rabbitmq.cli.givenMessageFromRabbitmqQueue
 import com.github.lemfi.kest.rabbitmq.cli.`given messages from rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given number of messages in rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.publishRabbitmqMessage
@@ -71,7 +71,7 @@ class TestReadWrite {
                 publish { "obi-wan kenobi" } toExchange "" withRoutingKey "R2D2"
             }
 
-            `given message from rabbitmq queue`<String>(
+            givenMessageFromRabbitmqQueue<String>(
                 name = "message from Leia was broadcasted",
                 retry = 10.times byIntervalsOf 1.seconds
             ) {

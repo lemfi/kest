@@ -5,7 +5,7 @@
 * create a queue `createRabbitmqQueue`
 * delete a queue `deleteRabbitmqQueue`
 * publish a message on a queue `publishRabbitmqMessage`
-* read a message from a queue ````given message from rabbitmq queue````
+* read a message from a queue `givenMessageFromRabbitmqQueue`
 
 == Create a queue on RabbitMQ
 
@@ -112,7 +112,7 @@ rabbitmq:
 
 [source,kotlin]
 ----
-`given message from rabbitmq queue`<String> {
+givenMessageFromRabbitmqQueue<String> {
         queue = "kest"
         messageTransformer = { toString(Charsets.UTF_8) }
 }
