@@ -118,7 +118,7 @@ builder parameters are:
 [source,kotlin]
 ----
 // RabbitMQMessage may be built by a combination of functions written as follows:
-publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
+publish { "message_to_publish" } toExchange "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
     "header" to "headerValue"
 ) `with properties` {
     messageId = "my id"
@@ -143,6 +143,6 @@ rabbitmq:
 [source,kotlin]
 ----
 `publish rabbitmq message`("say hello world through universe") {
-    publish { """ { "hello": "world" } """ } `to exchange` "" `with routing key` "universe"
+    publish { """ { "hello": "world" } """ } toExchange "" `with routing key` "universe"
 }
 ----

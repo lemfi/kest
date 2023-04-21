@@ -12,7 +12,10 @@ import java.util.Date
 class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
 
     fun publish(message: () -> String) = RabbitMQMessage(message()).also { this.message = it }
-    infix fun RabbitMQMessage.`to exchange`(exchange: String) = also { it.exchange = exchange }
+
+    @Deprecated("use toExchange instead", replaceWith = ReplaceWith("this toExchange exchange"))
+    infix fun RabbitMQMessage.`to exchange`(exchange: String) = toExchange(exchange)
+    infix fun RabbitMQMessage.toExchange(exchange: String) = also { it.exchange = exchange }
     infix fun RabbitMQMessage.`with routing key`(routingKey: String?) = also { it.routingKey = routingKey }
     infix fun RabbitMQMessage.`with headers`(headers: Map<String, Any>) = also { it.headers = headers }
     infix fun RabbitMQMessage.`with properties`(propertiesBuilder: RabbitMQPropertiesBuilder.() -> Unit) =
