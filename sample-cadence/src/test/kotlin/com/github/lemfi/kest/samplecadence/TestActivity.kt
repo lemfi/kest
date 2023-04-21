@@ -1,6 +1,6 @@
 package com.github.lemfi.kest.samplecadence
 
-import com.github.lemfi.kest.cadence.cli.`given activity call`
+import com.github.lemfi.kest.cadence.cli.givenActivityCall
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.samplecadence.sampleapi.IMayTheForceBeWithYouActivity
@@ -24,7 +24,7 @@ class TestActivity {
     @TestFactory
     fun `Darth Vader needs the Force`() = playScenario(name = "Darth Vader needs the Force") {
 
-        `given activity call` {
+        givenActivityCall {
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"
 
@@ -38,7 +38,7 @@ class TestActivity {
     @TestFactory
     fun `Darth Vader recruits a padawan`() = playScenario(name = "Darth Vader recruits a padawan") {
 
-        `given activity call` {
+        givenActivityCall {
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"
 
@@ -52,7 +52,7 @@ class TestActivity {
     @TestFactory
     fun `Darth Vader recruits all padawans`() = playScenario(name = "Darth Vader recruits a padawan") {
 
-        `given activity call`<List<Padawan>> {
+        givenActivityCall<List<Padawan>> {
             domain = "kest"
             tasklist = "SAMPLE_CADENCE"
 

@@ -17,7 +17,17 @@ import com.uber.cadence.serviceclient.WorkflowServiceTChannel
 
 private val logger = LoggerFactory.getLogger("CADENCE-Kest")
 
+
+@Suppress("unused")
+@Deprecated("use givenActivityCall instead")
 inline fun <reified R> ScenarioBuilder.`given activity call`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    noinline h: ActivityCallExecutionBuilder<R>.() -> Unit
+) = givenActivityCall(name, retryStep, h)
+
+
+inline fun <reified R> ScenarioBuilder.givenActivityCall(
     name: String? = null,
     retryStep: RetryStep? = null,
     noinline h: ActivityCallExecutionBuilder<R>.() -> Unit
