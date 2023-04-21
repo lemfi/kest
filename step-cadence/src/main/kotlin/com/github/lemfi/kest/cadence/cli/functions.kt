@@ -56,7 +56,14 @@ fun <R> ScenarioBuilder.givenWorkflow(
         retry = retryStep
     ) { WorkflowExecutionBuilder<R>().apply(h) }
 
+@Deprecated("use createDomain instead", replaceWith = ReplaceWith("createDomain(name = name, cadenceHost = cadenceHost, cadencePort = cadencePort)"))
 fun `create domain`(
+    name: String,
+    cadenceHost: String = cadenceProperty { host },
+    cadencePort: Int = cadenceProperty { port }
+) = createDomain(name, cadenceHost, cadencePort)
+
+fun createDomain(
     name: String,
     cadenceHost: String = cadenceProperty { host },
     cadencePort: Int = cadenceProperty { port }
