@@ -103,7 +103,14 @@ fun ScenarioBuilder.`given number of messages in rabbitmq queue`(
         retry = retry
     ) { RabbitMQCountMessagesExecutionBuilder().apply(builder) }
 
+@Deprecated("use deleteRabbitmqQueue instead")
 fun ScenarioBuilder.`delete rabbitmq queue`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RabbitMQQueueDeletionExecutionBuilder.() -> Unit
+) = deleteRabbitmqQueue(name, retry, builder)
+
+fun ScenarioBuilder.deleteRabbitmqQueue(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RabbitMQQueueDeletionExecutionBuilder.() -> Unit

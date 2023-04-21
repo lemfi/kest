@@ -3,6 +3,7 @@
 = RabbitMQ Steps
 
 * create a queue `createRabbitmqQueue`
+* delete a queue `deleteRabbitmqQueue`
 * publish a message on a queue ````publish rabbitmq message````
 * read a message from a queue ````given message from rabbitmq queue````
 
@@ -16,7 +17,6 @@ This step may seem useless, consider it as a helper to build scenarios
 * retry: String // optional, give a chance for step to fail several times before passing
 * builder: RabbitMQQueueCreationExecutionBuilder.() -> Unit // mandatory, configure execution of step +
 builder parameters are:
-** description: () -> String? // optional, describe execution
 ** message: QueueAndBinding // mandatory, configuration of queue to create
 *** queue: String // mandatory, queue to create
 *** exchange: String? // optional, if not set no binding will be created to any exchange
@@ -45,6 +45,39 @@ rabbitmq:
 ----
 createRabbitmqQueue("Obi-Wan Kenobi should be born before he can receive a message") {
     createQueue { "obi-wan_kenobi" } andBindItToExchange "StarWars" withRoutingKey "Force"
+}
+----
+
+== Delete a queue on RabbitMQ
+
+This step may seem useless, consider it as a helper to build scenarios
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQQueueDeletionExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+
+** queue: String // mandatory, queue to create
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to / +
++
+connection and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+deleteRabbitmqQueue("Obi-Wan Kenobi no longer wants to use his powers") {
+    queue = "obi-wan_kenobi"
 }
 ----
 

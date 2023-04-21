@@ -2,7 +2,7 @@ package com.github.lemfi.kest.samplerabbit
 
 import com.github.lemfi.kest.core.cli.run
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.rabbitmq.cli.`delete rabbitmq queue`
+import com.github.lemfi.kest.rabbitmq.cli.deleteRabbitmqQueue
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
@@ -17,7 +17,7 @@ var consumer: String? = null
 fun startRabbitApplication() {
 
     scenario {
-        `delete rabbitmq queue` {
+        deleteRabbitmqQueue {
             queue = "obi-wan_kenobi"
         }
     }.run()
