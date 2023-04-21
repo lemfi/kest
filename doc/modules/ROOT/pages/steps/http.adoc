@@ -2,7 +2,7 @@
 
 = HTTP Steps
 
-one step is defined here : ````given http call````
+one step is defined here : `givenHttpCall`
 
 This step comes as a parameterized function, the parameterized type is the expected return type for the HTTP Call. +
 Return type of step is HTTPResponse<EXPECTED_RESULT>
@@ -22,7 +22,7 @@ image::{gitplant}/step-http/doc/diag/model.puml[]
 
 [source,kotlin]
 ----
-val stepResult = `given http call`<String> {
+val stepResult = givenHttpCall<String> {
 
     url = "http://myapi/hello"
     method = "POST"

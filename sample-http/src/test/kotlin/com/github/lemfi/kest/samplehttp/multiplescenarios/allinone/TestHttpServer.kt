@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.cli.scenario
 import com.github.lemfi.kest.core.model.byIntervalsOf
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.times
-import com.github.lemfi.kest.http.cli.`given http call`
+import com.github.lemfi.kest.http.cli.givenHttpCall
 import com.github.lemfi.kest.http.model.fileDataPart
 import com.github.lemfi.kest.http.model.multipartBody
 import com.github.lemfi.kest.json.cli.json
@@ -25,7 +25,7 @@ class TestHttpServer {
     fun `http server hello`() = playScenarios(
         scenario(name = "api says hello and remembers it!") {
 
-            `given http call`<String>("Darth Vader says hello") {
+            givenHttpCall<String>("Darth Vader says hello") {
 
                 url = "http://localhost:8080/hello"
                 method = "POST"
@@ -41,7 +41,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo "Hello Darth Vader!"
             }
 
-            `given http call`<String>("Han Solo says hello") {
+            givenHttpCall<String>("Han Solo says hello") {
 
                 url = "http://localhost:8080/hello"
                 method = "POST"
@@ -57,7 +57,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo "Hello Han Solo!"
             }
 
-            `given http call`<List<String>>("get list of greeted people") {
+            givenHttpCall<List<String>>("get list of greeted people") {
 
                 url = "http://localhost:8080/hello"
                 method = "GET"
@@ -69,7 +69,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo listOf("Darth Vader", "Han Solo")
             }
 
-            `given http call`<List<String>>("when a redirect happens it can be avoided") {
+            givenHttpCall<List<String>>("when a redirect happens it can be avoided") {
 
                 url = "http://localhost:8080/hello-redirect"
                 method = "GET"
@@ -82,7 +82,7 @@ class TestHttpServer {
                 stepResult.headers["Location"] isEqualTo listOf("http://localhost:8080/hello")
             }
 
-            `given http call`<List<String>>("when a redirect happens it can be followed") {
+            givenHttpCall<List<String>>("when a redirect happens it can be followed") {
 
                 url = "http://localhost:8080/hello-redirect"
                 method = "GET"
@@ -103,7 +103,7 @@ class TestHttpServer {
     fun `http server goodbye`() = playScenarios(
         scenario(name = "api says goodbye and forgets people!") {
 
-            `given http call`<String>("Darth Vader says hello") {
+            givenHttpCall<String>("Darth Vader says hello") {
 
                 url = "http://localhost:8080/hello"
                 method = "POST"
@@ -119,7 +119,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo "Hello Darth Vader!"
             }
 
-            `given http call`<String>("Han Solo says hello") {
+            givenHttpCall<String>("Han Solo says hello") {
 
                 url = "http://localhost:8080/hello"
                 method = "POST"
@@ -135,7 +135,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo "Hello Han Solo!"
             }
 
-            `given http call`<String>("Darth Vader says goodbye") {
+            givenHttpCall<String>("Darth Vader says goodbye") {
 
                 url = "http://localhost:8080/hello?who=Darth Vader"
                 method = "DELETE"
@@ -147,7 +147,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo "Goodbye Darth Vader!"
             }
 
-            `given http call`<List<String>>("Han Solo is on his own") {
+            givenHttpCall<List<String>>("Han Solo is on his own") {
 
                 url = "http://localhost:8080/hello"
                 method = "GET"
@@ -167,7 +167,7 @@ class TestHttpServer {
     fun `http server error`() = playScenarios(
         scenario(name = "when wrong api is called an error is raised") {
 
-            `given http call`<JsonMap>("PATCH method is not allowed") {
+            givenHttpCall<JsonMap>("PATCH method is not allowed") {
 
                 url = "http://localhost:8080/hello"
                 method = "PATCH"
@@ -192,7 +192,7 @@ class TestHttpServer {
     fun `otp flows`() = playScenarios(
         scenario(name = "get and validate correct otp") {
 
-            val otp = `given http call`<JsonMap>("get an OTP") {
+            val otp = givenHttpCall<JsonMap>("get an OTP") {
 
                 url = "http://localhost:8080/otp"
                 method = "GET"
@@ -212,7 +212,7 @@ class TestHttpServer {
                 }
             }
 
-            `given http call`<JsonMap>("validate an OTP") {
+            givenHttpCall<JsonMap>("validate an OTP") {
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
@@ -228,7 +228,7 @@ class TestHttpServer {
         },
         scenario(name = "get and validate wrong otp") {
 
-            `given http call`<JsonMap>("get an OTP") {
+            givenHttpCall<JsonMap>("get an OTP") {
 
                 url = "http://localhost:8080/otp"
                 method = "GET"
@@ -246,7 +246,7 @@ class TestHttpServer {
                 }
             }
 
-            `given http call`<JsonMap>("validate an invalid OTP") {
+            givenHttpCall<JsonMap>("validate an invalid OTP") {
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
@@ -269,7 +269,7 @@ class TestHttpServer {
     fun `retryable steps`() = playScenarios(
         scenario(name = "a step should be retried as specified when not passing") {
 
-            `given http call`<String>(
+            givenHttpCall<String>(
                 name = "Sometimes retrying makes it pass!",
                 retry = 100.times byIntervalsOf 10.ms
             ) {
@@ -288,7 +288,7 @@ class TestHttpServer {
     fun inventory() = playScenarios(
         scenario(name = "get inventory as JsonArray") {
 
-            `given http call`<JsonArray>("get inventory") {
+            givenHttpCall<JsonArray>("get inventory") {
 
                 url = "http://localhost:8080/inventory"
                 method = "GET"
@@ -317,7 +317,7 @@ class TestHttpServer {
         },
         scenario(name = "get inventory as List<Inventory>") {
 
-            `given http call`<List<Inventory>>("get inventory") {
+            givenHttpCall<List<Inventory>>("get inventory") {
 
                 url = "http://localhost:8080/inventory"
                 method = "GET"
@@ -341,7 +341,7 @@ class TestHttpServer {
     fun deathStarPlans() = playScenarios(
         scenario(name = "give Rebel Alliance Death Star plans") {
 
-            `given http call`<String>("death star plans are not available") {
+            givenHttpCall<String>("death star plans are not available") {
 
                 url = "http://localhost:8080/death-star-secret-plans"
                 method = "GET"
@@ -351,7 +351,7 @@ class TestHttpServer {
                 it.body isEqualTo "Waiting for Rogue one..."
             }
 
-            `given http call`<String>("give death star plans") {
+            givenHttpCall<String>("give death star plans") {
 
                 url = "http://localhost:8080/death-star-secret-plans"
                 method = "POST"
@@ -414,7 +414,7 @@ class TestHttpServer {
                 stepResult.body isEqualTo "May the Force be with you!"
             }
 
-            `given http call`<String>("death star plans are available") {
+            givenHttpCall<String>("death star plans are available") {
 
                 url = "http://localhost:8080/death-star-secret-plans"
                 method = "GET"

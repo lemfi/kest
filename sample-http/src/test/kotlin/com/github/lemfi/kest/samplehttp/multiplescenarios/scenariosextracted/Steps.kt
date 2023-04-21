@@ -4,13 +4,13 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.model.StandaloneStepResult
-import com.github.lemfi.kest.http.cli.`given http call`
+import com.github.lemfi.kest.http.cli.givenHttpCall
 import com.github.lemfi.kest.http.model.HttpResponse
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted.`get otp`
 
 fun ScenarioBuilder.`say hello`(who: String) {
-    `given http call`<String>("$who says hello") {
+    givenHttpCall<String>("$who says hello") {
 
         url = "http://localhost:8080/hello"
         method = "POST"
@@ -28,7 +28,7 @@ fun ScenarioBuilder.`say hello`(who: String) {
 }
 
 fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
-    `given http call`<List<String>>("check ${expectedGreeted.joinToString(", ")} were greeted") {
+    givenHttpCall<List<String>>("check ${expectedGreeted.joinToString(", ")} were greeted") {
 
         url = "http://localhost:8080/hello"
         method = "GET"
@@ -43,7 +43,7 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
 
 fun ScenarioBuilder.`validate otp`(otp: () -> String) =
 
-    `given http call`<JsonMap>("validate an otp") {
+    givenHttpCall<JsonMap>("validate an otp") {
 
         url = "http://localhost:8080/otp"
         method = "POST"

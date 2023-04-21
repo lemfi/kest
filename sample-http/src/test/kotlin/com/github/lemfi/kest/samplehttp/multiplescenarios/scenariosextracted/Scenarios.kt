@@ -5,7 +5,7 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.scenariosextracted
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.http.cli.`given http call`
+import com.github.lemfi.kest.http.cli.givenHttpCall
 import com.github.lemfi.kest.json.cli.json
 import com.github.lemfi.kest.json.cli.matches
 import com.github.lemfi.kest.json.cli.validator
@@ -24,7 +24,7 @@ val `api says goodbye and forgets people!` = scenario(name = "api says goodbye a
     `say hello`("Darth Vader")
     `say hello`("Han Solo")
 
-    `given http call`<String>("say goodbye to Darth Vader") {
+    givenHttpCall<String>("say goodbye to Darth Vader") {
 
         url = "http://localhost:8080/hello?who=Darth Vader"
         method = "DELETE"
@@ -56,7 +56,7 @@ val `get and validate correct otp` =
 
 val `get and validate wrong otp` = scenario(name = "get and validate wrong otp") {
 
-    `given http call`<JsonMap>("get OTP") {
+    givenHttpCall<JsonMap>("get OTP") {
 
         url = "http://localhost:8080/otp"
         method = "GET"
@@ -74,7 +74,7 @@ val `get and validate wrong otp` = scenario(name = "get and validate wrong otp")
         }
     }
 
-    `given http call`<JsonMap>("try to validate wrong otp") {
+    givenHttpCall<JsonMap>("try to validate wrong otp") {
 
         url = "http://localhost:8080/otp"
         method = "POST"

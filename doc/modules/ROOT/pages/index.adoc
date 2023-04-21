@@ -132,7 +132,7 @@ Let's take following example:
 ----
 scenario(name = "api says hello and remembers it!") {
 
-    `given http call`<String> {
+    givenHttpCall<String> {
 
         url = "http://myapi/hello"
         method = "POST"
@@ -148,7 +148,7 @@ scenario(name = "api says hello and remembers it!") {
         stepResult.body  isEqualTo "Hello Darth Vader!"
     }
 
-    `given http call`<String> {
+    givenHttpCall<String> {
 
         url = "http://myapi/hello"
         method = "POST"
@@ -164,7 +164,7 @@ scenario(name = "api says hello and remembers it!") {
         stepResult.body isEqualTo "Hello Han Solo!"
     }
 
-    `given http call`<List<String>> {
+    givenHttpCall<List<String>> {
 
         url = "http://myapi/hello"
         method = "GET"

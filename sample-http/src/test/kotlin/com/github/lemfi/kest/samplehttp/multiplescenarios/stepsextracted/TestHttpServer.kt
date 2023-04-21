@@ -3,7 +3,7 @@ package com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.http.cli.`given http call`
+import com.github.lemfi.kest.http.cli.givenHttpCall
 import com.github.lemfi.kest.json.cli.json
 import com.github.lemfi.kest.json.cli.matches
 import com.github.lemfi.kest.json.cli.validator
@@ -36,7 +36,7 @@ class TestHttpServer {
             `say hello`("Darth Vader")
             `say hello`("Han Solo")
 
-            `given http call`<String> {
+            givenHttpCall<String> {
 
                 url = "http://localhost:8080/hello?who=Darth Vader"
                 method = "DELETE"
@@ -75,7 +75,7 @@ class TestHttpServer {
 
             `get otp`()
 
-            `given http call`<JsonMap> {
+            givenHttpCall<JsonMap> {
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
