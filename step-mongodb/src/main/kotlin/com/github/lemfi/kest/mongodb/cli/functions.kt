@@ -64,7 +64,14 @@ fun ScenarioBuilder.deleteMongoDocuments(
         retry = retryStep
     ) { MongoDBDeleteDocumentExecutionBuilder().apply(h) }
 
+@Deprecated("use givenCountOfMongoDocuments instead")
 fun ScenarioBuilder.`given count of mongo documents`(
+    name: String? = null,
+    retryStep: RetryStep? = null,
+    h: MongoDBCountDocumentExecutionBuilder.() -> Unit
+) = givenCountOfMongoDocuments(name, retryStep, h)
+
+fun ScenarioBuilder.givenCountOfMongoDocuments(
     name: String? = null,
     retryStep: RetryStep? = null,
     h: MongoDBCountDocumentExecutionBuilder.() -> Unit
