@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.junit5.runner.ScenarioStepsIterator
 import com.github.lemfi.kest.junit5.runner.`play scenario`
-import com.github.lemfi.kest.junit5.runner.`play scenarios`
+import com.github.lemfi.kest.junit5.runner.playScenarios
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DynamicContainer
 import org.junit.jupiter.api.DynamicNode
@@ -173,7 +173,7 @@ class KestRunnerTest {
             res4 = step(name = "step 4") { "${res3()}!" }
         }
 
-        val testNodes = `play scenarios`(scenario1, scenario2)
+        val testNodes = playScenarios(scenario1, scenario2)
 
         Assertions.assertEquals(2, testNodes.size)
         val testScenario1 = testNodes.first()
@@ -254,7 +254,7 @@ class KestRunnerTest {
             res4 = step(name = "step 4") { ++number }
         }
 
-        val testNodes = `play scenarios`(scenario1, scenario2, beforeEach = { beforeEach })
+        val testNodes = playScenarios(scenario1, scenario2, beforeEach = { beforeEach })
 
         Assertions.assertEquals(2, testNodes.size)
         val testScenario1 = testNodes.first()
@@ -385,7 +385,7 @@ class KestRunnerTest {
             res4 = step(name = "step 4") { ++number }
         }
 
-        val testNodes = `play scenarios`(scenario1, scenario2, beforeAll = { beforeAll })
+        val testNodes = playScenarios(scenario1, scenario2, beforeAll = { beforeAll })
 
         Assertions.assertEquals(3, testNodes.size)
         val beforeAllSscenario = testNodes.first()
@@ -484,7 +484,7 @@ class KestRunnerTest {
             res4 = step(name = "step 4") { ++number }
         }
 
-        val testNodes = `play scenarios`(scenario1, scenario2, afterEach = { afterEach })
+        val testNodes = playScenarios(scenario1, scenario2, afterEach = { afterEach })
 
         Assertions.assertEquals(2, testNodes.size)
         val testScenario1 = testNodes.first()
@@ -615,7 +615,7 @@ class KestRunnerTest {
             res4 = step(name = "step 4") { ++number }
         }
 
-        val testNodes = `play scenarios`(scenario1, scenario2, afterAll = { afterAll })
+        val testNodes = playScenarios(scenario1, scenario2, afterAll = { afterAll })
 
         Assertions.assertEquals(3, testNodes.size)
         val testScenario1 = testNodes.first()

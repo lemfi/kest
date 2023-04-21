@@ -196,7 +196,7 @@ To run a scenario Kest uses Junit5 engine:
 . Create a class to hold your test
 . Create a function annotated with Junit5 `@TestFactory`
 . Make it call Kest function
-.. `play scenarios` to play multiple scenarios in a single junit5 test factory +
+.. `playScenarios` to play multiple scenarios in a single junit5 test factory +
 => in this case you can pass `beforeEach` and `afterEach` attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
 => in this case you can pass `beforeEach` and `afterEach` attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
 .. `play scenario` to play one scenario per junit5 test factory +
@@ -208,7 +208,7 @@ To run a scenario Kest uses Junit5 engine:
 class TestHttpServer {
 
     @TestFactory
-    fun `http server says hello`() = `play scenarios`(
+    fun `http server says hello`() = playScenarios(
             scenario { /*...*/ },
             scenario { /*...*/ },
             scenario { /*...*/ },
@@ -219,7 +219,7 @@ class TestHttpServer {
 
 
     @TestFactory
-    fun `http server says goodbye`() = `play scenarios`(
+    fun `http server says goodbye`() = playScenarios(
             scenario { /*...*/ },
             scenario { /*...*/ },
             scenario { /*...*/ },

@@ -42,7 +42,24 @@ private fun createBeforeAfterScenario(scenarioBuilder: () -> Scenario): Scenario
     )
 }
 
+@Deprecated("use playScenarios instead", replaceWith = ReplaceWith("playScenarios(*scenario, beforeEach = beforeEach, beforeAll = beforeAll, afterEach = afterEach, afterAll = afterAll)"))
 fun `play scenarios`(
+    vararg scenario: Scenario,
+    beforeEach: (() -> Scenario)? = null,
+    beforeAll: (() -> Scenario)? = null,
+    afterEach: (() -> Scenario)? = null,
+    afterAll: (() -> Scenario)? = null,
+): List<DynamicNode> =
+    playScenarios(
+        scenario = scenario,
+        beforeEach = beforeEach,
+        beforeAll = beforeAll,
+        afterEach = afterEach,
+        afterAll = afterAll
+    )
+
+
+fun playScenarios(
     vararg scenario: Scenario,
     beforeEach: (() -> Scenario)? = null,
     beforeAll: (() -> Scenario)? = null,
@@ -66,7 +83,7 @@ fun `play scenarios`(
 fun `play scenario`(
     name: String = "anonymous scenario",
     unwrap: Boolean = true,
-    l: StandaloneScenarioBuilder.() -> Unit
+    l: StandaloneScenarioBuilder.() -> Unit,
 ) =
     StandaloneScenarioBuilder(name).apply(l).toScenario()
         .let { `play scenario`(it, unwrap) }

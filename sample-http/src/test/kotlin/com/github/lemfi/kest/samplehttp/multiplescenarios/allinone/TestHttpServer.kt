@@ -13,7 +13,7 @@ import com.github.lemfi.kest.json.cli.matches
 import com.github.lemfi.kest.json.cli.validator
 import com.github.lemfi.kest.json.model.JsonArray
 import com.github.lemfi.kest.json.model.JsonMap
-import com.github.lemfi.kest.junit5.runner.`play scenarios`
+import com.github.lemfi.kest.junit5.runner.playScenarios
 import com.github.lemfi.kest.samplehttp.startSampleApi
 import com.github.lemfi.kest.samplehttp.stopSampleApi
 import org.junit.jupiter.api.TestFactory
@@ -22,7 +22,7 @@ import java.nio.charset.Charset
 class TestHttpServer {
 
     @TestFactory
-    fun `http server hello`() = `play scenarios`(
+    fun `http server hello`() = playScenarios(
         scenario(name = "api says hello and remembers it!") {
 
             `given http call`<String>("Darth Vader says hello") {
@@ -31,10 +31,10 @@ class TestHttpServer {
                 method = "POST"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
                 body = """
-                        {
-                            "who": "Darth Vader"
-                        }
-                        """
+                            {
+                                "who": "Darth Vader"
+                            }
+                            """
             } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201 { "Saying Hello should return a 201, was ${stepResult.status}!" }
@@ -47,10 +47,10 @@ class TestHttpServer {
                 method = "POST"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
                 body = """
-                        {
-                            "who": "Han Solo"
-                        }
-                    """
+                            {
+                                "who": "Han Solo"
+                            }
+                        """
             } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
@@ -96,11 +96,11 @@ class TestHttpServer {
             }
         },
         beforeAll = ::startSampleApi,
-        afterAll = ::stopSampleApi,
+        afterAll = ::stopSampleApi
     )
 
     @TestFactory
-    fun `http server goodbye`() = `play scenarios`(
+    fun `http server goodbye`() = playScenarios(
         scenario(name = "api says goodbye and forgets people!") {
 
             `given http call`<String>("Darth Vader says hello") {
@@ -109,10 +109,10 @@ class TestHttpServer {
                 method = "POST"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
                 body = """
-                        {
-                            "who": "Darth Vader"
-                        }
-                        """
+                            {
+                                "who": "Darth Vader"
+                            }
+                            """
             } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
@@ -125,10 +125,10 @@ class TestHttpServer {
                 method = "POST"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
                 body = """
-                        {
-                            "who": "Han Solo"
-                        }
-                    """
+                            {
+                                "who": "Han Solo"
+                            }
+                        """
             } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 201
@@ -160,11 +160,11 @@ class TestHttpServer {
             }
         },
         beforeAll = ::startSampleApi,
-        afterAll = ::stopSampleApi,
+        afterAll = ::stopSampleApi
     )
 
     @TestFactory
-    fun `http server error`() = `play scenarios`(
+    fun `http server error`() = playScenarios(
         scenario(name = "when wrong api is called an error is raised") {
 
             `given http call`<JsonMap>("PATCH method is not allowed") {
@@ -173,10 +173,10 @@ class TestHttpServer {
                 method = "PATCH"
                 headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
                 body = """
-                        {
-                            "who": "Darth Vader"
-                        }
-                        """
+                            {
+                                "who": "Darth Vader"
+                            }
+                            """
             } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 405
@@ -185,11 +185,11 @@ class TestHttpServer {
 
         },
         beforeAll = ::startSampleApi,
-        afterAll = ::stopSampleApi,
+        afterAll = ::stopSampleApi
     )
 
     @TestFactory
-    fun `otp flows`() = `play scenarios`(
+    fun `otp flows`() = playScenarios(
         scenario(name = "get and validate correct otp") {
 
             val otp = `given http call`<JsonMap>("get an OTP") {
@@ -205,10 +205,10 @@ class TestHttpServer {
                 stepResult.status isEqualTo 201
                 json(stepResult.body) matches validator {
                     """
-                        {
-                            "otp": "{{string}}" 
-                        }
-                    """
+                            {
+                                "otp": "{{string}}" 
+                            }
+                        """
                 }
             }
 
@@ -239,10 +239,10 @@ class TestHttpServer {
                 stepResult.status isEqualTo 201
                 json(stepResult.body) matches validator {
                     """
-                        {
-                            "otp": "{{string}}" 
-                        }
-                    """.trimIndent()
+                            {
+                                "otp": "{{string}}" 
+                            }
+                        """.trimIndent()
                 }
             }
 
@@ -266,7 +266,7 @@ class TestHttpServer {
     )
 
     @TestFactory
-    fun `retryable steps`() = `play scenarios`(
+    fun `retryable steps`() = playScenarios(
         scenario(name = "a step should be retried as specified when not passing") {
 
             `given http call`<String>(
@@ -280,13 +280,12 @@ class TestHttpServer {
             }
 
         },
-
         beforeEach = ::startSampleApi,
-        afterEach = ::stopSampleApi,
+        afterEach = ::stopSampleApi
     )
 
     @TestFactory
-    fun inventory() = `play scenarios`(
+    fun inventory() = playScenarios(
         scenario(name = "get inventory as JsonArray") {
 
             `given http call`<JsonArray>("get inventory") {
@@ -300,17 +299,17 @@ class TestHttpServer {
                 stepResult.status isEqualTo 200
                 json(stepResult.body) matches validator {
                     """
-                        [
-                            {
-                                "kind": "weapon",
-                                "name": "lightsaber"
-                            },
-                            {
-                                "kind": "vehicle",
-                                "name": "landspeeder"
-                            }
-                        ]
-                    """.trimIndent()
+                            [
+                                {
+                                    "kind": "weapon",
+                                    "name": "lightsaber"
+                                },
+                                {
+                                    "kind": "vehicle",
+                                    "name": "landspeeder"
+                                }
+                            ]
+                        """.trimIndent()
                 }
             }
 
@@ -327,19 +326,19 @@ class TestHttpServer {
             } assertThat { stepResult ->
 
                 stepResult.status isEqualTo 200
-                stepResult.body isEqualTo listOf (
+                stepResult.body isEqualTo listOf(
                     Inventory("weapon", "lightsaber"),
                     Inventory("vehicle", "landspeeder"),
                 )
             }
         },
         beforeAll = ::startSampleApi,
-        afterAll = ::stopSampleApi,
+        afterAll = ::stopSampleApi
     )
 
 
     @TestFactory
-    fun deathStarPlans() = `play scenarios`(
+    fun deathStarPlans() = playScenarios(
         scenario(name = "give Rebel Alliance Death Star plans") {
 
             `given http call`<String>("death star plans are not available") {
@@ -363,7 +362,67 @@ class TestHttpServer {
                         filename = "death_star_plan.txt"
                         contentType = "text/plain"
                         data = """
-                            
+                                
+                                █  ██████████████████████████████████████████████████████████
+                                █     █        █           █  █     █     █           █  █  █
+                                ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
+                                █     █        █  █  █        █  █  █  █           █        █
+                                █  █  ███████  █  ███████  ████  █  █████████████  ███████  █
+                                █  █  █  █  █           █     █  █  █  █     █  █  █        █
+                                ████  █  █  ████  ████  ████  █  ████  █  ████  ████  ████  █
+                                █        █  █     █        █     █        █  █  █     █     █
+                                ███████  █  █  █  ████  ████  ███████  ████  █  ███████  ████
+                                █  █        █  █  █  █  █        █           █        █     █
+                                █  ███████  █  ████  ██████████  ███████  ██████████  ████  █
+                                █        █     █  █     █     █  █  █           █     █     █
+                                ████  ███████  █  ████  █  ████  █  █  █  ████  █  ███████  █
+                                █     █     █  █     █     █  █     █  █  █     █           █
+                                █  █  ████  █  ████  █  ████  ████  ██████████  █  ███████  █
+                                █  █  █     █           █              █           █     █  █
+                                ████  █  █  ██████████  ████  ████  ██████████  ███████  █  █
+                                █     █  █     █     █  █        █     █        █           █
+                                █  █  █  ███████  █  █  ████  ████  █████████████  ███████  █
+                                █  █              █     █        █        █        █  █  █  █
+                                ████  █  ████  ██████████  ██████████  █  █  ████  █  █  ████
+                                █     █     █           █     █     █  █        █        █  █
+                                ███████  ████  █  ████████████████  ███████  █████████████  █
+                                █     █     █  █        █  █     █     █     █  █     █  █  █
+                                █  █  █  ███████  ███████  █  █  ████  ████  █  █  ████  █  █
+                                █  █           █     █     █  █        █                    █
+                                ██████████  ████  ███████  █  ███████  █  █  █  ██████████  █
+                                █     █  █  █  █  █     █     █           █  █        █  █  █
+                                █  ████  █  █  ███████  █  █  ████  ████  █  ███████  █  ████
+                                █                    █  █  █  █        █  █  █     █     █  █
+                                ████  ████  ███████  █  ███████  ████  ███████  ████  █  █  █
+                                █  █  █  █     █              █  █  █     █        █  █     █
+                                █  █  █  ████████████████  ████  █  █  █  █  ████  ████  █  █
+                                █  █              █  █  █     █  █     █  █  █  █     █  █  █
+                                █  █  █  ██████████  █  █  █  █  ███████  ████  ████  ████  █
+                                █     █  █  █     █        █  █  █     █  █  █     █        █
+                                ███████  █  █  ███████  ███████  █  ███████  ████  █  ████  █
+                                █  █        █     █     █  █  █  █           █  █        █  █
+                                █  ███████  █  █  █  ████  █  █  █  ████  █  █  █  ███████  █
+                                █              █  █           █     █     █     █     █     
+                                █████████████████████████████████████████████████████████████  
+    
+                            """.trimIndent().toByteArray(Charset.defaultCharset())
+                    }
+                )
+            } assertThat { stepResult ->
+
+                stepResult.status isEqualTo 201
+                stepResult.body isEqualTo "May the Force be with you!"
+            }
+
+            `given http call`<String>("death star plans are available") {
+
+                url = "http://localhost:8080/death-star-secret-plans"
+                method = "GET"
+                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+            } assertThat {
+                it.status isEqualTo 200
+                it.body isEqualTo """ 
+                        
                             █  ██████████████████████████████████████████████████████████
                             █     █        █           █  █     █     █           █  █  █
                             ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
@@ -405,71 +464,11 @@ class TestHttpServer {
                             █  ███████  █  █  █  ████  █  █  █  ████  █  █  █  ███████  █
                             █              █  █           █     █     █     █     █     
                             █████████████████████████████████████████████████████████████  
-
-                        """.trimIndent().toByteArray(Charset.defaultCharset())
-                    }
-                )
-            } assertThat { stepResult ->
-
-                stepResult.status isEqualTo 201
-                stepResult.body isEqualTo "May the Force be with you!"
-            }
-
-            `given http call`<String>("death star plans are available") {
-
-                url = "http://localhost:8080/death-star-secret-plans"
-                method = "GET"
-                headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
-            } assertThat {
-                it.status isEqualTo 200
-                it.body isEqualTo """ 
-                    
-                        █  ██████████████████████████████████████████████████████████
-                        █     █        █           █  █     █     █           █  █  █
-                        ████  █  ███████  █  ████  █  █  █  █  █  █  ███████  █  █  █
-                        █     █        █  █  █        █  █  █  █           █        █
-                        █  █  ███████  █  ███████  ████  █  █████████████  ███████  █
-                        █  █  █  █  █           █     █  █  █  █     █  █  █        █
-                        ████  █  █  ████  ████  ████  █  ████  █  ████  ████  ████  █
-                        █        █  █     █        █     █        █  █  █     █     █
-                        ███████  █  █  █  ████  ████  ███████  ████  █  ███████  ████
-                        █  █        █  █  █  █  █        █           █        █     █
-                        █  ███████  █  ████  ██████████  ███████  ██████████  ████  █
-                        █        █     █  █     █     █  █  █           █     █     █
-                        ████  ███████  █  ████  █  ████  █  █  █  ████  █  ███████  █
-                        █     █     █  █     █     █  █     █  █  █     █           █
-                        █  █  ████  █  ████  █  ████  ████  ██████████  █  ███████  █
-                        █  █  █     █           █              █           █     █  █
-                        ████  █  █  ██████████  ████  ████  ██████████  ███████  █  █
-                        █     █  █     █     █  █        █     █        █           █
-                        █  █  █  ███████  █  █  ████  ████  █████████████  ███████  █
-                        █  █              █     █        █        █        █  █  █  █
-                        ████  █  ████  ██████████  ██████████  █  █  ████  █  █  ████
-                        █     █     █           █     █     █  █        █        █  █
-                        ███████  ████  █  ████████████████  ███████  █████████████  █
-                        █     █     █  █        █  █     █     █     █  █     █  █  █
-                        █  █  █  ███████  ███████  █  █  ████  ████  █  █  ████  █  █
-                        █  █           █     █     █  █        █                    █
-                        ██████████  ████  ███████  █  ███████  █  █  █  ██████████  █
-                        █     █  █  █  █  █     █     █           █  █        █  █  █
-                        █  ████  █  █  ███████  █  █  ████  ████  █  ███████  █  ████
-                        █                    █  █  █  █        █  █  █     █     █  █
-                        ████  ████  ███████  █  ███████  ████  ███████  ████  █  █  █
-                        █  █  █  █     █              █  █  █     █        █  █     █
-                        █  █  █  ████████████████  ████  █  █  █  █  ████  ████  █  █
-                        █  █              █  █  █     █  █     █  █  █  █     █  █  █
-                        █  █  █  ██████████  █  █  █  █  ███████  ████  ████  ████  █
-                        █     █  █  █     █        █  █  █     █  █  █     █        █
-                        ███████  █  █  ███████  ███████  █  ███████  ████  █  ████  █
-                        █  █        █     █     █  █  █  █           █  █        █  █
-                        █  ███████  █  █  █  ████  █  █  █  ████  █  █  █  ███████  █
-                        █              █  █           █     █     █     █     █     
-                        █████████████████████████████████████████████████████████████  
-                        """.trimIndent().trim()
+                            """.trimIndent().trim()
             }
         },
         beforeAll = ::startSampleApi,
-        afterAll = ::stopSampleApi,
+        afterAll = ::stopSampleApi
     )
 
     data class Inventory(
