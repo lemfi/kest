@@ -4,7 +4,7 @@ import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.redis.cli.redisDeleteKey
 import com.github.lemfi.kest.redis.cli.redisGetKey
-import com.github.lemfi.kest.redis.cli.`redis insert data`
+import com.github.lemfi.kest.redis.cli.redisInsertData
 import org.junit.jupiter.api.TestFactory
 
 class RedisSample {
@@ -12,23 +12,23 @@ class RedisSample {
     @TestFactory
     fun `redis is a planet in a galaxy far far away`() = playScenario(name = "Starwars characters", unwrap = false) {
 
-        `redis insert data`(name = "declare Luke Skywalker") {
+        redisInsertData(name = "declare Luke Skywalker") {
             insert { "Luke Skywalker" } withKey "ls" inNamespace "light"
         }
 
-        `redis insert data`(name = "declare Han Solo") {
+        redisInsertData(name = "declare Han Solo") {
             insert { "Han Solo" } withKey "hs" inNamespace "light"
         }
 
-        `redis insert data`(name = "declare Leia Organa (Skywalker) Solo") {
+        redisInsertData(name = "declare Leia Organa (Skywalker) Solo") {
             insert { "Leia Organa (Skywalker) Solo" } withKey "lo" inNamespace "light"
         }
 
-        `redis insert data`(name = "declare Anakin Skywalker") {
+        redisInsertData(name = "declare Anakin Skywalker") {
             insert { "Anakin Skywalker" } withKey "as" inNamespace "dark"
         }
 
-        `redis insert data`(name = "declare Senator Palpatine") {
+        redisInsertData(name = "declare Senator Palpatine") {
             insert { "Senator Palpatine" } withKey "sp" inNamespace "dark"
         }
 

@@ -50,7 +50,14 @@ fun ScenarioBuilder.redisGetKey(
         RedisReadExecutionBuilder().apply(builder)
     }
 
+@Deprecated("use redisInsertData instead")
 fun ScenarioBuilder.`redis insert data`(
+    name: String? = null,
+    retry: RetryStep? = null,
+    builder: RedisInsertExecutionBuilder.() -> Unit
+) = redisInsertData(name, retry, builder)
+
+fun ScenarioBuilder.redisInsertData(
     name: String? = null,
     retry: RetryStep? = null,
     builder: RedisInsertExecutionBuilder.() -> Unit
