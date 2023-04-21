@@ -33,13 +33,13 @@ class RedisSample {
         }
 
         `redis get key`(name = "find Luke Skywalker") {
-            `read key` { "ls" } fromNamespace "light"
+            readKey { "ls" } fromNamespace "light"
         } assertThat {
             it isEqualTo "Luke Skywalker"
         }
 
         `redis get key`(name = "find Anakin Skywalker") {
-            `read key` { "as" } fromNamespace "dark"
+            readKey { "as" } fromNamespace "dark"
         } assertThat {
             it isEqualTo "Anakin Skywalker"
         }

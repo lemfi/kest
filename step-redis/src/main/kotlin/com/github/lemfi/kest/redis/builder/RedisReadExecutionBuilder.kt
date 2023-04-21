@@ -15,7 +15,9 @@ class RedisReadExecutionBuilder : ExecutionBuilder<String?> {
 
     private lateinit var read: RedisRead
 
-    fun `read key`(key: () -> String) = RedisRead(key = key()).apply { read = this }
+    @Deprecated("use readKey instead", replaceWith = ReplaceWith("readKey (key)"))
+    fun `read key`(key: () -> String) = readKey(key)
+    fun readKey(key: () -> String) = RedisRead(key = key()).apply { read = this }
 
     @Deprecated("use fromNamespace instead", replaceWith = ReplaceWith("this fromNamespace namespace"))
     infix fun RedisRead.`from namespace`(namespace: String) = fromNamespace(namespace)
