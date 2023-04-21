@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.sampleredis
 
 import com.github.lemfi.kest.core.cli.assertThat
-import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.redis.cli.`redis delete key`
 import com.github.lemfi.kest.redis.cli.`redis get key`
 import com.github.lemfi.kest.redis.cli.`redis insert data`
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.TestFactory
 class RedisSample {
 
     @TestFactory
-    fun `redis is a planet in a galaxy far far away`() = `play scenario`(name = "Starwars characters", unwrap = false) {
+    fun `redis is a planet in a galaxy far far away`() = playScenario(name = "Starwars characters", unwrap = false) {
 
         `redis insert data`(name = "declare Luke Skywalker") {
             insert { "Luke Skywalker" } `with key` "ls" `in namespace` "light"

@@ -5,7 +5,7 @@ import com.github.lemfi.kest.core.model.byIntervalsOf
 import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
-import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.rabbitmq.cli.`create rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given message from rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given messages from rabbitmq queue`
@@ -24,7 +24,7 @@ class TestReadWrite {
     fun afterEach() = stopRabbitApplication()
 
     @TestFactory
-    fun `Leia asks for help`() = `play scenario`(name = "Leia asks for help via RabbitMQ") {
+    fun `Leia asks for help`() = playScenario(name = "Leia asks for help via RabbitMQ") {
 
         `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
             `create queue` { "obi-wan kenobi" }
@@ -61,7 +61,7 @@ class TestReadWrite {
 
     @TestFactory
     fun `Leia asks for help - check broadcast once`() =
-        `play scenario`(name = "Leia asks for help via RabbitMQ, check broadcast once") {
+        playScenario(name = "Leia asks for help via RabbitMQ, check broadcast once") {
 
             `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
                 `create queue` { "obi-wan kenobi" }

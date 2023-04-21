@@ -2,7 +2,7 @@ package com.github.lemfi.kest.samplecadence
 
 import com.github.lemfi.kest.cadence.cli.`given workflow`
 import com.github.lemfi.kest.core.cli.assertThat
-import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.samplecadence.sampleapi.Hello
 import com.github.lemfi.kest.samplecadence.sampleapi.IHelloWorldWorkflow
 import com.github.lemfi.kest.samplecadence.sampleapi.startActivitiesAndWorkflows
@@ -20,7 +20,7 @@ class TestWorkflow {
     fun afterEach() = stopActivitiesAndWorkflows()
 
     @TestFactory
-    fun `Darth Vader says hello!`() = `play scenario`(name = "Darth Vader says hello!") {
+    fun `Darth Vader says hello!`() = playScenario(name = "Darth Vader says hello!") {
 
         `given workflow`("Say Hello Workflow") {
 

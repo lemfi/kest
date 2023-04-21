@@ -5,6 +5,7 @@ import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.junit5.runner.ScenarioStepsIterator
 import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.junit5.runner.playScenarios
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DynamicContainer
@@ -24,7 +25,7 @@ class KestRunnerTest {
             res2 = step(name = "step 2") { "${res1()}!" }
         }
 
-        val testNode = `play scenario`(scenario, false) as DynamicContainer
+        val testNode = playScenario(scenario = scenario, unwrap = false) as DynamicContainer
 
         Assertions.assertEquals("my scenario", testNode.displayName)
 
@@ -62,7 +63,7 @@ class KestRunnerTest {
             res2 = step(name = "step 2") { "${res1()}!" }
         }
 
-        val testNode = `play scenario`(scenario, true) as ScenarioStepsIterator
+        val testNode = playScenario(scenario = scenario, unwrap = true) as ScenarioStepsIterator
 
         lateinit var step1: DynamicNode
         lateinit var step2: DynamicNode
@@ -93,7 +94,7 @@ class KestRunnerTest {
         lateinit var res1: StandaloneStepResult<String>
         lateinit var res2: StandaloneStepResult<String>
 
-        val testNode = `play scenario`("my scenario", false) {
+        val testNode = playScenario("my scenario", false) {
             res1 = step(name = "step 1") { "res" }
             res2 = step(name = "step 2") { "${res1()}!" }
         } as DynamicContainer
@@ -129,7 +130,7 @@ class KestRunnerTest {
         lateinit var res1: StandaloneStepResult<String>
         lateinit var res2: StandaloneStepResult<String>
 
-        val testNode = `play scenario`("my scenario", true) {
+        val testNode = playScenario("my scenario", true) {
             res1 = step(name = "step 1") { "res" }
             res2 = step(name = "step 2") { "${res1()}!" }
         } as ScenarioStepsIterator

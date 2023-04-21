@@ -80,13 +80,25 @@ fun playScenarios(
     }
 }
 
+@Deprecated("use playScenario instead")
 fun `play scenario`(
+    name: String = "anonymous scenario",
+    unwrap: Boolean = true,
+    l: StandaloneScenarioBuilder.() -> Unit,
+) = playScenario(name, unwrap, l)
+
+
+fun playScenario(
     name: String = "anonymous scenario",
     unwrap: Boolean = true,
     l: StandaloneScenarioBuilder.() -> Unit,
 ) =
     StandaloneScenarioBuilder(name).apply(l).toScenario()
-        .let { `play scenario`(it, unwrap) }
+        .let { playScenario(scenario = it, unwrap = unwrap) }
 
-fun `play scenario`(scenario: Scenario, unwrap: Boolean = true) = autoconfigure()
+@Deprecated("use playScenario instead", replaceWith = ReplaceWith("playScenario(scenario = scenario, unwrap = unwrap)"))
+fun `play scenario`(scenario: Scenario, unwrap: Boolean = true) =
+    playScenario(scenario, unwrap)
+
+fun playScenario(scenario: Scenario, unwrap: Boolean = true) = autoconfigure()
     .let { if (unwrap) ScenarioStepsIterator(scenario) else scenario.toDynamicContainer() }

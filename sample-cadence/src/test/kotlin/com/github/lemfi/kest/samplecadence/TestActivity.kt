@@ -2,7 +2,7 @@ package com.github.lemfi.kest.samplecadence
 
 import com.github.lemfi.kest.cadence.cli.`given activity call`
 import com.github.lemfi.kest.core.cli.assertThat
-import com.github.lemfi.kest.junit5.runner.`play scenario`
+import com.github.lemfi.kest.junit5.runner.playScenario
 import com.github.lemfi.kest.samplecadence.sampleapi.IMayTheForceBeWithYouActivity
 import com.github.lemfi.kest.samplecadence.sampleapi.IRecruitPadawansActivity
 import com.github.lemfi.kest.samplecadence.sampleapi.MayTheForceBeWithYou
@@ -22,7 +22,7 @@ class TestActivity {
     fun afterEach() = stopActivitiesAndWorkflows()
 
     @TestFactory
-    fun `Darth Vader needs the Force`() = `play scenario`(name = "Darth Vader needs the Force") {
+    fun `Darth Vader needs the Force`() = playScenario(name = "Darth Vader needs the Force") {
 
         `given activity call` {
             domain = "kest"
@@ -36,7 +36,7 @@ class TestActivity {
     }
 
     @TestFactory
-    fun `Darth Vader recruits a padawan`() = `play scenario`(name = "Darth Vader recruits a padawan") {
+    fun `Darth Vader recruits a padawan`() = playScenario(name = "Darth Vader recruits a padawan") {
 
         `given activity call` {
             domain = "kest"
@@ -50,7 +50,7 @@ class TestActivity {
     }
 
     @TestFactory
-    fun `Darth Vader recruits all padawans`() = `play scenario`(name = "Darth Vader recruits a padawan") {
+    fun `Darth Vader recruits all padawans`() = playScenario(name = "Darth Vader recruits a padawan") {
 
         `given activity call`<List<Padawan>> {
             domain = "kest"
