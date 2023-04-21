@@ -25,7 +25,7 @@ builder parameters are:
 [source,kotlin]
 ----
 // QueueAndBinding is built by a combination if three functions written as follows:
-`create queue` { "world" } `and bind it to exchange` "universe" withRoutingKey "galaxy"
+`create queue` { "world" } andBindItToExchange "universe" withRoutingKey "galaxy"
 ----
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to / +
@@ -44,7 +44,7 @@ rabbitmq:
 [source,kotlin]
 ----
 `create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
-    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" withRoutingKey "Force"
+    `create queue` { "obi-wan_kenobi" } andBindItToExchange "StarWars" withRoutingKey "Force"
 }
 ----
 

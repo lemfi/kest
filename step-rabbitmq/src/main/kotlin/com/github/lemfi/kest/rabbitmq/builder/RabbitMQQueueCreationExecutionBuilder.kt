@@ -10,11 +10,15 @@ import com.github.lemfi.kest.rabbitmq.model.rabbitMQProperty
 class RabbitMQQueueCreationExecutionBuilder : ExecutionBuilder<Unit> {
 
     fun `create queue`(name: () -> String) = QueueAndBinding(name()).also { queue = it }
-    infix fun QueueAndBinding.`and bind it to exchange`(exchange: String) = this.also { it.exchange = exchange }
+
+    @Deprecated("use andBindItToExchange instead", replaceWith = ReplaceWith("this andBindItToExchange exchange"))
+    infix fun QueueAndBinding.`and bind it to exchange`(exchange: String) = andBindItToExchange(exchange)
+    infix fun QueueAndBinding.andBindItToExchange(exchange: String) = this.also { it.exchange = exchange }
 
     @Deprecated("use withRoutingKey instead", replaceWith = ReplaceWith("this withRoutingKey routingKey"))
     infix fun QueueAndBinding.`with routing key`(routingKey: String) = withRoutingKey(routingKey)
     infix fun QueueAndBinding.withRoutingKey(routingKey: String) = this.also { it.routingKey = routingKey }
+
     private lateinit var queue: QueueAndBinding
 
     @Suppress("MemberVisibilityCanBePrivate")
