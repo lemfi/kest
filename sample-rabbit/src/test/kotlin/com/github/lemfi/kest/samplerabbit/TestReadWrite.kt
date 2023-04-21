@@ -6,6 +6,7 @@ import com.github.lemfi.kest.core.model.ms
 import com.github.lemfi.kest.core.model.seconds
 import com.github.lemfi.kest.core.model.times
 import com.github.lemfi.kest.junit5.runner.playScenario
+import com.github.lemfi.kest.rabbitmq.builder.RabbitMQPropertiesBuilder
 import com.github.lemfi.kest.rabbitmq.cli.`create rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given message from rabbitmq queue`
 import com.github.lemfi.kest.rabbitmq.cli.`given messages from rabbitmq queue`

@@ -21,7 +21,11 @@ class RabbitMQMessageExecutionBuilder : ExecutionBuilder<Unit> {
     @Deprecated("use withHeaders instead", replaceWith = ReplaceWith("this withHeaders headers"))
     infix fun RabbitMQMessage.`with headers`(headers: Map<String, Any>) = withHeaders(headers)
     infix fun RabbitMQMessage.withHeaders(headers: Map<String, Any>) = also { it.headers = headers }
+    @Deprecated("use withProperties instead")
     infix fun RabbitMQMessage.`with properties`(propertiesBuilder: RabbitMQPropertiesBuilder.() -> Unit) =
+        withProperties(propertiesBuilder)
+
+    infix fun RabbitMQMessage.withProperties(propertiesBuilder: RabbitMQPropertiesBuilder.() -> Unit) =
         also { it.properties = RabbitMQPropertiesBuilder().apply(propertiesBuilder).build() }
 
     private lateinit var message: RabbitMQMessage

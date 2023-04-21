@@ -120,7 +120,7 @@ builder parameters are:
 // RabbitMQMessage may be built by a combination of functions written as follows:
 publish { "message_to_publish" } toExchange "target_exchange" `with routing key` "routing_key" withHeaders mapOf(
     "header" to "headerValue"
-) `with properties` {
+) withProperties {
     messageId = "my id"
     expiration = "10000"
 }
