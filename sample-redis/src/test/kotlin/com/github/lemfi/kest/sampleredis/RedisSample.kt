@@ -33,19 +33,19 @@ class RedisSample {
         }
 
         `redis get key`(name = "find Luke Skywalker") {
-            `read key` { "ls" } `from namespace` "light"
+            `read key` { "ls" } fromNamespace "light"
         } assertThat {
             it isEqualTo "Luke Skywalker"
         }
 
         `redis get key`(name = "find Anakin Skywalker") {
-            `read key` { "as" } `from namespace` "dark"
+            `read key` { "as" } fromNamespace "dark"
         } assertThat {
             it isEqualTo "Anakin Skywalker"
         }
 
         `redis delete key`(name = "delete vilains") {
-            deleteKey { "*" } `from namespace` "dark"
+            deleteKey { "*" } fromNamespace "dark"
         }
 
     }
