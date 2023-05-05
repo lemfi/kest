@@ -1085,6 +1085,7 @@ The lambda should return the new value for your Gherkin Context.
 === Default way
 
 To allow Kest to detect your gherkin scenario you need to declare a class with `KestGherkin`annotation, it takes two parameters:
+
 . `path`: classpath location where gherkin definitions are stored
 . `stepDefinitionsPackage`: package where gherkin definition steps are implemented
 
