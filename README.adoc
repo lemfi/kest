@@ -5,6 +5,8 @@
 :includedir: ROOT/pages
 :documentation: doc/modules/ROOT/pages/
 
+Full documentation can be found here: https://lemfi.github.io/kest/[]
+
 :leveloffset: +1
 
 
@@ -15,7 +17,7 @@
 
 == Presentation
 
-Kest is a framework written in Kotlin for testing your backends. +
+Kest is a test framework written in Kotlin for testing your backends. +
 It relies on JUnit5 to run scenarios.
 
 Easy to use, easy to extend.
@@ -50,18 +52,18 @@ I'm going to need to interact with three different technologies, with different 
 
 [source,kotlin]
 ----
-    implementation("com.github.lemfi.kest:core:0.7.4")
-    implementation("com.github.lemfi.kest:junit5:0.7.4")
+    implementation("com.github.lemfi.kest:core:0.8.0")
+    implementation("com.github.lemfi.kest:junit5:0.8.0")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.7.4")
-    implementation("com.github.lemfi.kest:step-cadence:0.7.4")
-    implementation("com.github.lemfi.kest:step-mongodb:0.7.4")
-    implementation("com.github.lemfi.kest:step-rabbitmq:0.7.4")
-    implementation("com.github.lemfi.kest:step-redis:0.7.4")
+    implementation("com.github.lemfi.kest:step-http:0.8.0")
+    implementation("com.github.lemfi.kest:step-cadence:0.8.0")
+    implementation("com.github.lemfi.kest:step-mongodb:0.8.0")
+    implementation("com.github.lemfi.kest:step-rabbitmq:0.8.0")
+    implementation("com.github.lemfi.kest:step-redis:0.8.0")
 
     // toolbox for Json Data
-    implementation("com.github.lemfi.kest:json:0.7.4")
+    implementation("com.github.lemfi.kest:json:0.8.0")
 
 ----
 
@@ -73,13 +75,13 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>core</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>junit5</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
 
@@ -87,31 +89,31 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-http</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-rabbitmq</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-cadence</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-mongodb</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-redis</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
 
@@ -119,7 +121,7 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-json</artifactId>
-        <version>0.7.4</version>
+        <version>0.8.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -141,7 +143,7 @@ Let's take following example:
 ----
 scenario(name = "api says hello and remembers it!") {
 
-    `given http call`<String> {
+    givenHttpCall<String> {
 
         url = "http://myapi/hello"
         method = "POST"
@@ -151,13 +153,13 @@ scenario(name = "api says hello and remembers it!") {
                 "who": "Darth Vader"
             }
         """
-    } `assert that` { stepResult ->
+    } assertThat { stepResult ->
 
-        eq(201, stepResult.status)
-        eq("Hello Darth Vader!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body  isEqualTo "Hello Darth Vader!"
     }
 
-    `given http call`<String> {
+    givenHttpCall<String> {
 
         url = "http://myapi/hello"
         method = "POST"
@@ -167,22 +169,22 @@ scenario(name = "api says hello and remembers it!") {
                 "who": "Han Solo"
             }
         """
-    } `assert that` { stepResult ->
+    } assertThat { stepResult ->
 
-        eq(201, stepResult.status)
-        eq("Hello Han Solo!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body isEqualTo "Hello Han Solo!"
     }
 
-    `given http call`<List<String>> {
+    givenHttpCall<List<String>> {
 
         url = "http://myapi/hello"
         method = "GET"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-    } `assert that` { stepResult ->
+    } assertThat { stepResult ->
 
-        eq(200, stepResult.status)
-        eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+        stepResult.status isEqualTo 200
+        stepResult.body  isEqualTo listOf("Darth Vader", "Han Solo")
     }
 }
 ----
@@ -205,10 +207,10 @@ To run a scenario Kest uses Junit5 engine:
 . Create a class to hold your test
 . Create a function annotated with Junit5 `@TestFactory`
 . Make it call Kest function
-.. `play scenarios` to play multiple scenarios in a single junit5 test factory +
+.. `playScenarios` to play multiple scenarios in a single junit5 test factory +
 => in this case you can pass `beforeEach` and `afterEach` attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
 => in this case you can pass `beforeEach` and `afterEach` attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
-.. `play scenario` to play one scenario per junit5 test factory +
+.. `playScenario` to play one scenario per junit5 test factory +
 => in this case you can use junit5 annotations `@BeforeEach` and `@AfterEach`
 
 [source,kotlin]
@@ -217,7 +219,7 @@ To run a scenario Kest uses Junit5 engine:
 class TestHttpServer {
 
     @TestFactory
-    fun `http server says hello`() = `play scenarios`(
+    fun `http server says hello`() = playScenarios(
             scenario { /*...*/ },
             scenario { /*...*/ },
             scenario { /*...*/ },
@@ -228,7 +230,7 @@ class TestHttpServer {
 
 
     @TestFactory
-    fun `http server says goodbye`() = `play scenarios`(
+    fun `http server says goodbye`() = playScenarios(
             scenario { /*...*/ },
             scenario { /*...*/ },
             scenario { /*...*/ },
@@ -252,12 +254,12 @@ class TestHttpServer {
     }
 
     @TestFactory
-    fun `http server says hello - scenario 1`() = `play scenario`(
+    fun `http server says hello - scenario 1`() = playScenario(
             scenario { /*...*/ }
     )
 
     @TestFactory
-    fun `http server says hello - scenario 2`() = `play scenario`(
+    fun `http server says hello - scenario 2`() = playScenario(
             scenario { /*...*/ }
     )
 
@@ -291,10 +293,10 @@ A step is where interaction with your system happen, it:
 ----
 step(
     name = "a name a step has",
-    retry = 10.times `by intervals of` 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
+    retry = 10.times byIntervalsOf 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
 ) {
     // here goes the definition of the execution
-} `assert that` {
+} assertThat {
     // here goes list of assertions
 }
 ----
@@ -320,9 +322,9 @@ step(name = "name of my step") {
     // execute your need here
     1+1
 
-} `assert that` { stepResult ->
+} assertThat { stepResult ->
 
-    eq(2, stepResult)
+    stepResult isEqualTo 2
 
 }
 ----
@@ -349,11 +351,11 @@ It's also on that `StepResult` that you can retrieve the result of the step.
 
 [source,kotlin,]
 ----
-val step1: StepResult<Int> = step { 1+1 } `assert that` { eq(2, it) }
+val step1: StepResult<Int> = step { 1+1 } assertThat { it isEqualTo 2 }
 
-val step2: StepResult<Double> = step { step1() + 1.5 } `assert that` { eq(3.5, it) }
+val step2: StepResult<Double> = step { step1() + 1.5 } assertThat { it isEqualTo 3.5 }
 
-step { step2.invoke().toString() } `assert that` { eq("3.5", it) }
+step { step2.invoke().toString() } assertThat { it isEqualTo "3.5" }
 ----
 
 As you can see on the example, to get the result of a step you may invoke it.
@@ -369,14 +371,14 @@ It is still possible to return a result from a `nestedScenario`
 ----
 val step1 = nestedScenario<Double> {
 
-    val step11: StepResult<Int> = step { 1+1 } `assert that` { eq(2, it) }
+    val step11: StepResult<Int> = step { 1+1 } assertThat { it isEqualTo 2 }
 
-    val step12: StepResult<Double> = step { step11() + 1.5 } `assert that` { eq(3.5, it) }
+    val step12: StepResult<Double> = step { step11() + 1.5 } assertThat { it isEqualTo 3.5 }
 
     returns { step12() }
 }
 
-step { step1() + 4 } `assert that` { eq(7.5, it) }
+step { step1() + 4 } assertThat { it isEqualTo 7.5 }
 ----
 
 === Transform the result of a step
@@ -385,16 +387,17 @@ You may transform a result of a step so that later steps reusing the result will
 
 [source,kotlin,]
 ----
-val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { eq(2, it) }
+val step1 = step { 1 + 1 } mapResultTo { it * 1.0 } assertThat { it isEqualTo 2 }
 
-step { step1() * 3 } `assert that` { eq(6.0, it) }
+step { step1() * 3 } assertThat { it isEqualTo 18.0 }
 ----
 
-Here step1 result was transformed from an Int to a Double +
+Here step1 result was transformed from an Int to a Double  +
+Even though in assertions of step 1 the result is still an Int: Assertions are always done on initial result, not transformed one. +
 Then when second step invoked step1 result it got a Double +
 
-NOTE: Take care, when you use `map result to` it will not transform the result for the assertions of the step, assertions are always done on step initial result. +
-Moreover,  `map result to` lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then `map result to` lambda will never be executed.
+NOTE: Take care, when you use `mapResultTo` it will not transform the result for the assertions of the step, assertions are always done on step initial result. +
+Moreover,  `mapResultTo` lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then `mapResultTo` lambda will never be executed.
 
 :leveloffset!:
 :leveloffset: +1
@@ -455,36 +458,41 @@ And the function to check that with Kest would be:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "string": "{{string}}",
-  "number": "{{number}}",
-  "boolean": "{{boolean}}"
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "{{string}}",
+      "number": "{{number}}",
+      "boolean": "{{boolean}}"
+    }
+    """
 }
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
 
 // OR shortcuts are provided two write it without having to remember the notation
-jsonMatches(
-"""
-{
-  "string": "$stringPattern",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "$stringPattern",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+
 ----
 
 === Defining your own matchers
@@ -506,27 +514,29 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{{sample}}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {{sample}}
+    """
+}
 
 // OR
 
-jsonMatches(
-samplePattern.pattern,
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches samplePattern
 ----
 
 ==== Define a class
@@ -551,27 +561,29 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{{sample}}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {{sample}}
+    """
+}
 
 // OR
 
-jsonMatches(
-samplePattern.pattern,
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches samplePattern
 ----
 
 ==== Define a function that will check the validity of pattern
@@ -601,37 +613,40 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "date": "{{sample}}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+      "date": "2021-01-12",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "date": "{{sample}}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "date": "2021-01-12",
-  "number": 1,
-  "boolean": true
-}""")
-
 // OR
 
-jsonMatches(
-"""
-{
-  "date": "$samplePattern",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+      "date": "2021-01-12",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "date": "$samplePattern",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "date": "2021-01-12",
-  "number": 1,
-  "boolean": true
-}""")
 ----
 
 === Lists and nullable matchers
@@ -671,53 +686,57 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "data": "[[{{sample}}]]"
-}
-""",
-"""
-{
-  "data": [
+json(
+    """
     {
-      "string": "a string",
-      "number": 1,
-      "boolean": true
-    },
+      "data": [
+        {
+          "string": "a string",
+          "number": 1,
+          "boolean": true
+        },
+        {
+          "string": "another string",
+          "number": 2,
+          "boolean": false
+        }
+      ]
+    }"""
+) matches validator {
+    """
     {
-      "string": "another string",
-      "number": 2,
-      "boolean": false
+      "data": "[[{{sample}}]]"
     }
-  ]
-}""")
+    """
+}
 
 // OR
 
-jsonMatches(
-"""
-{
-  "data": "${jsonArrayOf(samplePattern)}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
-}
-""",
-"""
-{
-  "data": [
+json(
+    """
     {
-      "string": "a string",
-      "number": 1,
-      "boolean": true
-    },
+      "data": [
+        {
+          "string": "a string",
+          "number": 1,
+          "boolean": true
+        },
+        {
+          "string": "another string",
+          "number": 2,
+          "boolean": false
+        }
+      ]
+    }"""
+) matches validator {
+    """
     {
-      "string": "another string",
-      "number": 2,
-      "boolean": false
+      "data": "${jsonArrayOf(samplePattern)}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
     }
-  ]
-}""")
+    """
+}
 ----
 
 ==== Nullable values
@@ -736,37 +755,41 @@ To check match you can now call this:
 
 [source,kotlin]
 ----
-jsonMatches(
-"""
-{
-  "string": "{{string?}}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+          "string": null,
+          "number": 1,
+          "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "{{string?}}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-      "string": null,
-      "number": 1,
-      "boolean": true
-}""")
 
 // OR
 
-jsonMatches(
-"""
-{
-  "string": "${stringPattern.nullable}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+json(
+    """
+    {
+          "string": null,
+          "number": 1,
+          "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "${stringPattern.nullable}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-      "string": null,
-      "number": 1,
-      "boolean": true
-}""")
 ----
 
 == Polymorphism
@@ -792,29 +815,30 @@ Let's take this example:
 
 ----
 
-You can check whether your json matches one or the other of those matchers by passing a list to `jsonMatches` function:
+You can check whether your json matches one or the other of those matchers by passing a list to `validator` this way:
 
 [source,kotlin]
 ----
-jsonMatches(
-                listOf(
-                """{
-                      "common":  "{{string}}",
-                      "poly1": "{{string}}"
-                    }
-                """,
-                """{
-                      "common":  "{{string}}",
-                      "poly2": "{{string}}"
-                    }
-                """
-                ),
-                 """{
-                      "common":  "a string",
-                      "poly2": "another string"
-                    }
-                """
-        )
+json(
+    """{
+          "common":  "a string",
+          "poly2": "another string"
+        }
+    """
+) matches validator(
+    listOf(
+        """{
+              "common":  "{{string}}",
+              "poly1": "{{string}}"
+            }
+        """,
+        """{
+              "common":  "{{string}}",
+              "poly2": "{{string}}"
+            }
+        """
+    )
+)
 ----
 
 == Lists
@@ -850,7 +874,226 @@ val name3 = jsonMap.getForPath<String>("characters[2]", "R2") // == "D2"
 
 = Gherkin support
 
-Scenarios can be described in Gherkin and implemented with Kest. Documentation coming soon...
+Scenarios can be described in Gherkin and implemented with Kest.
+
+== Big picture
+
+Let's start with an example. +
+Let's say we need to implement that scenario:
+
+[source, gherkin]
+----
+Feature: Mathematics
+
+    Scenario: Do some maths
+        Given number 82
+        When it is divided by 4
+        And multiplied by sum of 1 and 2
+        Then the result is 61.5
+----
+
+Then you would write it like that with Kest:
+[source, kotlin]
+----
+@Given("number (.*)")
+fun ScenarioBuilder.number(number: Int) = step { number }
+
+@When("it is divided by (.*)")
+fun ScenarioBuilder.divide(previousStep: StepResult<Int>, number: Long) = step { previousStep() / number }
+
+@And("multiplied by sum of (.*) and (.*)")
+fun ScenarioBuilder.multiplyBySumOf(previousStep: StepResult<Long>, s1: Double, s2: Float) =
+    step { previousStep() * (s1 + s2) }
+
+@Then("the result is (.*)")
+fun ScenarioBuilder.operationResult(previousStep: StepResult<Double>, expectedResult: Double) =
+    step { previousStep() } assertThat {
+        it isEqualTo expectedResult
+    }
+----
+
+* Annotations are set on functions which should be defined with these parameters:
+    . previous step result (if needed)
+    . parameters extracted from annotation regex (if any)
+
+== Annotations
+
+Five annotations are available to build steps from gherkin definitions. +
+They are the link between your gherkin definition and your Kest steps implementations.
+
+* `Given`
+* `When`
+* `Then`
+* `But`
+* `And`
+
+There is no difference between these annotations, one could be used in place of another one.
+They are declared on functions and take one parameter: a sentence that will match a Gherkin step definition. +
+The sentence may contain regex to make steps customizable.
+
+WARNING: if two annotations match a gherkin definition, then the first found by Kest will be used, take care when you define them, especially when they contain regex.
+
+== Defining steps
+
+To define a step you will create a function and annotate it with previously introduced annotations.
+
+=== Parameters of function
+
+==== Regex in annotation
+When you set regex to your annotation' sentence, then you will have to pass the captured values of regex to your step function. +
+Parameters should appear in the same order they are defined in annotation. +
+Let's take that example:
+[source, gherkin]
+----
+Feature: Mathematics
+
+    Scenario: Do some maths
+        Given numbers 3 and 4
+        When they are added
+        Then the result is 7
+----
+And let's implement step `Given numbers 3 and 4` +
+We have several options:
+
+. no customization +
++
+----
+@Given("numbers 3 and 4")
+fun givenNumbers3And4() = step { 3 to 4 }
+----
+. customization +
++
+----
+@Given("numbers (.*) and (.*)")
+fun givenNumbers(
+    first: Int /* will receive value 3 */,
+    second: Int /* will receive value 4 */,
+) = step { first to second }
+----
+
+NOTE: Kest can automatically cast parameters extracted from regex of type String, Long, Int, Float, Double and Boolean, if you need another type you should declare it as String and build the correct type in your function.
+
+==== Use a docstring defined on gherkin step
+
+When writing gherkin steps you may use docstring to describe a complex data. +
+For example:
+[source, gherkin]
+----
+Feature: Films
+
+    Scenario: Guess the theme
+        Given a movie which starts with
+        """
+        A long time ago in a galaxy far, far away…
+
+        It is a period of civil war.
+        Rebel spaceships, striking
+        from a hidden base, have won
+        their first victory against
+        the evil Galactic Empire.
+
+        During the battle, Rebel
+        spies managed to steal secret
+        plans to the Empire's
+        ultimate weapon, the DEATH
+        STAR, an armored space
+        station with enough power to
+        destroy an entire planet.
+
+        Pursued by the Empire's
+        sinister agents, Princess
+        Leia races home aboard her
+        starship, custodian of the
+        stolen plans that can save
+        her people and restore
+        freedom to the galaxy....
+        """
+        When it is displayed
+        Then I hear "Main Title" from Star Wars: A New Hope
+----
+In that case you would implement it this way:
+[source, kotlin]
+----
+@Given("a movie which starts with")
+fun aMovieWhichStartsWith(text: String) = step { text }
+----
+
+More precisely, the docstring parameter must be the *LAST* parameter of your function.
+
+==== Use the result of a previous step
+
+If you need to reuse the result of a previous step you will have to declare it as first parameter of your function. +
+Let's take that example:
+[source, gherkin]
+----
+Feature: Mathematics
+
+    Scenario: Do some maths
+        Given numbers 3 and 4
+        When they are added
+        Then the result is 7
+----
+And let's implement step `When they are added` +
+We will define it like this:
+[source, kotlin]
+----
+@When("they are added")
+fun theyAreAdded(previsousStep: StepResult<Pair<Int, Int>>) = step { previsousStep().first + previousStep().second }
+----
+let's implement step `Then the result is 7` +
+[source, kotlin]
+----
+@Then("the result is (.*)")
+fun theResultIs(previsousStep: StepResult<Int>, expectedResult: Int) = step { previsousStep() } assertThat { it isEqualTo expectedResult }
+----
+
+== Keep a context during scenario
+
+You may one to keep a context while playing a gherkin scenario. +
+It could be useful if you want to perform cleanups at the end oy your scenario: you could store everything you built in context and then end scenario with a cleanup step that would be responsible of cleaning all things stored in context.
+
+For that:
+
+. define a Context class that will extend `GherkinContext`
+. at the end of a step call function `setGherkinScenarioContext<You_Context_Class>`
++
+[source, kotlin]
+----
+data class MyContext(val stuff: List<String>): GherkinContext
+scenario {
+
+    step {
+        "A long time ago in a galaxy far, far away…"
+    } setGherkinScenarioContext  { context: MyContext?, stepRes ->
+
+        context?.copy(stuff = context.stuff + listOf(stepRes)) ?: MyContext(listOf(stepRes))
+
+    }
+}
+----
++
+`setGherkinScenarioContext` takes as parameter a lambda that will be invoked with: +
+
+.. current Gherkin Context (may be null if invoked for the first time)
+.. the result of the step where you are invoking it.
+
+The lambda should return the new value for your Gherkin Context.
+
+
+== Play Gherkin scenarios
+
+=== Default way
+
+To allow Kest to detect your gherkin scenario you need to declare a class with `KestGherkin`annotation, it takes two parameters:
+. `path`: classpath location where gherkin definitions are stored
+. `stepDefinitionsPackage`: package where gherkin definition steps are implemented
+
+By default `path`takes value `/gherkin` so no need to set it if you store your definitions in `src/test/resources/gherkin`
+
+=== Custom way
+
+If your Gherkin definitions are stored outside from your classpath you may use annotation `KestGherkinCustom` which will take an additional parameter `sourceProvider: +
+`sourceProvider` is a KClass of an implementation of `KestGherkinFeaturesProvider`, in that implementation it is up to you to retrieve your Gherkin Features from wherever you need return them as a list of Strings
 
 :leveloffset!:
 :leveloffset: +1

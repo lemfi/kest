@@ -5,9 +5,12 @@
 
 = RabbitMQ Steps
 
-* create a queue ````create rabbitmq queue````
-* publish a message on a queue ````publish rabbitmq message````
-* read a message from a queue ````given message from rabbitmq queue````
+* create a queue `createRabbitmqQueue`
+* delete a queue `deleteRabbitmqQueue`
+* publish a message on a queue `publishRabbitmqMessage`
+* read a message from a queue `givenMessageFromRabbitmqQueue`
+* read multiple messages from a queue `givenMessagesFromRabbitmqQueue`
+* count number of messages in a queue `givenNumberOfMessagesInRabbitmqQueue
 
 == Create a queue on RabbitMQ
 
@@ -19,7 +22,6 @@ This step may seem useless, consider it as a helper to build scenarios
 * retry: String // optional, give a chance for step to fail several times before passing
 * builder: RabbitMQQueueCreationExecutionBuilder.() -> Unit // mandatory, configure execution of step +
 builder parameters are:
-** description: () -> String? // optional, describe execution
 ** message: QueueAndBinding // mandatory, configuration of queue to create
 *** queue: String // mandatory, queue to create
 *** exchange: String? // optional, if not set no binding will be created to any exchange
@@ -28,7 +30,7 @@ builder parameters are:
 [source,kotlin]
 ----
 // QueueAndBinding is built by a combination if three functions written as follows:
-`create queue` { "world" } `and bind it to exchange` "universe" `with routing key` "galaxy"
+createQueue { "world" } andBindItToExchange "universe" withRoutingKey "galaxy"
 ----
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to / +
@@ -46,12 +48,45 @@ rabbitmq:
 
 [source,kotlin]
 ----
-`create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
-    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" `with routing key` "Force"
+createRabbitmqQueue("Obi-Wan Kenobi should be born before he can receive a message") {
+    createQueue { "obi-wan_kenobi" } andBindItToExchange "StarWars" withRoutingKey "Force"
 }
 ----
 
-== Read messages from rabbitMQ
+== Delete a queue on RabbitMQ
+
+This step may seem useless, consider it as a helper to build scenarios
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQQueueDeletionExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+
+** queue: String // mandatory, queue to create
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to / +
++
+connection and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+deleteRabbitmqQueue("Obi-Wan Kenobi no longer wants to use his powers") {
+    queue = "obi-wan_kenobi"
+}
+----
+
+== Read one message from rabbitMQ queue
 
 This step comes as a parameterized function, the parameterized type is the expected return type for the message to read. +
 Default return type is `ByteArray`
@@ -64,7 +99,6 @@ Default return type is `ByteArray`
 builder parameters are:
 ** queue: String // queue from which read message
 ** messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
-** nbMessges: Int // optional number of messages to retrieve, defaults to 1
 ** deleteQueue: Boolean // Should queue be deleted after reading, defaults to false
 ** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
 ** vhost: String // optional, defaults to / +
@@ -82,9 +116,50 @@ rabbitmq:
 
 [source,kotlin]
 ----
-`given message from rabbitmq queue`<String> {
+givenMessageFromRabbitmqQueue<String> {
         queue = "kest"
         messageTransformer = { toString(Charsets.UTF_8) }
+}
+----
+
+N.B: For messages with Json format you may use `toJson` function, which maps `ByteArray` to a `JsonMap`. +
+See xref:json.adoc[Kest JSON] documentation for more details.
+
+== Read multiple messages from rabbitMQ
+
+This step comes as a parameterized function, the parameterized type is the expected return type for the message to read. +
+Default return type is `ByteArray`
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQMessagesExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** queue: String // queue from which read message
+** messageTransformer: String // transformer from `ByteArray` to expected return type, mandatory if other than `ByteArray`
+** nbMessages: Int // optional number of messages to retrieve, defaults to 1
+** deleteQueue: Boolean // Should queue be deleted after reading, defaults to false
+** connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672
+** vhost: String // optional, defaults to / +
++
+connection and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+givenMessagesFromRabbitmqQueue<String> {
+        queue = "kest"
+        messageTransformer = { toString(Charsets.UTF_8) }
+        nbMessages = 2
 }
 ----
 
@@ -121,9 +196,9 @@ builder parameters are:
 [source,kotlin]
 ----
 // RabbitMQMessage may be built by a combination of functions written as follows:
-publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
+publish { "message_to_publish" } toExchange "target_exchange" withRoutingKey "routing_key" withHeaders mapOf(
     "header" to "headerValue"
-) `with properties` {
+) withProperties {
     messageId = "my id"
     expiration = "10000"
 }
@@ -145,7 +220,46 @@ rabbitmq:
 
 [source,kotlin]
 ----
-`publish rabbitmq message`("say hello world through universe") {
-    publish { """ { "hello": "world" } """ } `to exchange` "" `with routing key` "universe"
+publishRabbitmqMessage("say hello world through universe") {
+    publish { """ { "hello": "world" } """ } toExchange "" withRoutingKey "universe"
+}
+----
+
+
+
+== count number of messages in a queue
+
+NOTE: This step uses RabbitMQ management api, results are not instantaneous, this step should be used carefully regarding of that.
+
+=== Parameters to provide on step
+
+* name: String? // optional, give a name to your step to make scenario execution more readable
+* retry: String // optional, give a chance for step to fail several times before passing
+* builder: RabbitMQCountMessagesExecutionBuilder.() -> Unit // mandatory, configure execution of step +
+builder parameters are:
+** queue: String // queue from which count messages
+** connection: String // optional, connection string to rabbitmq management api, defaults to http://localhost:15672
+** user: String // optional, user to connect to management api, defaults to guest
+** password: String // optional, password to connect to management api, defaults to guest
+** vhost: String // optional, defaults to / +
++
+connection, user, password and vhost can be set globally on kest configuration file:
++
+[source,yml,title=kest.yml]
+----
+rabbitmq:
+  managementapi:
+    connection: http://my_host:15672
+    user: my_user
+    password: my_password
+  vhost: /myvhost
+----
+
+=== Sample
+
+[source,kotlin]
+----
+givenNumberOfMessagesInRabbitmqQueue {
+    queue = "kest"
 }
 ----
