@@ -7,7 +7,7 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.StandaloneStepResult
+import com.github.lemfi.kest.core.model.StepResult
 import com.github.lemfi.kest.gherkin.core.And
 import com.github.lemfi.kest.gherkin.core.Given
 import com.github.lemfi.kest.gherkin.core.Then
@@ -39,17 +39,17 @@ object OtherStepDefinitions {
     }
 
     @And("another static string")
-    fun ScenarioBuilder.anotherStaticString(stepResult: StandaloneStepResult<String>) = step {
+    fun ScenarioBuilder.anotherStaticString(stepResult: StepResult<String>) = step {
         stepResult() to "another static string"
     }
 
     @When("they are concatenated")
-    fun ScenarioBuilder.theyAreConcatenated(stepResult: StandaloneStepResult<Pair<String, String>>) = step {
+    fun ScenarioBuilder.theyAreConcatenated(stepResult: StepResult<Pair<String, String>>) = step {
         stepResult().run { first + second }
     }
 
     @Then("the result is")
-    fun ScenarioBuilder.theResultIs(stepResult: StandaloneStepResult<String>) = step { stepResult() } assertThat {
+    fun ScenarioBuilder.theResultIs(stepResult: StepResult<String>) = step { stepResult() } assertThat {
         it isEqualTo "a static stringanother static string"
     }
 
@@ -61,16 +61,16 @@ class YetOtherStepDefinitions {
     fun ScenarioBuilder.string(s: String) = step { s }
 
     @When("it is reversed")
-    fun ScenarioBuilder.reverseString(previousStep: StandaloneStepResult<String>) = step { previousStep().reversed() }
+    fun ScenarioBuilder.reverseString(previousStep: StepResult<String>) = step { previousStep().reversed() }
 
     @Then("it becomes (.*)")
-    fun ScenarioBuilder.checkString(previousStep: StandaloneStepResult<String>, expectedString: String) =
+    fun ScenarioBuilder.checkString(previousStep: StepResult<String>, expectedString: String) =
         step { previousStep() } assertThat {
             it isEqualTo expectedString
         }
 
     @Then("it becomes")
-    fun ScenarioBuilder.checkString2(previousStep: StandaloneStepResult<String>, expectedString: String) =
+    fun ScenarioBuilder.checkString2(previousStep: StepResult<String>, expectedString: String) =
         step { previousStep() } assertThat {
             it isEqualTo expectedString
         }
@@ -79,14 +79,14 @@ class YetOtherStepDefinitions {
     fun ScenarioBuilder.number(number: Int) = step { number }
 
     @When("it is divided by (.*)")
-    fun ScenarioBuilder.divide(previousStep: StandaloneStepResult<Int>, number: Long) = step { previousStep() / number }
+    fun ScenarioBuilder.divide(previousStep: StepResult<Int>, number: Long) = step { previousStep() / number }
 
     @And("multiplied by sum of (.*) and (.*)")
-    fun ScenarioBuilder.multiplyBySumOf(previousStep: StandaloneStepResult<Long>, s1: Double?, s2: Float?) =
+    fun ScenarioBuilder.multiplyBySumOf(previousStep: StepResult<Long>, s1: Double?, s2: Float?) =
         step { previousStep() * ((s1 ?: 0.0) + (s2 ?: 0f)) }
 
     @Then("the result is (.*)")
-    fun ScenarioBuilder.operationResult(previousStep: StandaloneStepResult<Double>, expectedResult: Double) =
+    fun ScenarioBuilder.operationResult(previousStep: StepResult<Double>, expectedResult: Double) =
         step { previousStep() } assertThat {
             it isEqualTo expectedResult
         }
@@ -95,15 +95,15 @@ class YetOtherStepDefinitions {
     fun ScenarioBuilder.booleans(b1: Boolean, b2: Boolean) = step { b1 to b2 }
 
     @When("a logical AND is performed")
-    fun ScenarioBuilder.and(previousStep: StandaloneStepResult<Pair<Boolean, Boolean>>) =
+    fun ScenarioBuilder.and(previousStep: StepResult<Pair<Boolean, Boolean>>) =
         step { previousStep().let { it.first && it.second } }
 
     @When("a logical OR is performed")
-    fun ScenarioBuilder.or(previousStep: StandaloneStepResult<Pair<Boolean, Boolean>>) =
+    fun ScenarioBuilder.or(previousStep: StepResult<Pair<Boolean, Boolean>>) =
         step { previousStep().let { it.first || it.second } }
 
     @Then("the boolean result is (.*)")
-    fun ScenarioBuilder.booleanResult(previousStep: StandaloneStepResult<Boolean>, expectedResult: Boolean) =
+    fun ScenarioBuilder.booleanResult(previousStep: StepResult<Boolean>, expectedResult: Boolean) =
         step { previousStep() } assertThat {
             it isEqualTo expectedResult
         }

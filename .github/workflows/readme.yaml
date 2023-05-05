@@ -37,5 +37,8 @@ jobs:
       - name: Reduce rabbitmq readme
         run: asciidoctor-reducer -o step-rabbitmq/README.adoc doc/modules/readme-step-rabbitmq.adoc
 
+      - name: Reduce gherkin readme
+        run: asciidoctor-reducer -o gherkin-core/README.adoc doc/modules/readme-gherkin.adoc
+
       - name: Commit readmes
         uses: EndBug/add-and-commit@v8

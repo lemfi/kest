@@ -1,3 +1,222 @@
 = Gherkin support
 
-Scenarios can be described in Gherkin and implemented with Kest. Documentation coming soon...
+Scenarios can be described in Gherkin and implemented with Kest.
+
+== Big picture
+
+Let's start with an example. +
+Let's say we need to implement that scenario:
+
+[source, gherkin]
+----
+Feature: Mathematics
+
+    Scenario: Do some maths
+        Given number 82
+        When it is divided by 4
+        And multiplied by sum of 1 and 2
+        Then the result is 61.5
+----
+
+Then you would write it like that with Kest:
+[source, kotlin]
+----
+@Given("number (.*)")
+fun ScenarioBuilder.number(number: Int) = step { number }
+
+@When("it is divided by (.*)")
+fun ScenarioBuilder.divide(previousStep: StepResult<Int>, number: Long) = step { previousStep() / number }
+
+@And("multiplied by sum of (.*) and (.*)")
+fun ScenarioBuilder.multiplyBySumOf(previousStep: StepResult<Long>, s1: Double, s2: Float) =
+    step { previousStep() * (s1 + s2) }
+
+@Then("the result is (.*)")
+fun ScenarioBuilder.operationResult(previousStep: StepResult<Double>, expectedResult: Double) =
+    step { previousStep() } assertThat {
+        it isEqualTo expectedResult
+    }
+----
+
+* Annotations are set on functions which should be defined with these parameters:
+    . previous step result (if needed)
+    . parameters extracted from annotation regex (if any)
+
+== Annotations
+
+Five annotations are available to build steps from gherkin definitions. +
+They are the link between your gherkin definition and your Kest steps implementations.
+
+* `Given`
+* `When`
+* `Then`
+* `But`
+* `And`
+
+There is no difference between these annotations, one could be used in place of another one.
+They are declared on functions and take one parameter: a sentence that will match a Gherkin step definition. +
+The sentence may contain regex to make steps customizable.
+
+WARNING: if two annotations match a gherkin definition, then the first found by Kest will be used, take care when you define them, especially when they contain regex.
+
+== Defining steps
+
+To define a step you will create a function and annotate it with previously introduced annotations.
+
+=== Parameters of function
+
+==== Regex in annotation
+When you set regex to your annotation' sentence, then you will have to pass the captured values of regex to your step function. +
+Parameters should appear in the same order they are defined in annotation. +
+Let's take that example:
+[source, gherkin]
+----
+Feature: Mathematics
+
+    Scenario: Do some maths
+        Given numbers 3 and 4
+        When they are added
+        Then the result is 7
+----
+And let's implement step `Given numbers 3 and 4` +
+We have several options:
+
+. no customization +
++
+----
+@Given("numbers 3 and 4")
+fun givenNumbers3And4() = step { 3 to 4 }
+----
+. customization +
++
+----
+@Given("numbers (.*) and (.*)")
+fun givenNumbers(
+    first: Int /* will receive value 3 */,
+    second: Int /* will receive value 4 */,
+) = step { first to second }
+----
+
+NOTE: Kest can automatically cast parameters extracted from regex of type String, Long, Int, Float, Double and Boolean, if you need another type you should declare it as String and build the correct type in your function.
+
+==== Use a docstring defined on gherkin step
+
+When writing gherkin steps you may use docstring to describe a complex data. +
+For example:
+[source, gherkin]
+----
+Feature: Films
+
+    Scenario: Guess the theme
+        Given a movie which starts with
+        """
+        A long time ago in a galaxy far, far away…
+
+        It is a period of civil war.
+        Rebel spaceships, striking
+        from a hidden base, have won
+        their first victory against
+        the evil Galactic Empire.
+
+        During the battle, Rebel
+        spies managed to steal secret
+        plans to the Empire's
+        ultimate weapon, the DEATH
+        STAR, an armored space
+        station with enough power to
+        destroy an entire planet.
+
+        Pursued by the Empire's
+        sinister agents, Princess
+        Leia races home aboard her
+        starship, custodian of the
+        stolen plans that can save
+        her people and restore
+        freedom to the galaxy....
+        """
+        When it is displayed
+        Then I hear "Main Title" from Star Wars: A New Hope
+----
+In that case you would implement it this way:
+[source, kotlin]
+----
+@Given("a movie which starts with")
+fun aMovieWhichStartsWith(text: String) = step { text }
+----
+
+More precisely, the docstring parameter must be the *LAST* parameter of your function.
+
+==== Use the result of a previous step
+
+If you need to reuse the result of a previous step you will have to declare it as first parameter of your function. +
+Let's take that example:
+[source, gherkin]
+----
+Feature: Mathematics
+
+    Scenario: Do some maths
+        Given numbers 3 and 4
+        When they are added
+        Then the result is 7
+----
+And let's implement step `When they are added` +
+We will define it like this:
+[source, kotlin]
+----
+@When("they are added")
+fun theyAreAdded(previsousStep: StepResult<Pair<Int, Int>>) = step { previsousStep().first + previousStep().second }
+----
+let's implement step `Then the result is 7` +
+[source, kotlin]
+----
+@Then("the result is (.*)")
+fun theResultIs(previsousStep: StepResult<Int>, expectedResult: Int) = step { previsousStep() } assertThat { it isEqualTo expectedResult }
+----
+
+== Keep a context during scenario
+
+You may one to keep a context while playing a gherkin scenario. +
+It could be useful if you want to perform cleanups at the end oy your scenario: you could store everything you built in context and then end scenario with a cleanup step that would be responsible of cleaning all things stored in context.
+
+For that:
+
+. define a Context class that will extend `GherkinContext`
+. at the end of a step call function `setGherkinScenarioContext<You_Context_Class>`
++
+[source, kotlin]
+----
+data class MyContext(val stuff: List<String>): GherkinContext
+scenario {
+
+    step {
+        "A long time ago in a galaxy far, far away…"
+    } setGherkinScenarioContext  { context: MyContext?, stepRes ->
+
+        context?.copy(stuff = context.stuff + listOf(stepRes)) ?: MyContext(listOf(stepRes))
+
+    }
+}
+----
++
+`setGherkinScenarioContext` takes as parameter a lambda that will be invoked with: +
+
+.. current Gherkin Context (may be null if invoked for the first time)
+.. the result of the step where you are invoking it.
+
+The lambda should return the new value for your Gherkin Context.
+
+
+== Play Gherkin scenarios
+
+=== Default way
+
+To allow Kest to detect your gherkin scenario you need to declare a class with `KestGherkin`annotation, it takes two parameters:
+. `path`: classpath location where gherkin definitions are stored
+. `stepDefinitionsPackage`: package where gherkin definition steps are implemented
+
+By default `path`takes value `/gherkin` so no need to set it if you store your definitions in `src/test/resources/gherkin`
+
+=== Custom way
+
+If your Gherkin definitions are stored outside from your classpath you may use annotation `KestGherkinCustom` which will take an additional parameter `sourceProvider: +
+`sourceProvider` is a KClass of an implementation of `KestGherkinFeaturesProvider`, in that implementation it is up to you to retrieve your Gherkin Features from wherever you need return them as a list of Strings

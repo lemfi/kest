@@ -1,6 +1,8 @@
 package com.github.lemfi.kest.gherkin.core
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
+import com.github.lemfi.kest.core.cli.scenario
+import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.executor.NestedScenarioStepExecution
 import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.AssertableStepResult
@@ -877,4 +879,3 @@ expected 3 value parameters, got 2 value parameters for function wrongNumberOfPa
     }
 
 }
-
