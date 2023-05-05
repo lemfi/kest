@@ -11,7 +11,9 @@ sealed class Step<RESULT> {
     abstract var execution: () -> Execution<RESULT>
     abstract val retry: RetryStep?
 
-    abstract var postExecution: IStepPostExecution<RESULT, RESULT>
+    @Deprecated("use stepResult instead", replaceWith = ReplaceWith("future"))
+    abstract var postExecution: IStepResult<RESULT, RESULT>
+    abstract var future: IStepResult<RESULT, RESULT>
 }
 
 class StandaloneStep<RESULT>(
@@ -20,7 +22,9 @@ class StandaloneStep<RESULT>(
     override val retry: RetryStep?,
 ) : Step<RESULT>() {
 
-    override var postExecution: IStepPostExecution<RESULT, RESULT> = StandaloneStepResult(this, null) { t -> t }
+    @Deprecated("use stepResult instead", replaceWith = ReplaceWith("future"))
+    override var postExecution: IStepResult<RESULT, RESULT> = StandaloneStepResult(this, null) { t -> t }
+    override var future: IStepResult<RESULT, RESULT> = StandaloneStepResult(this, null) { t -> t }
 
     override lateinit var execution: () -> Execution<RESULT>
 }
@@ -32,7 +36,9 @@ class NestedScenarioStep<RESULT>(
 
     override val retry: RetryStep? = null
 
-    override var postExecution: IStepPostExecution<RESULT, RESULT> = NestedScenarioStepResult(this, null) { t -> t }
+    @Deprecated("use stepResult instead", replaceWith = ReplaceWith("future"))
+    override var postExecution: IStepResult<RESULT, RESULT> = NestedScenarioStepResult(this, null) { t -> t }
+    override var future: IStepResult<RESULT, RESULT> = NestedScenarioStepResult(this, null) { t -> t }
 
     override lateinit var execution: () -> Execution<RESULT>
 }
@@ -54,15 +60,17 @@ value class DefaultStepName(override val value: String) : IStepName
         imports = ["com.github.lemfi.kest.core.model.StandaloneStepResult"]
     )
 )
-typealias StepPostExecution<RESULT> = StandaloneStepPostExecution<RESULT, RESULT, RESULT>
+typealias StepPostExecution<RESULT> = AssertableStepResult<RESULT, RESULT, RESULT>
 
-typealias StepResult<RESULT> = IStepPostExecution<RESULT, RESULT>
-typealias StandaloneStepResult<RESULT> = StandaloneStepPostExecution<RESULT, RESULT, RESULT>
-typealias NestedScenarioStepResult<RESULT> = NestedScenarioStepPostExecution<RESULT, RESULT>
+typealias StepResult<RESULT> = IStepResult<RESULT, RESULT>
+typealias StandaloneStepResult<RESULT> = AssertableStepResult<RESULT, RESULT, RESULT>
+typealias NestedScenarioStepResult<RESULT> = NotAssertableStepResult<RESULT, RESULT>
 
-sealed class IStepPostExecution<RESULT, MAPPED_RESULT>(
+@Deprecated("use IStepResult instead", replaceWith = ReplaceWith("IStepResult<RESULT, MAPPED_RESULT>"))
+typealias IStepPostExecution<RESULT, MAPPED_RESULT> = IStepResult<RESULT, MAPPED_RESULT>
+sealed class IStepResult<RESULT, MAPPED_RESULT>(
     private val step: Step<*>,
-    private val pe: IStepPostExecution<*, RESULT>?,
+    private val pe: IStepResult<*, RESULT>?,
     private val transformer: (RESULT) -> MAPPED_RESULT
 ) {
 
@@ -98,11 +106,13 @@ sealed class IStepPostExecution<RESULT, MAPPED_RESULT>(
 
     operator fun invoke() = result()
 
+    @Deprecated("use future instead", replaceWith = ReplaceWith("future"))
     val lazy: () -> MAPPED_RESULT = { invoke() }
+    val future: () -> MAPPED_RESULT = { invoke() }
 
     fun setResult(t: RESULT) {
         resSet = true
-        var parent: IStepPostExecution<*, *>? = pe
+        var parent: IStepResult<*, *>? = pe
         while (parent != null) {
             parent.resSet = true
             parent = parent.pe
@@ -113,7 +123,7 @@ sealed class IStepPostExecution<RESULT, MAPPED_RESULT>(
     fun setFailed(e: Throwable) {
         failed = e
         resSet = true
-        var parent: IStepPostExecution<*, *>? = pe
+        var parent: IStepResult<*, *>? = pe
         while (parent != null) {
             parent.setFailed(e)
             parent = parent.pe
@@ -129,15 +139,17 @@ sealed class IStepPostExecution<RESULT, MAPPED_RESULT>(
     }
 }
 
-class StandaloneStepPostExecution<INITIAL_RESULT : Any?, RESULT, MAPPED_RESULT>(
+@Deprecated("use AssertableStepResult instead", replaceWith = ReplaceWith("AssertableStepResult<INITIAL_RESULT, RESULT, MAPPED_RESULT>"))
+typealias StandaloneStepPostExecution<INITIAL_RESULT, RESULT, MAPPED_RESULT> = AssertableStepResult<INITIAL_RESULT, RESULT, MAPPED_RESULT>
+class AssertableStepResult<INITIAL_RESULT : Any?, RESULT, MAPPED_RESULT>(
     private val step: Step<*>,
-    private val pe: StandaloneStepPostExecution<INITIAL_RESULT, *, RESULT>?,
+    private val pe: AssertableStepResult<INITIAL_RESULT, *, RESULT>?,
     transformer: (RESULT) -> MAPPED_RESULT
-) : IStepPostExecution<RESULT, MAPPED_RESULT>(step, pe, transformer) {
+) : IStepResult<RESULT, MAPPED_RESULT>(step, pe, transformer) {
 
     @Deprecated("use `mapResultTo` instead", replaceWith = ReplaceWith("this mapResultTo mapper"))
-    infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = StandaloneStepPostExecution(step, this, mapper)
-    infix fun <M> mapResultTo(mapper: (MAPPED_RESULT) -> M) = StandaloneStepPostExecution(step, this, mapper)
+    infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = AssertableStepResult(step, this, mapper)
+    infix fun <M> mapResultTo(mapper: (MAPPED_RESULT) -> M) = AssertableStepResult(step, this, mapper)
 
     val assertions: MutableList<AssertionsBuilder.(INITIAL_RESULT) -> Unit> = mutableListOf()
 
@@ -146,15 +158,18 @@ class StandaloneStepPostExecution<INITIAL_RESULT : Any?, RESULT, MAPPED_RESULT>(
     }
 }
 
-class NestedScenarioStepPostExecution<RESULT, MAPPED_RESULT>(
+@Deprecated("use NotAssertableStepResult instead", replaceWith = ReplaceWith("NotAssertableStepResult<RESULT, MAPPED_RESULT>"))
+typealias NestedScenarioStepPostExecution<RESULT, MAPPED_RESULT> = NotAssertableStepResult<RESULT, MAPPED_RESULT>
+
+class NotAssertableStepResult<RESULT, MAPPED_RESULT>(
     private val step: Step<*>,
-    pe: NestedScenarioStepPostExecution<*, RESULT>?,
+    pe: NotAssertableStepResult<*, RESULT>?,
     transformer: (RESULT) -> MAPPED_RESULT
-) : IStepPostExecution<RESULT, MAPPED_RESULT>(step, pe, transformer) {
+) : IStepResult<RESULT, MAPPED_RESULT>(step, pe, transformer) {
 
     @Deprecated("use `mapResultTo` instead", replaceWith = ReplaceWith("this mapResultTo mapper"))
-    infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
-    infix fun <M> mapResultTo(mapper: (MAPPED_RESULT) -> M) = NestedScenarioStepPostExecution(step, this, mapper)
+    infix fun <M> `map result to`(mapper: (MAPPED_RESULT) -> M) = NotAssertableStepResult(step, this, mapper)
+    infix fun <M> mapResultTo(mapper: (MAPPED_RESULT) -> M) = NotAssertableStepResult(step, this, mapper)
 
 }
 

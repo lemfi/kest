@@ -1,9 +1,6 @@
 package com.github.lemfi.kest.gherkin.core
 
-import com.github.lemfi.kest.core.model.IStepPostExecution
-import com.github.lemfi.kest.core.model.StandaloneStep
-import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
-import com.github.lemfi.kest.core.model.StepName
+import com.github.lemfi.kest.core.model.IStepResult
 
 interface GherkinContext
 
@@ -11,7 +8,7 @@ private val gherkinContextThreadLocal = ThreadLocal.withInitial { ContextHolder(
 
 @Suppress("UNCHECKED_CAST")
 @Deprecated("use setGherkinScenarioContext instead", replaceWith = ReplaceWith("this setGherkinScenarioContext l"))
-infix fun <STEP_POST_EXECUTION: IStepPostExecution<*, RESULT>, RESULT, GHERKIN_CONTEXT : GherkinContext> STEP_POST_EXECUTION.`set gherkin scenario context`(l: (GHERKIN_CONTEXT?, RESULT) -> GHERKIN_CONTEXT): STEP_POST_EXECUTION =
+infix fun <STEP_POST_EXECUTION: IStepResult<*, RESULT>, RESULT, GHERKIN_CONTEXT : GherkinContext> STEP_POST_EXECUTION.`set gherkin scenario context`(l: (GHERKIN_CONTEXT?, RESULT) -> GHERKIN_CONTEXT): STEP_POST_EXECUTION =
     apply {
 
         gherkinContextThreadLocal.get().context.add { gherkinContext ->
@@ -20,7 +17,7 @@ infix fun <STEP_POST_EXECUTION: IStepPostExecution<*, RESULT>, RESULT, GHERKIN_C
     }
 
 @Suppress("UNCHECKED_CAST")
-infix fun <STEP_POST_EXECUTION: IStepPostExecution<*, RESULT>, RESULT, GHERKIN_CONTEXT : GherkinContext> STEP_POST_EXECUTION.setGherkinScenarioContext(l: (GHERKIN_CONTEXT?, RESULT) -> GHERKIN_CONTEXT): STEP_POST_EXECUTION =
+infix fun <STEP_POST_EXECUTION: IStepResult<*, RESULT>, RESULT, GHERKIN_CONTEXT : GherkinContext> STEP_POST_EXECUTION.setGherkinScenarioContext(l: (GHERKIN_CONTEXT?, RESULT) -> GHERKIN_CONTEXT): STEP_POST_EXECUTION =
     apply {
 
         gherkinContextThreadLocal.get().context.add { gherkinContext ->

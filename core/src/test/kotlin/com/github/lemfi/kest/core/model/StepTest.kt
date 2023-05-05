@@ -142,7 +142,7 @@ class StepTest {
             transformer = { t -> t }
         )
 
-        val stepRes1 = StandaloneStepResult<String>(
+        val stepRes1 = StandaloneStepResult(
             step = step1,
             pe = stepRes2,
             transformer = { t -> "$t is transformed" }
@@ -156,7 +156,7 @@ class StepTest {
     }
 
     @Test
-    fun `all parents are resolved when a post execution is sucessfully resolved`() {
+    fun `all parents are resolved when a post execution is successfully resolved`() {
         val step1 = mockk<StandaloneStep<String>>()
 
         every { step1.name } returns StepName("step 1")
@@ -167,13 +167,13 @@ class StepTest {
             transformer = { t -> t }
         )
 
-        val stepRes2 = StandaloneStepResult<String>(
+        val stepRes2 = StandaloneStepResult(
             step = step1,
             pe = stepRes3,
             transformer = { t -> t }
         )
 
-        val stepRes1 = StandaloneStepResult<String>(
+        val stepRes1 = StandaloneStepResult(
             step = step1,
             pe = stepRes2,
             transformer = { t -> "$t is transformed" }
@@ -202,13 +202,13 @@ class StepTest {
             transformer = { t -> t }
         )
 
-        val stepRes2 = StandaloneStepResult<String>(
+        val stepRes2 = StandaloneStepResult(
             step = step1,
             pe = stepRes3,
             transformer = { t -> t }
         )
 
-        val stepRes1 = StandaloneStepResult<String>(
+        val stepRes1 = StandaloneStepResult(
             step = step1,
             pe = stepRes2,
             transformer = { t -> "$t is transformed" }
@@ -233,7 +233,7 @@ class StepTest {
     }
 
     @Test
-    fun `add assertion to standlalone step`() {
+    fun `add assertion to standalone step`() {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
@@ -252,7 +252,7 @@ class StepTest {
     }
 
     @Test
-    fun `add assertion to standlalone step with a parent`() {
+    fun `add assertion to standalone step with a parent`() {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
@@ -261,7 +261,7 @@ class StepTest {
             pe = null,
             transformer = { t -> t }
         )
-        val stepRes1 = StandaloneStepResult<String>(
+        val stepRes1 = StandaloneStepResult(
             step = step,
             pe = stepRes2,
             transformer = { t -> t }
@@ -278,7 +278,7 @@ class StepTest {
 
 
     @Test
-    fun `map standlalone step result`() {
+    fun `map standalone step result`() {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
@@ -299,7 +299,7 @@ class StepTest {
         val step = mockk<StandaloneStep<String>>()
 
         every { step.name } returns StepName("a step")
-        val stepRes = NestedScenarioStepPostExecution<String, String>(
+        val stepRes = NotAssertableStepResult<String, String>(
             step = step,
             pe = null,
             transformer = { t -> t }
@@ -335,7 +335,7 @@ class StepTest {
             transformer = { t -> t }
         )
 
-        every { step.postExecution } returns stepRes
+        every { step.future } returns stepRes
 
         every { step.execution } returns {
             object : Execution<Int>() {
@@ -345,11 +345,11 @@ class StepTest {
 
         step.run()
 
-        Assertions.assertEquals(1, step.postExecution.lazy())
+        Assertions.assertEquals(1, step.future.future())
 
         counter++
-        step.postExecution.replay()
+        step.future.replay()
 
-        Assertions.assertEquals(2, step.postExecution.lazy())
+        Assertions.assertEquals(2, step.future.future())
     }
 }

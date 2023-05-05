@@ -871,7 +871,7 @@ class KestGherkinTestEngineTest {
         val exception = assertThrows<NullPointerException> { descriptor.prepare(context) }
         assertEquals("bam", exception.message)
 
-        assertTrue(feature.steps.first().postExecution.isFailed())
+        assertTrue(feature.steps.first().future.isFailed())
     }
 
     @Test
@@ -938,8 +938,8 @@ class KestGherkinTestEngineTest {
 
         assertEquals(context, res)
 
-        assertTrue(feature.steps.first().postExecution.isSuccess())
-        assertEquals("HELLO", feature.steps.first().postExecution())
+        assertTrue(feature.steps.first().future.isSuccess())
+        assertEquals("HELLO", feature.steps.first().future())
 
         verifyOrder {
             listener.dynamicTestRegistered(descriptor)
@@ -969,7 +969,7 @@ class KestGherkinTestEngineTest {
 
         assertEquals(context, res)
 
-        assertTrue(feature.steps.first().postExecution.isFailed())
+        assertTrue(feature.steps.first().future.isFailed())
 
         val testExecutionResult = slot<TestExecutionResult>()
 
@@ -1014,8 +1014,8 @@ Expected true, was false
 
         assertEquals(context, res)
 
-        assertFalse(feature.steps.first().postExecution.isFailed())
-        assertFalse(feature.steps.first().postExecution.isSuccess())
+        assertFalse(feature.steps.first().future.isFailed())
+        assertFalse(feature.steps.first().future.isSuccess())
 
         val skipReason = slot<String>()
 

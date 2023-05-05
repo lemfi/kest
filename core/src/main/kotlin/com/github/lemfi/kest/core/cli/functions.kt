@@ -17,7 +17,7 @@ import com.github.lemfi.kest.core.model.IScenario
 import com.github.lemfi.kest.core.model.IStepName
 import com.github.lemfi.kest.core.model.RetryStep
 import com.github.lemfi.kest.core.model.Scenario
-import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.AssertableStepResult
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
 import com.github.lemfi.kest.core.model.StepResultFailure
@@ -29,12 +29,12 @@ fun scenario(name: String = "anonymous scenario", s: ScenarioBuilder.() -> Unit)
 }
 
 @Deprecated("use assertThat instead")
-infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.`assert that`(message: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
+infix fun <I, T, R> AssertableStepResult<I, T, R>.`assert that`(message: AssertionsBuilder.(stepResult: I) -> Unit): AssertableStepResult<I, T, R> {
     addAssertion(message)
     return this
 }
 
-infix fun <I, T, R> StandaloneStepPostExecution<I, T, R>.assertThat(l: AssertionsBuilder.(stepResult: I) -> Unit): StandaloneStepPostExecution<I, T, R> {
+infix fun <I, T, R> AssertableStepResult<I, T, R>.assertThat(l: AssertionsBuilder.(stepResult: I) -> Unit): AssertableStepResult<I, T, R> {
     addAssertion(l)
     return this
 }
@@ -96,7 +96,7 @@ fun ScenarioBuilder.nestedScenario(
         NestedScenarioExecutionBuilder<Unit>(name)
             .apply {
                 returns {
-                    steps.onEach { if (it.postExecution.isFailed()) it.postExecution() }
+                    steps.onEach { if (it.future.isFailed()) it.future() }
                 }
             }
             .apply(l)
@@ -115,7 +115,7 @@ fun <RESULT> Step<RESULT>.run(): Step<RESULT> {
     val execution = try {
         execution()
     } catch (e: Throwable) {
-        postExecution.setFailed(e)
+        future.setFailed(e)
         throw e
     }
 
@@ -128,9 +128,9 @@ fun <RESULT> Step<RESULT>.run(): Step<RESULT> {
 
         try {
             val res = execution.execute()
-            if (postExecution is StandaloneStepPostExecution<*, *, *>) {
+            if (future is AssertableStepResult<*, *, *>) {
                 @Suppress("unchecked_cast")
-                (postExecution as StandaloneStepPostExecution<RESULT, *, *>).assertions.forEach { assert ->
+                (future as AssertableStepResult<RESULT, *, *>).assertions.forEach { assert ->
                     runCatching {
                         assertion.assert(res)
                     }.onFailure {
@@ -140,7 +140,7 @@ fun <RESULT> Step<RESULT>.run(): Step<RESULT> {
             }
             tries = 0
             execution.onAssertionSuccess()
-            postExecution.setResult(res)
+            future.setResult(res)
 
         } catch (e: Throwable) {
             execution.onAssertionFailedError()
@@ -149,10 +149,10 @@ fun <RESULT> Step<RESULT>.run(): Step<RESULT> {
             if (tries > 0) {
                 Thread.sleep(delay)
             } else if (e is AssertionFailedError) {
-                postExecution.setFailed(e)
+                future.setFailed(e)
                 throw e
             } else {
-                postExecution.setFailed(e)
+                future.setFailed(e)
                 assertion.fail(e)
             }
         } finally {

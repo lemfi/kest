@@ -37,7 +37,7 @@ class ScenarioBuilderTest {
         Assertions.assertEquals(1, scenarioBuilder.steps.size)
         Assertions.assertEquals("my created step", scenarioBuilder.steps[0].name.value)
         Assertions.assertEquals("world", scenarioBuilder.steps[0].execution().execute())
-        Assertions.assertEquals(scenarioBuilder.steps[0].postExecution, res)
+        Assertions.assertEquals(scenarioBuilder.steps[0].future, res)
     }
 
     @Test
@@ -53,6 +53,6 @@ class ScenarioBuilderTest {
 
         Assertions.assertEquals(1, scenarioBuilder.steps.size)
         Assertions.assertEquals("world", scenarioBuilder.steps[0].execution().execute())
-        Assertions.assertEquals(scenarioBuilder.steps[0].postExecution, res)
+        Assertions.assertEquals(scenarioBuilder.steps[0].future, res)
     }
 }

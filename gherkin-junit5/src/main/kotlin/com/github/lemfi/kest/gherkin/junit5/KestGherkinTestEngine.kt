@@ -217,7 +217,7 @@ class NestedStepTestDescriptor(
             }
         }.onFailure {
             logger.error(it.message, it)
-            step.postExecution.setFailed(it)
+            step.future.setFailed(it)
         }.getOrThrow()
 
         return context

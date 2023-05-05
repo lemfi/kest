@@ -7,7 +7,7 @@ import com.github.lemfi.kest.core.builder.StandaloneScenarioBuilder
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.model.DefaultStepName
-import com.github.lemfi.kest.core.model.IStepPostExecution
+import com.github.lemfi.kest.core.model.IStepResult
 import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
@@ -117,7 +117,7 @@ class GherkinScenarioBuilder(
                     )
                 ).apply {
 
-                    if (built is IStepPostExecution<*, *>) {
+                    if (built is IStepResult<*, *>) {
                         steps.last().useGherkinStepNameAsKestStepName(gherkinAssertion)
                     }
                 }
@@ -303,8 +303,8 @@ class GherkinScenarioBuilder(
                 param.kind == KParameter.Kind.INSTANCE -> paramValue
                 param.kind == KParameter.Kind.EXTENSION_RECEIVER -> paramValue
                 else -> when {
-                    (param.type.classifier as KClass<*>).isSubclassOf(IStepPostExecution::class) -> paramValue
-                    (param.type.classifier as KClass<*>).supertypes.any { it.classifier == IStepPostExecution::class } -> paramValue
+                    (param.type.classifier as KClass<*>).isSubclassOf(IStepResult::class) -> paramValue
+                    (param.type.classifier as KClass<*>).supertypes.any { it.classifier == IStepResult::class } -> paramValue
                     param.type.classifier as KClass<*> == Long::class -> transform(
                         function,
                         param,

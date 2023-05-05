@@ -23,7 +23,7 @@ class NestedScenario<RESULT>(
         try {
             result()
                 .apply {
-                    parentStep.postExecution.setResult(this)
+                    parentStep.future.setResult(this)
                 }
         } catch (e: Throwable) {
             with(
@@ -32,7 +32,7 @@ class NestedScenario<RESULT>(
                     cause = e,
                 )
             ) {
-                parentStep.postExecution.setFailed(this)
+                parentStep.future.setFailed(this)
                 throw this
             }
         }

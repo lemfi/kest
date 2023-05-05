@@ -10,7 +10,7 @@ import com.github.lemfi.kest.core.model.IStepName
 import com.github.lemfi.kest.core.model.Scenario
 import com.github.lemfi.kest.core.model.StandaloneScenario
 import com.github.lemfi.kest.core.model.StandaloneStep
-import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.AssertableStepResult
 import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.core.model.Step
 import com.github.lemfi.kest.core.model.StepName
@@ -63,7 +63,7 @@ class FunctionsTest {
 
     @Test
     fun `add assertions to result of a step`() {
-        val stepResult = mockk<StandaloneStepPostExecution<String, Int, Long>>(relaxUnitFun = true)
+        val stepResult = mockk<AssertableStepResult<String, Int, Long>>(relaxUnitFun = true)
 
         val l = slot<AssertionsBuilder.(stepResult: String) -> Unit>()
         every { stepResult.addAssertion(capture(l)) } returns Unit
@@ -111,7 +111,7 @@ class FunctionsTest {
         val postExecution = mockk<StandaloneStepResult<String>>(relaxUnitFun = true)
 
         every { step.execution } returns { throw IllegalAccessException("this step will fail on execution build!") }
-        every { step.postExecution } returns postExecution
+        every { step.future } returns postExecution
 
         val exception = assertThrows<IllegalAccessException> {
             step.run()
@@ -154,7 +154,7 @@ class FunctionsTest {
             }
         }
         every { step.execution } returns { execution }
-        every { step.postExecution } returns postExecution
+        every { step.future } returns postExecution
 
         val exception = assertThrows<AssertionFailedError> {
             step.run()
@@ -197,7 +197,7 @@ this step will fail on execution!
         var onExecutionEndedCalled = false
 
         step.apply {
-            postExecution = standaloneStandaloneStepResult
+            future = standaloneStandaloneStepResult
             execution = {
                 object : Execution<String>() {
                     override fun execute(): String = "execution is successful"
@@ -221,7 +221,7 @@ this step will fail on execution!
             step.run()
         }
 
-        Assertions.assertTrue(step.postExecution.isFailed())
+        Assertions.assertTrue(step.future.isFailed())
         Assertions.assertTrue(onAssertionFailedCalled)
         Assertions.assertTrue(onExecutionEndedCalled)
 
@@ -250,7 +250,7 @@ hahaha
         val execution = mockk<Execution<String>>(relaxUnitFun = true)
         every { step.execution } returns { execution }
         every { execution.execute() } throws IllegalAccessException("first call fails") andThen "success"
-        every { step.postExecution } returns postExecution
+        every { step.future } returns postExecution
         every { postExecution.assertions } returns mutableListOf({ true.isTrue })
 
         val res = step.run()
@@ -272,7 +272,7 @@ hahaha
         every { firstStep.name } returns object : IStepName {
             override val value = "the first step name"
         }
-        every { firstStep.postExecution } returns StandaloneStepResult(firstStep, null) {}
+        every { firstStep.future } returns StandaloneStepResult(firstStep, null) {}
 
         val step = mockk<StandaloneStep<Unit>>(relaxUnitFun = true)
         val postExecution = mockk<StandaloneStepResult<Unit>>(relaxUnitFun = true)
@@ -286,11 +286,11 @@ hahaha
         val execution = object : Execution<Unit>() {
             override fun execute() {
                 executionCalled++
-                firstStep.postExecution()
+                firstStep.future()
             }
         }
         every { step.execution } returns { execution }
-        every { step.postExecution } returns postExecution
+        every { step.future } returns postExecution
         every { postExecution.assertions } returns mutableListOf({ true.isTrue })
 
         assertThrows<StepResultFailure> { step.run() }
@@ -313,7 +313,7 @@ hahaha
         val execution = mockk<Execution<String>>(relaxUnitFun = true)
         every { step.execution } returns { execution }
         every { execution.execute() } returns "success"
-        every { step.postExecution } returns postExecution
+        every { step.future } returns postExecution
         every { postExecution.assertions } returns mutableListOf({ true.isTrue })
 
         val res = step.run()
@@ -414,7 +414,7 @@ hahaha
 
         val stepExecution = scenarioBuilder.toScenario().run { steps.first().run() }
 
-        assertEquals("played!", stepExecution.postExecution())
+        assertEquals("played!", stepExecution.future())
     }
 
 }

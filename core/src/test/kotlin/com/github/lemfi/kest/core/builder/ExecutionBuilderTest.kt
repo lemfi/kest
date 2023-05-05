@@ -1,7 +1,7 @@
 package com.github.lemfi.kest.core.builder
 
 import com.github.lemfi.kest.core.model.Execution
-import com.github.lemfi.kest.core.model.IStepPostExecution
+import com.github.lemfi.kest.core.model.IStepResult
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,7 +19,7 @@ class ExecutionBuilderTest {
             }
         }
         
-        val stepResult = mockk<IStepPostExecution<String, String>>()
+        val stepResult = mockk<IStepResult<String, String>>()
 
         every { stepResult() } returns "hello world!"
 

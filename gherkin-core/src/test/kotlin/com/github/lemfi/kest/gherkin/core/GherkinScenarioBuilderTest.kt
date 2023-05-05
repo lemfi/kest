@@ -3,7 +3,7 @@ package com.github.lemfi.kest.gherkin.core
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
 import com.github.lemfi.kest.core.executor.NestedScenarioStepExecution
 import com.github.lemfi.kest.core.model.NestedScenarioStep
-import com.github.lemfi.kest.core.model.StandaloneStepPostExecution
+import com.github.lemfi.kest.core.model.AssertableStepResult
 import com.github.lemfi.kest.core.model.StepName
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -59,13 +59,13 @@ class GherkinScenarioBuilderTest {
         assertEquals("When something happens, but I do not care what", step3.name.value)
         assertEquals("Then I can check another thing, whatever, that scenario is boring!", step4.name.value)
 
-        assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-        assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-        assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-        assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-        assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+        assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+        assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+        assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+        assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+        assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
-        val assertion = (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+        val assertion = (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
         val exception = assertThrows<AssertionFailedError> {
             AssertionsBuilder("", StepName("...")).run {
@@ -121,13 +121,13 @@ class GherkinScenarioBuilderTest {
         assertEquals("When they are concatenated", step3.name.value)
         assertEquals("Then the result is", step4.name.value)
 
-        assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-        assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-        assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-        assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-        assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+        assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+        assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+        assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+        assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+        assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
-        val assertion = (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+        val assertion = (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
         val exception = assertThrows<AssertionFailedError> {
             AssertionsBuilder("", StepName("...")).run {
@@ -191,13 +191,13 @@ class GherkinScenarioBuilderTest {
             assertEquals("When they are concatenated", step3.name.value)
             assertEquals("Then the result is", step4.name.value)
 
-            assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-            assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+            assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+            assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
-            val assertion = (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+            val assertion = (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
@@ -261,13 +261,13 @@ class GherkinScenarioBuilderTest {
             assertEquals("When they are concatenated", step3.name.value)
             assertEquals("Then the result is", step4.name.value)
 
-            assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-            assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+            assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+            assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
-            val assertion = (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+            val assertion = (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
@@ -348,12 +348,12 @@ class GherkinScenarioBuilderTest {
             assertEquals("When it is reversed", step2.name.value)
             assertEquals("Then it becomes dlrow olleh", step3.name.value)
 
-            assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-            assertEquals(1, (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+            assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+            assertEquals(1, (step3.future as AssertableStepResult<*, *, *>).assertions.size)
 
-            val assertion = (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+            val assertion = (step3.future as AssertableStepResult<*, *, *>).assertions.first()
 
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
@@ -393,14 +393,14 @@ class GherkinScenarioBuilderTest {
                 assertEquals("And multiplied by sum of 1 and 2", step3.name.value)
                 assertEquals("Then the result is 61.5", step4.name.value)
 
-                assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-                assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+                assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+                assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
                 val assertion =
-                    (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+                    (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
                 val exception = assertThrows<AssertionFailedError> {
                     AssertionsBuilder("", StepName("...")).run {
@@ -435,14 +435,14 @@ class GherkinScenarioBuilderTest {
                 assertEquals("And multiplied by sum of null and \"null\"", step3.name.value)
                 assertEquals("Then the result is 0.0", step4.name.value)
 
-                assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-                assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+                assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+                assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
                 val assertion =
-                    (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+                    (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
                 val exception = assertThrows<AssertionFailedError> {
                     AssertionsBuilder("", StepName("...")).run {
@@ -482,12 +482,12 @@ class GherkinScenarioBuilderTest {
                 assertEquals("When a logical AND is performed", step2.name.value)
                 assertEquals("Then the boolean result is false", step3.name.value)
 
-                assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-                assertEquals(1, (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+                assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+                assertEquals(1, (step3.future as AssertableStepResult<*, *, *>).assertions.size)
 
-                val assertion = (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+                val assertion = (step3.future as AssertableStepResult<*, *, *>).assertions.first()
 
                 val exception = assertThrows<AssertionFailedError> {
                     AssertionsBuilder("", StepName("...")).run {
@@ -520,12 +520,12 @@ class GherkinScenarioBuilderTest {
                 assertEquals("When a logical OR is performed", step2.name.value)
                 assertEquals("Then the boolean result is true", step3.name.value)
 
-                assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-                assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-                assertEquals(1, (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+                assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+                assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+                assertEquals(1, (step3.future as AssertableStepResult<*, *, *>).assertions.size)
 
-                val assertion = (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+                val assertion = (step3.future as AssertableStepResult<*, *, *>).assertions.first()
 
                 val exception = assertThrows<AssertionFailedError> {
                     AssertionsBuilder("", StepName("...")).run {
@@ -582,12 +582,12 @@ class GherkinScenarioBuilderTest {
             assertEquals("When it is reversed", step2.name.value)
             assertEquals("Then it becomes", step3.name.value)
 
-            assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-            assertEquals(1, (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+            assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+            assertEquals(1, (step3.future as AssertableStepResult<*, *, *>).assertions.size)
 
-            val assertion = (step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+            val assertion = (step3.future as AssertableStepResult<*, *, *>).assertions.first()
 
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
@@ -645,13 +645,13 @@ class GherkinScenarioBuilderTest {
             assertEquals("When they are added", step3.name.value)
             assertEquals("Then the result is 10", step4.name.value)
 
-            assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-            assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+            assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+            assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
-            val assertion = (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+            val assertion = (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
@@ -710,13 +710,13 @@ class GherkinScenarioBuilderTest {
             assertEquals("When they are multiplied", step3.name.value)
             assertEquals("Then the result is 24", step4.name.value)
 
-            assertTrue((step1.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step2.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step3.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isEmpty())
-            assertTrue((step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.isNotEmpty())
-            assertEquals(1, (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.size)
+            assertTrue((step1.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step2.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step3.future as AssertableStepResult<*, *, *>).assertions.isEmpty())
+            assertTrue((step4.future as AssertableStepResult<*, *, *>).assertions.isNotEmpty())
+            assertEquals(1, (step4.future as AssertableStepResult<*, *, *>).assertions.size)
 
-            val assertion = (step4.postExecution as StandaloneStepPostExecution<*, *, *>).assertions.first()
+            val assertion = (step4.future as AssertableStepResult<*, *, *>).assertions.first()
 
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
