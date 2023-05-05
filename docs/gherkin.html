@@ -424,9 +424,17 @@ scenario {
 <div class="sect2">
 <h3 id="default-way"><a class="anchor" href="#default-way"></a>Default way</h3>
 <div class="paragraph">
-<p>To allow Kest to detect your gherkin scenario you need to declare a class with <code>KestGherkin`annotation, it takes two parameters:
-. `path</code>: classpath location where gherkin definitions are stored
-. <code>stepDefinitionsPackage</code>: package where gherkin definition steps are implemented</p>
+<p>To allow Kest to detect your gherkin scenario you need to declare a class with `KestGherkin`annotation, it takes two parameters:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>path</code>: classpath location where gherkin definitions are stored</p>
+</li>
+<li>
+<p><code>stepDefinitionsPackage</code>: package where gherkin definition steps are implemented</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
 <p>By default <code>path`takes value `/gherkin</code> so no need to set it if you store your definitions in <code>src/test/resources/gherkin</code></p>
