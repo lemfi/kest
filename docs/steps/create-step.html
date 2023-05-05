@@ -185,8 +185,8 @@
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given the sum of two numbers`(name = "addition of 1 and 2") {
     operand1 = 1
     operand2 = 2
-} `assert that` { res -&gt;
-    eq(3, res)
+} assertThat { res -&gt;
+    res isEqualTo 3
 }</code></pre>
 </div>
 </div>

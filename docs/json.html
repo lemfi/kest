@@ -173,36 +173,40 @@ To do so, Kest provides by default 3 matchers:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-"""
-{
-  "string": "{{string}}",
-  "number": "{{number}}",
-  "boolean": "{{boolean}}"
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "{{string}}",
+      "number": "{{number}}",
+      "boolean": "{{boolean}}"
+    }
+    """
 }
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
 
 // OR shortcuts are provided two write it without having to remember the notation
-jsonMatches(
-"""
-{
-  "string": "$stringPattern",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
-}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")</code></pre>
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "$stringPattern",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
+}</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -226,27 +230,29 @@ jsonMatches(
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-"""
-{{sample}}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {{sample}}
+    """
+}
 
 // OR
 
-jsonMatches(
-samplePattern.pattern,
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")</code></pre>
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches samplePattern</code></pre>
 </div>
 </div>
 </div>
@@ -274,27 +280,29 @@ samplePattern.pattern,
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-"""
-{{sample}}
-""",
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {{sample}}
+    """
+}
 
 // OR
 
-jsonMatches(
-samplePattern.pattern,
-"""
-{
-  "string": "a string",
-  "number": 1,
-  "boolean": true
-}""")</code></pre>
+json(
+    """
+    {
+      "string": "a string",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches samplePattern</code></pre>
 </div>
 </div>
 </div>
@@ -327,37 +335,40 @@ samplePattern.pattern,
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-"""
-{
-  "date": "{{sample}}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """
+    {
+      "date": "2021-01-12",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "date": "{{sample}}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-  "date": "2021-01-12",
-  "number": 1,
-  "boolean": true
-}""")
-
 // OR
 
-jsonMatches(
-"""
-{
-  "date": "$samplePattern",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
-}
-""",
-"""
-{
-  "date": "2021-01-12",
-  "number": 1,
-  "boolean": true
-}""")</code></pre>
+json(
+    """
+    {
+      "date": "2021-01-12",
+      "number": 1,
+      "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "date": "$samplePattern",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
+}</code></pre>
 </div>
 </div>
 </div>
@@ -401,53 +412,57 @@ jsonMatches(
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-"""
-{
-  "data": "[[{{sample}}]]"
-}
-""",
-"""
-{
-  "data": [
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """
     {
-      "string": "a string",
-      "number": 1,
-      "boolean": true
-    },
+      "data": [
+        {
+          "string": "a string",
+          "number": 1,
+          "boolean": true
+        },
+        {
+          "string": "another string",
+          "number": 2,
+          "boolean": false
+        }
+      ]
+    }"""
+) matches validator {
+    """
     {
-      "string": "another string",
-      "number": 2,
-      "boolean": false
+      "data": "[[{{sample}}]]"
     }
-  ]
-}""")
+    """
+}
 
 // OR
 
-jsonMatches(
-"""
-{
-  "data": "${jsonArrayOf(samplePattern)}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
-}
-""",
-"""
-{
-  "data": [
+json(
+    """
     {
-      "string": "a string",
-      "number": 1,
-      "boolean": true
-    },
+      "data": [
+        {
+          "string": "a string",
+          "number": 1,
+          "boolean": true
+        },
+        {
+          "string": "another string",
+          "number": 2,
+          "boolean": false
+        }
+      ]
+    }"""
+) matches validator {
+    """
     {
-      "string": "another string",
-      "number": 2,
-      "boolean": false
+      "data": "${jsonArrayOf(samplePattern)}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
     }
-  ]
-}""")</code></pre>
+    """
+}</code></pre>
 </div>
 </div>
 </div>
@@ -467,37 +482,41 @@ jsonMatches(
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-"""
-{
-  "string": "{{string?}}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """
+    {
+          "string": null,
+          "number": 1,
+          "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "{{string?}}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
 }
-""",
-"""
-{
-      "string": null,
-      "number": 1,
-      "boolean": true
-}""")
 
 // OR
 
-jsonMatches(
-"""
-{
-  "string": "${stringPattern.nullable}",
-  "number": "$numberPattern",
-  "boolean": "$booleanPattern"
-}
-""",
-"""
-{
-      "string": null,
-      "number": 1,
-      "boolean": true
-}""")</code></pre>
+json(
+    """
+    {
+          "string": null,
+          "number": 1,
+          "boolean": true
+    }"""
+) matches validator {
+    """
+    {
+      "string": "${stringPattern.nullable}",
+      "number": "$numberPattern",
+      "boolean": "$booleanPattern"
+    }
+    """
+}</code></pre>
 </div>
 </div>
 </div>
@@ -530,29 +549,30 @@ jsonMatches(
 </div>
 </div>
 <div class="paragraph">
-<p>You can check whether your json matches one or the other of those matchers by passing a list to <code>jsonMatches</code> function:</p>
+<p>You can check whether your json matches one or the other of those matchers by passing a list to <code>validator</code> this way:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">jsonMatches(
-                listOf(
-                """{
-                      "common":  "{{string}}",
-                      "poly1": "{{string}}"
-                    }
-                """,
-                """{
-                      "common":  "{{string}}",
-                      "poly2": "{{string}}"
-                    }
-                """
-                ),
-                 """{
-                      "common":  "a string",
-                      "poly2": "another string"
-                    }
-                """
-        )</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">json(
+    """{
+          "common":  "a string",
+          "poly2": "another string"
+        }
+    """
+) matches validator(
+    listOf(
+        """{
+              "common":  "{{string}}",
+              "poly1": "{{string}}"
+            }
+        """,
+        """{
+              "common":  "{{string}}",
+              "poly2": "{{string}}"
+            }
+        """
+    )
+)</code></pre>
 </div>
 </div>
 </div>

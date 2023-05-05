@@ -101,13 +101,22 @@
 <div class="ulist">
 <ul>
 <li>
-<p>create a queue <code><code>`create rabbitmq queue</code>`</code></p>
+<p>create a queue <code>createRabbitmqQueue</code></p>
 </li>
 <li>
-<p>publish a message on a queue <code><code>`publish rabbitmq message</code>`</code></p>
+<p>delete a queue <code>deleteRabbitmqQueue</code></p>
 </li>
 <li>
-<p>read a message from a queue <code><code>`given message from rabbitmq queue</code>`</code></p>
+<p>publish a message on a queue <code>publishRabbitmqMessage</code></p>
+</li>
+<li>
+<p>read a message from a queue <code>givenMessageFromRabbitmqQueue</code></p>
+</li>
+<li>
+<p>read multiple messages from a queue <code>givenMessagesFromRabbitmqQueue</code></p>
+</li>
+<li>
+<p>count number of messages in a queue `givenNumberOfMessagesInRabbitmqQueue</p>
 </li>
 </ul>
 </div>
@@ -135,9 +144,6 @@ builder parameters are:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>description: () &#8594; String? // optional, describe execution</p>
-</li>
-<li>
 <p>message: QueueAndBinding // mandatory, configuration of queue to create</p>
 <div class="ulist">
 <ul>
@@ -152,7 +158,7 @@ builder parameters are:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">// QueueAndBinding is built by a combination if three functions written as follows:
-`create queue` { "world" } `and bind it to exchange` "universe" `with routing key` "galaxy"</code></pre>
+createQueue { "world" } andBindItToExchange "universe" withRoutingKey "galaxy"</code></pre>
 </div>
 </div>
 </li>
@@ -186,8 +192,8 @@ builder parameters are:</p>
 <h3 id="sample"><a class="anchor" href="#sample"></a>Sample</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`create rabbitmq queue`("Obi-Wan Kenobi should be born before he can receive a message") {
-    `create queue` { "obi-wan_kenobi" } `and bind it to exchange` "StarWars" `with routing key` "Force"
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">createRabbitmqQueue("Obi-Wan Kenobi should be born before he can receive a message") {
+    createQueue { "obi-wan_kenobi" } andBindItToExchange "StarWars" withRoutingKey "Force"
 }</code></pre>
 </div>
 </div>
@@ -195,11 +201,10 @@ builder parameters are:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="read-messages-from-rabbitmq"><a class="anchor" href="#read-messages-from-rabbitmq"></a>Read messages from rabbitMQ</h2>
+<h2 id="delete-a-queue-on-rabbitmq"><a class="anchor" href="#delete-a-queue-on-rabbitmq"></a>Delete a queue on RabbitMQ</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This step comes as a parameterized function, the parameterized type is the expected return type for the message to read.<br>
-Default return type is <code>ByteArray</code></p>
+<p>This step may seem useless, consider it as a helper to build scenarios</p>
 </div>
 <div class="sect2">
 <h3 id="parameters-to-provide-on-step-2"><a class="anchor" href="#parameters-to-provide-on-step-2"></a>Parameters to provide on step</h3>
@@ -212,21 +217,12 @@ Default return type is <code>ByteArray</code></p>
 <p>retry: String // optional, give a chance for step to fail several times before passing</p>
 </li>
 <li>
-<p>builder: RabbitMQMessageExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+<p>builder: RabbitMQQueueDeletionExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
 builder parameters are:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>queue: String // queue from which read message</p>
-</li>
-<li>
-<p>messageTransformer: String // transformer from <code>ByteArray</code> to expected return type, mandatory if other than <code>ByteArray</code></p>
-</li>
-<li>
-<p>nbMessges: Int // optional number of messages to retrieve, defaults to 1</p>
-</li>
-<li>
-<p>deleteQueue: Boolean // Should queue be deleted after reading, defaults to false</p>
+<p>queue: String // mandatory, queue to create</p>
 </li>
 <li>
 <p>connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672</p>
@@ -255,9 +251,150 @@ builder parameters are:</p>
 <h3 id="sample-2"><a class="anchor" href="#sample-2"></a>Sample</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given message from rabbitmq queue`&lt;String&gt; {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">deleteRabbitmqQueue("Obi-Wan Kenobi no longer wants to use his powers") {
+    queue = "obi-wan_kenobi"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-one-message-from-rabbitmq-queue"><a class="anchor" href="#read-one-message-from-rabbitmq-queue"></a>Read one message from rabbitMQ queue</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This step comes as a parameterized function, the parameterized type is the expected return type for the message to read.<br>
+Default return type is <code>ByteArray</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-3"><a class="anchor" href="#parameters-to-provide-on-step-3"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>name: String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>retry: String // optional, give a chance for step to fail several times before passing</p>
+</li>
+<li>
+<p>builder: RabbitMQMessageExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+builder parameters are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>queue: String // queue from which read message</p>
+</li>
+<li>
+<p>messageTransformer: String // transformer from <code>ByteArray</code> to expected return type, mandatory if other than <code>ByteArray</code></p>
+</li>
+<li>
+<p>deleteQueue: Boolean // Should queue be deleted after reading, defaults to false</p>
+</li>
+<li>
+<p>connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672</p>
+</li>
+<li>
+<p>vhost: String // optional, defaults to /<br></p>
+<div class="paragraph">
+<p>connection and vhost can be set globally on kest configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample-3"><a class="anchor" href="#sample-3"></a>Sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenMessageFromRabbitmqQueue&lt;String&gt; {
         queue = "kest"
         messageTransformer = { toString(Charsets.UTF_8) }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>N.B: For messages with Json format you may use <code>toJson</code> function, which maps <code>ByteArray</code> to a <code>JsonMap</code>.<br>
+See <a href="../json.html" class="xref page">Kest JSON</a> documentation for more details.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-multiple-messages-from-rabbitmq"><a class="anchor" href="#read-multiple-messages-from-rabbitmq"></a>Read multiple messages from rabbitMQ</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This step comes as a parameterized function, the parameterized type is the expected return type for the message to read.<br>
+Default return type is <code>ByteArray</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-4"><a class="anchor" href="#parameters-to-provide-on-step-4"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>name: String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>retry: String // optional, give a chance for step to fail several times before passing</p>
+</li>
+<li>
+<p>builder: RabbitMQMessagesExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+builder parameters are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>queue: String // queue from which read message</p>
+</li>
+<li>
+<p>messageTransformer: String // transformer from <code>ByteArray</code> to expected return type, mandatory if other than <code>ByteArray</code></p>
+</li>
+<li>
+<p>nbMessages: Int // optional number of messages to retrieve, defaults to 1</p>
+</li>
+<li>
+<p>deleteQueue: Boolean // Should queue be deleted after reading, defaults to false</p>
+</li>
+<li>
+<p>connection: String // optional, connection string to rabbitmq, defaults to amqp://guest:guest@localhost:5672</p>
+</li>
+<li>
+<p>vhost: String // optional, defaults to /<br></p>
+<div class="paragraph">
+<p>connection and vhost can be set globally on kest configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">rabbitmq:
+  connection: amqp://mylogin:mypwd@myhost:4567
+  vhost: /myvhost</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample-4"><a class="anchor" href="#sample-4"></a>Sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenMessagesFromRabbitmqQueue&lt;String&gt; {
+        queue = "kest"
+        messageTransformer = { toString(Charsets.UTF_8) }
+        nbMessages = 2
 }</code></pre>
 </div>
 </div>
@@ -272,7 +409,7 @@ See <a href="../json.html" class="xref page">Kest JSON</a> documentation for mor
 <h2 id="publish-a-message-on-rabbitmq"><a class="anchor" href="#publish-a-message-on-rabbitmq"></a>Publish a message on RabbitMQ</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="parameters-to-provide-on-step-3"><a class="anchor" href="#parameters-to-provide-on-step-3"></a>Parameters to provide on step</h3>
+<h3 id="parameters-to-provide-on-step-5"><a class="anchor" href="#parameters-to-provide-on-step-5"></a>Parameters to provide on step</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -344,9 +481,9 @@ builder parameters are:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">// RabbitMQMessage may be built by a combination of functions written as follows:
-publish { "message_to_publish" } `to exchange` "target_exchange" `with routing key` "routing_key" `with headers` mapOf(
+publish { "message_to_publish" } toExchange "target_exchange" withRoutingKey "routing_key" withHeaders mapOf(
     "header" to "headerValue"
-) `with properties` {
+) withProperties {
     messageId = "my id"
     expiration = "10000"
 }</code></pre>
@@ -384,11 +521,88 @@ publish { "message_to_publish" } `to exchange` "target_exchange" `with routing k
 </div>
 </div>
 <div class="sect2">
-<h3 id="sample-3"><a class="anchor" href="#sample-3"></a>Sample</h3>
+<h3 id="sample-5"><a class="anchor" href="#sample-5"></a>Sample</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`publish rabbitmq message`("say hello world through universe") {
-    publish { """ { "hello": "world" } """ } `to exchange` "" `with routing key` "universe"
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">publishRabbitmqMessage("say hello world through universe") {
+    publish { """ { "hello": "world" } """ } toExchange "" withRoutingKey "universe"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="count-number-of-messages-in-a-queue"><a class="anchor" href="#count-number-of-messages-in-a-queue"></a>count number of messages in a queue</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This step uses RabbitMQ management api, results are not instantaneous, this step should be used carefully regarding of that.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-6"><a class="anchor" href="#parameters-to-provide-on-step-6"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>name: String? // optional, give a name to your step to make scenario execution more readable</p>
+</li>
+<li>
+<p>retry: String // optional, give a chance for step to fail several times before passing</p>
+</li>
+<li>
+<p>builder: RabbitMQCountMessagesExecutionBuilder.() &#8594; Unit // mandatory, configure execution of step<br>
+builder parameters are:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>queue: String // queue from which count messages</p>
+</li>
+<li>
+<p>connection: String // optional, connection string to rabbitmq management api, defaults to <a href="http://localhost:15672" class="bare">http://localhost:15672</a></p>
+</li>
+<li>
+<p>user: String // optional, user to connect to management api, defaults to guest</p>
+</li>
+<li>
+<p>password: String // optional, password to connect to management api, defaults to guest</p>
+</li>
+<li>
+<p>vhost: String // optional, defaults to /<br></p>
+<div class="paragraph">
+<p>connection, user, password and vhost can be set globally on kest configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">rabbitmq:
+  managementapi:
+    connection: http://my_host:15672
+    user: my_user
+    password: my_password
+  vhost: /myvhost</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample-6"><a class="anchor" href="#sample-6"></a>Sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenNumberOfMessagesInRabbitmqQueue {
+    queue = "kest"
 }</code></pre>
 </div>
 </div>

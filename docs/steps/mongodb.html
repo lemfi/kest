@@ -129,7 +129,7 @@
 <h2 id="clean-database"><a class="anchor" href="#clean-database"></a>Clean database</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>clean mongo database</code></p>
+<p><code>cleanMongoDatabase</code></p>
 </div>
 <div class="sect2">
 <h3 id="parameters-configure-step"><a class="anchor" href="#parameters-configure-step"></a>Parameters configure step</h3>
@@ -147,6 +147,10 @@ Optional, defaults to database configured in kest.yml</p>
 <p><code>collections</code>: List&lt;String&gt; // Target collections to clean.
 Optional, by default all collections of DB will be cleaned</p>
 </li>
+<li>
+<p><code>except</code>: List&lt;String&gt; // Target collections KEEP.
+Optional, by default no collections of DB will be kept</p>
+</li>
 </ul>
 </div>
 </div>
@@ -154,7 +158,7 @@ Optional, by default all collections of DB will be cleaned</p>
 <h3 id="samples"><a class="anchor" href="#samples"></a>Samples</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`clean mongo database`(name = """clean "vehicles" and "planets" collections on "starwars" DB""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMongoDatabase(name = """clean "vehicles" and "planets" collections on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collections("vehicles", "planets")
@@ -163,14 +167,23 @@ Optional, by default all collections of DB will be cleaned</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`clean mongo database`(name = """clean "vehicles" and "planets" collections on globally configured database""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMongoDatabase(name = """clean all collections except "vehicles" and "planets" collections on "starwars" DB""") {
+    connection = "mongodb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    except("vehicles", "planets")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMongoDatabase(name = """clean "vehicles" and "planets" collections on globally configured database""") {
     collections("vehicles", "planets")
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`clean mongo database`(name = "clean all collections on globally configured database")</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMongoDatabase(name = "clean all collections on globally configured database")</code></pre>
 </div>
 </div>
 </div>
@@ -180,7 +193,7 @@ Optional, by default all collections of DB will be cleaned</p>
 <h2 id="insert-document"><a class="anchor" href="#insert-document"></a>Insert document</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>insert mongo document</code></p>
+<p><code>insertMongoDocument</code></p>
 </div>
 <div class="sect2">
 <h3 id="parameters-to-provide-on-step"><a class="anchor" href="#parameters-to-provide-on-step"></a>Parameters to provide on step</h3>
@@ -207,7 +220,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h3 id="samples-2"><a class="anchor" href="#samples-2"></a>Samples</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`insert mongo document`(name = """insert Endor into "planets" collection on "starwars" DB""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">insertMongoDocument(name = """insert Endor into "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -222,7 +235,7 @@ Optional, defaults to database configured in kest.yml</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`insert mongo document`(name = """insert Endor into "planets" collection on globally configured database""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">insertMongoDocument(name = """insert Endor into "planets" collection on globally configured database""") {
     collection = "planets"
     document = """
         {
@@ -240,7 +253,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h2 id="update-documents"><a class="anchor" href="#update-documents"></a>Update documents</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>update mongo document</code></p>
+<p><code>updateMongoDocument</code></p>
 </div>
 <div class="sect2">
 <h3 id="parameters-to-provide-on-step-2"><a class="anchor" href="#parameters-to-provide-on-step-2"></a>Parameters to provide on step</h3>
@@ -270,7 +283,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h3 id="samples-3"><a class="anchor" href="#samples-3"></a>Samples</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`update mongo document`(name = """update Endor planet from "planets" collection on "starwars" DB""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">updateMongoDocument(name = """update Endor planet from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -282,7 +295,7 @@ Optional, defaults to database configured in kest.yml</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`update mongo document`(name = """update Endor planet from "planets" collection on globally configured database""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">updateMongoDocument(name = """update Endor planet from "planets" collection on globally configured database""") {
     collection = "planets"
 
     filter = mapOf("name" to "Endor")
@@ -297,7 +310,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h2 id="read-documents"><a class="anchor" href="#read-documents"></a>Read documents</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>given mongo documents</code></p>
+<p><code>givenMongoDocuments</code></p>
 </div>
 <div class="sect2">
 <h3 id="parameters-to-provide-on-step-3"><a class="anchor" href="#parameters-to-provide-on-step-3"></a>Parameters to provide on step</h3>
@@ -324,7 +337,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h3 id="samples-4"><a class="anchor" href="#samples-4"></a>Samples</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given mongo documents`(name = """read Endor planet from "planets" collection on "starwars" DB""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenMongoDocuments(name = """read Endor planet from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -335,7 +348,7 @@ Optional, defaults to database configured in kest.yml</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given mongo documents`(name = """read Endor planet from "planets" collection on globally configured database""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenMongoDocuments(name = """read Endor planet from "planets" collection on globally configured database""") {
     collection = "planets"
 
     filter = mapOf("name" to "Endor")
@@ -349,7 +362,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h2 id="count-documents"><a class="anchor" href="#count-documents"></a>Count documents</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>given count of mongo documents</code></p>
+<p><code>givenCountOfMongoDocuments</code></p>
 </div>
 <div class="sect2">
 <h3 id="parameters-to-provide-on-step-4"><a class="anchor" href="#parameters-to-provide-on-step-4"></a>Parameters to provide on step</h3>
@@ -376,7 +389,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h3 id="samples-5"><a class="anchor" href="#samples-5"></a>Samples</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given count of mongo documents`(name = """count documents from "planets" collection on "starwars" DB""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenCountOfMongoDocuments(name = """count documents from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -385,7 +398,7 @@ Optional, defaults to database configured in kest.yml</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`given count of mongo documents`(name = """count documents from "planets" collection collection on globally configured database""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">givenCountOfMongoDocuments(name = """count documents from "planets" collection collection on globally configured database""") {
     collection = "planets"
 }</code></pre>
 </div>
@@ -397,7 +410,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h2 id="delete-documents"><a class="anchor" href="#delete-documents"></a>Delete documents!</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>delete mongo documents</code></p>
+<p><code>deleteMongoDocuments</code></p>
 </div>
 <div class="sect2">
 <h3 id="parameters-to-provide-on-step-5"><a class="anchor" href="#parameters-to-provide-on-step-5"></a>Parameters to provide on step</h3>
@@ -424,7 +437,7 @@ Optional, defaults to database configured in kest.yml</p>
 <h3 id="samples-6"><a class="anchor" href="#samples-6"></a>Samples</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on "starwars" DB""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">deleteMongoDocuments(name = """remove planet Alderaan from "planets" collection on "starwars" DB""") {
     connection = "mongodb://agalaxyfarfaraway:1300"
     database = "starwars"
     collection = "planets"
@@ -435,7 +448,7 @@ Optional, defaults to database configured in kest.yml</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">`delete mongo documents`(name = """remove planet Alderaan from "planets" collection on globally configured database""") {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">deleteMongoDocuments(name = """remove planet Alderaan from "planets" collection on globally configured database""") {
     collection = "planets"
 
     filter = mapOf("name" to "Alderaan")

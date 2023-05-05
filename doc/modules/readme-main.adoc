@@ -5,6 +5,8 @@
 :includedir: ROOT/pages
 :documentation: doc/modules/ROOT/pages/
 
+Full documentation can be found here: https://lemfi.github.io/kest/[]
+
 include::{includedir}/index.adoc[leveloffset=+1]
 include::{includedir}/steps.adoc[leveloffset=+1]
 include::{includedir}/json.adoc[leveloffset=+1]

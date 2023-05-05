@@ -99,7 +99,7 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>one step is defined here : <code><code>`given http call</code>`</code></p>
+<p>one step is defined here : <code>givenHttpCall</code></p>
 </div>
 <div class="paragraph">
 <p>This step comes as a parameterized function, the parameterized type is the expected return type for the HTTP Call.<br>
@@ -141,7 +141,7 @@ Return type of step is HTTPResponse&lt;EXPECTED_RESULT&gt;</p>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val stepResult = `given http call`&lt;String&gt; {
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val stepResult = givenHttpCall&lt;String&gt; {
 
     url = "http://myapi/hello"
     method = "POST"

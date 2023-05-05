@@ -94,8 +94,352 @@
 </aside>
 <article class="doc">
 <h1 class="page">Gherkin support</h1>
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p>Scenarios can be described in Gherkin and implemented with Kest. Documentation coming soon&#8230;&#8203;</p>
+<p>Scenarios can be described in Gherkin and implemented with Kest.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="big-picture"><a class="anchor" href="#big-picture"></a>Big picture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s start with an example.<br>
+Let&#8217;s say we need to implement that scenario:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-gherkin hljs" data-lang="gherkin">Feature: Mathematics
+
+    Scenario: Do some maths
+        Given number 82
+        When it is divided by 4
+        And multiplied by sum of 1 and 2
+        Then the result is 61.5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then you would write it like that with Kest:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Given("number (.*)")
+fun ScenarioBuilder.number(number: Int) = step { number }
+
+@When("it is divided by (.*)")
+fun ScenarioBuilder.divide(previousStep: StepResult&lt;Int&gt;, number: Long) = step { previousStep() / number }
+
+@And("multiplied by sum of (.*) and (.*)")
+fun ScenarioBuilder.multiplyBySumOf(previousStep: StepResult&lt;Long&gt;, s1: Double, s2: Float) =
+    step { previousStep() * (s1 + s2) }
+
+@Then("the result is (.*)")
+fun ScenarioBuilder.operationResult(previousStep: StepResult&lt;Double&gt;, expectedResult: Double) =
+    step { previousStep() } assertThat {
+        it isEqualTo expectedResult
+    }</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Annotations are set on functions which should be defined with these parameters:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>previous step result (if needed)</p>
+</li>
+<li>
+<p>parameters extracted from annotation regex (if any)</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="annotations"><a class="anchor" href="#annotations"></a>Annotations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Five annotations are available to build steps from gherkin definitions.<br>
+They are the link between your gherkin definition and your Kest steps implementations.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Given</code></p>
+</li>
+<li>
+<p><code>When</code></p>
+</li>
+<li>
+<p><code>Then</code></p>
+</li>
+<li>
+<p><code>But</code></p>
+</li>
+<li>
+<p><code>And</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There is no difference between these annotations, one could be used in place of another one.
+They are declared on functions and take one parameter: a sentence that will match a Gherkin step definition.<br>
+The sentence may contain regex to make steps customizable.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+if two annotations match a gherkin definition, then the first found by Kest will be used, take care when you define them, especially when they contain regex.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="defining-steps"><a class="anchor" href="#defining-steps"></a>Defining steps</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To define a step you will create a function and annotate it with previously introduced annotations.</p>
+</div>
+<div class="sect2">
+<h3 id="parameters-of-function"><a class="anchor" href="#parameters-of-function"></a>Parameters of function</h3>
+<div class="sect3">
+<h4 id="regex-in-annotation"><a class="anchor" href="#regex-in-annotation"></a>Regex in annotation</h4>
+<div class="paragraph">
+<p>When you set regex to your annotation' sentence, then you will have to pass the captured values of regex to your step function.<br>
+Parameters should appear in the same order they are defined in annotation.<br>
+Let&#8217;s take that example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-gherkin hljs" data-lang="gherkin">Feature: Mathematics
+
+    Scenario: Do some maths
+        Given numbers 3 and 4
+        When they are added
+        Then the result is 7</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And let&#8217;s implement step <code>Given numbers 3 and 4</code><br>
+We have several options:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>no customization<br></p>
+<div class="listingblock">
+<div class="content">
+<pre>@Given("numbers 3 and 4")
+fun givenNumbers3And4() = step { 3 to 4 }</pre>
+</div>
+</div>
+</li>
+<li>
+<p>customization<br></p>
+<div class="listingblock">
+<div class="content">
+<pre>@Given("numbers (.*) and (.*)")
+fun givenNumbers(
+    first: Int /* will receive value 3 */,
+    second: Int /* will receive value 4 */,
+) = step { first to second }</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Kest can automatically cast parameters extracted from regex of type String, Long, Int, Float, Double and Boolean, if you need another type you should declare it as String and build the correct type in your function.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="use-a-docstring-defined-on-gherkin-step"><a class="anchor" href="#use-a-docstring-defined-on-gherkin-step"></a>Use a docstring defined on gherkin step</h4>
+<div class="paragraph">
+<p>When writing gherkin steps you may use docstring to describe a complex data.<br>
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-gherkin hljs" data-lang="gherkin">Feature: Films
+
+    Scenario: Guess the theme
+        Given a movie which starts with
+        """
+        A long time ago in a galaxy far, far away…
+
+        It is a period of civil war.
+        Rebel spaceships, striking
+        from a hidden base, have won
+        their first victory against
+        the evil Galactic Empire.
+
+        During the battle, Rebel
+        spies managed to steal secret
+        plans to the Empire's
+        ultimate weapon, the DEATH
+        STAR, an armored space
+        station with enough power to
+        destroy an entire planet.
+
+        Pursued by the Empire's
+        sinister agents, Princess
+        Leia races home aboard her
+        starship, custodian of the
+        stolen plans that can save
+        her people and restore
+        freedom to the galaxy....
+        """
+        When it is displayed
+        Then I hear "Main Title" from Star Wars: A New Hope</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In that case you would implement it this way:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Given("a movie which starts with")
+fun aMovieWhichStartsWith(text: String) = step { text }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>More precisely, the docstring parameter must be the <strong>LAST</strong> parameter of your function.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="use-the-result-of-a-previous-step"><a class="anchor" href="#use-the-result-of-a-previous-step"></a>Use the result of a previous step</h4>
+<div class="paragraph">
+<p>If you need to reuse the result of a previous step you will have to declare it as first parameter of your function.<br>
+Let&#8217;s take that example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-gherkin hljs" data-lang="gherkin">Feature: Mathematics
+
+    Scenario: Do some maths
+        Given numbers 3 and 4
+        When they are added
+        Then the result is 7</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And let&#8217;s implement step <code>When they are added</code><br>
+We will define it like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@When("they are added")
+fun theyAreAdded(previsousStep: StepResult&lt;Pair&lt;Int, Int&gt;&gt;) = step { previsousStep().first + previousStep().second }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>let&#8217;s implement step <code>Then the result is 7</code><br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">@Then("the result is (.*)")
+fun theResultIs(previsousStep: StepResult&lt;Int&gt;, expectedResult: Int) = step { previsousStep() } assertThat { it isEqualTo expectedResult }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="keep-a-context-during-scenario"><a class="anchor" href="#keep-a-context-during-scenario"></a>Keep a context during scenario</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You may one to keep a context while playing a gherkin scenario.<br>
+It could be useful if you want to perform cleanups at the end oy your scenario: you could store everything you built in context and then end scenario with a cleanup step that would be responsible of cleaning all things stored in context.</p>
+</div>
+<div class="paragraph">
+<p>For that:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>define a Context class that will extend <code>GherkinContext</code></p>
+</li>
+<li>
+<p>at the end of a step call function <code>setGherkinScenarioContext&lt;You_Context_Class&gt;</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">data class MyContext(val stuff: List&lt;String&gt;): GherkinContext
+scenario {
+
+    step {
+        "A long time ago in a galaxy far, far away…"
+    } setGherkinScenarioContext  { context: MyContext?, stepRes -&gt;
+
+        context?.copy(stuff = context.stuff + listOf(stepRes)) ?: MyContext(listOf(stepRes))
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>setGherkinScenarioContext</code> takes as parameter a lambda that will be invoked with:<br></p>
+</div>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>current Gherkin Context (may be null if invoked for the first time)</p>
+</li>
+<li>
+<p>the result of the step where you are invoking it.</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The lambda should return the new value for your Gherkin Context.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="play-gherkin-scenarios"><a class="anchor" href="#play-gherkin-scenarios"></a>Play Gherkin scenarios</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="default-way"><a class="anchor" href="#default-way"></a>Default way</h3>
+<div class="paragraph">
+<p>To allow Kest to detect your gherkin scenario you need to declare a class with <code>KestGherkin`annotation, it takes two parameters:
+. `path</code>: classpath location where gherkin definitions are stored
+. <code>stepDefinitionsPackage</code>: package where gherkin definition steps are implemented</p>
+</div>
+<div class="paragraph">
+<p>By default <code>path`takes value `/gherkin</code> so no need to set it if you store your definitions in <code>src/test/resources/gherkin</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="custom-way"><a class="anchor" href="#custom-way"></a>Custom way</h3>
+<div class="paragraph">
+<p>If your Gherkin definitions are stored outside from your classpath you may use annotation <code>KestGherkinCustom</code> which will take an additional parameter <code>sourceProvider:<br>
+`sourceProvider</code> is a KClass of an implementation of <code>KestGherkinFeaturesProvider</code>, in that implementation it is up to you to retrieve your Gherkin Features from wherever you need return them as a list of Strings</p>
+</div>
+</div>
+</div>
 </div>
 <nav class="pagination">
   <span class="prev"><a href="json.html">JSON support</a></span>

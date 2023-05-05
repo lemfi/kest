@@ -97,7 +97,7 @@
 <h2 id="presentation"><a class="anchor" href="#presentation"></a>Presentation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Kest is a framework written in Kotlin for testing your backends.<br>
+<p>Kest is a test framework written in Kotlin for testing your backends.<br>
 It relies on JUnit5 to run scenarios.</p>
 </div>
 <div class="paragraph">
@@ -147,18 +147,18 @@ I&#8217;m going to need to interact with three different technologies, with diff
 <h3 id="gradle"><a class="anchor" href="#gradle"></a>Gradle</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    implementation("com.github.lemfi.kest:core:0.7.4")
-    implementation("com.github.lemfi.kest:junit5:0.7.4")
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">    implementation("com.github.lemfi.kest:core:0.8.0")
+    implementation("com.github.lemfi.kest:junit5:0.8.0")
 
     // include the steps you need among available ones
-    implementation("com.github.lemfi.kest:step-http:0.7.4")
-    implementation("com.github.lemfi.kest:step-cadence:0.7.4")
-    implementation("com.github.lemfi.kest:step-mongodb:0.7.4")
-    implementation("com.github.lemfi.kest:step-rabbitmq:0.7.4")
-    implementation("com.github.lemfi.kest:step-redis:0.7.4")
+    implementation("com.github.lemfi.kest:step-http:0.8.0")
+    implementation("com.github.lemfi.kest:step-cadence:0.8.0")
+    implementation("com.github.lemfi.kest:step-mongodb:0.8.0")
+    implementation("com.github.lemfi.kest:step-rabbitmq:0.8.0")
+    implementation("com.github.lemfi.kest:step-redis:0.8.0")
 
     // toolbox for Json Data
-    implementation("com.github.lemfi.kest:json:0.7.4")</code></pre>
+    implementation("com.github.lemfi.kest:json:0.8.0")</code></pre>
 </div>
 </div>
 </div>
@@ -170,13 +170,13 @@ I&#8217;m going to need to interact with three different technologies, with diff
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;core&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;junit5&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
 
@@ -184,31 +184,31 @@ I&#8217;m going to need to interact with three different technologies, with diff
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;step-http&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;step-rabbitmq&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;step-cadence&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;step-mongodb&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;step-redis&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
 
@@ -216,7 +216,7 @@ I&#8217;m going to need to interact with three different technologies, with diff
     &lt;dependency&gt;
         &lt;groupId&gt;com.github.lemfi.kest&lt;/groupId&gt;
         &lt;artifactId&gt;step-json&lt;/artifactId&gt;
-        &lt;version&gt;0.7.4&lt;/version&gt;
+        &lt;version&gt;0.8.0&lt;/version&gt;
         &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
 &lt;/dependencies&gt;</code></pre>
@@ -242,7 +242,7 @@ One step defines an execution and a list of assertions to validate completed exe
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">scenario(name = "api says hello and remembers it!") {
 
-    `given http call`&lt;String&gt; {
+    givenHttpCall&lt;String&gt; {
 
         url = "http://myapi/hello"
         method = "POST"
@@ -252,13 +252,13 @@ One step defines an execution and a list of assertions to validate completed exe
                 "who": "Darth Vader"
             }
         """
-    } `assert that` { stepResult -&gt;
+    } assertThat { stepResult -&gt;
 
-        eq(201, stepResult.status)
-        eq("Hello Darth Vader!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body  isEqualTo "Hello Darth Vader!"
     }
 
-    `given http call`&lt;String&gt; {
+    givenHttpCall&lt;String&gt; {
 
         url = "http://myapi/hello"
         method = "POST"
@@ -268,22 +268,22 @@ One step defines an execution and a list of assertions to validate completed exe
                 "who": "Han Solo"
             }
         """
-    } `assert that` { stepResult -&gt;
+    } assertThat { stepResult -&gt;
 
-        eq(201, stepResult.status)
-        eq("Hello Han Solo!", stepResult.body)
+        stepResult.status isEqualTo 201
+        stepResult.body isEqualTo "Hello Han Solo!"
     }
 
-    `given http call`&lt;List&lt;String&gt;&gt; {
+    givenHttpCall&lt;List&lt;String&gt;&gt; {
 
         url = "http://myapi/hello"
         method = "GET"
         headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
 
-    } `assert that` { stepResult -&gt;
+    } assertThat { stepResult -&gt;
 
-        eq(200, stepResult.status)
-        eq(listOf("Darth Vader", "Han Solo"), stepResult.body)
+        stepResult.status isEqualTo 200
+        stepResult.body  isEqualTo listOf("Darth Vader", "Han Solo")
     }
 }</code></pre>
 </div>
@@ -336,12 +336,12 @@ One step defines an execution and a list of assertions to validate completed exe
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
-<p><code>play scenarios</code> to play multiple scenarios in a single junit5 test factory<br>
+<p><code>playScenarios</code> to play multiple scenarios in a single junit5 test factory<br>
 &#8658; in this case you can pass <code>beforeEach</code> and <code>afterEach</code> attributes representing a lambda returning a scenario to be played before and after each scenario if needed.
 &#8658; in this case you can pass <code>beforeEach</code> and <code>afterEach</code> attributes representing a lambda returning a scenario to be played before and after each scenario if needed.</p>
 </li>
 <li>
-<p><code>play scenario</code> to play one scenario per junit5 test factory<br>
+<p><code>playScenario</code> to play one scenario per junit5 test factory<br>
 &#8658; in this case you can use junit5 annotations <code>@BeforeEach</code> and <code>@AfterEach</code></p>
 </li>
 </ol>
@@ -354,7 +354,7 @@ One step defines an execution and a list of assertions to validate completed exe
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">class TestHttpServer {
 
     @TestFactory
-    fun `http server says hello`() = `play scenarios`(
+    fun `http server says hello`() = playScenarios(
             scenario { /*...*/ },
             scenario { /*...*/ },
             scenario { /*...*/ },
@@ -365,7 +365,7 @@ One step defines an execution and a list of assertions to validate completed exe
 
 
     @TestFactory
-    fun `http server says goodbye`() = `play scenarios`(
+    fun `http server says goodbye`() = playScenarios(
             scenario { /*...*/ },
             scenario { /*...*/ },
             scenario { /*...*/ },
@@ -389,12 +389,12 @@ class TestHttpServer {
     }
 
     @TestFactory
-    fun `http server says hello - scenario 1`() = `play scenario`(
+    fun `http server says hello - scenario 1`() = playScenario(
             scenario { /*...*/ }
     )
 
     @TestFactory
-    fun `http server says hello - scenario 2`() = `play scenario`(
+    fun `http server says hello - scenario 2`() = playScenario(
             scenario { /*...*/ }
     )
 

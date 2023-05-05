@@ -119,10 +119,10 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">step(
     name = "a name a step has",
-    retry = 10.times `by intervals of` 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
+    retry = 10.times byIntervalsOf 200.ms, // if assertions of step fail, step will be retried 10 times by intervals of 200 ms before really failing. Useful if you have asynchonous stuff going on on your backends.
 ) {
     // here goes the definition of the execution
-} `assert that` {
+} assertThat {
     // here goes list of assertions
 }</code></pre>
 </div>
@@ -171,9 +171,9 @@
     // execute your need here
     1+1
 
-} `assert that` { stepResult -&gt;
+} assertThat { stepResult -&gt;
 
-    eq(2, stepResult)
+    stepResult isEqualTo 2
 
 }</code></pre>
 </div>
@@ -213,11 +213,11 @@ It&#8217;s also on that <code>StepResult</code> that you can retrieve the result
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1: StepResult&lt;Int&gt; = step { 1+1 } `assert that` { eq(2, it) }
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1: StepResult&lt;Int&gt; = step { 1+1 } assertThat { it isEqualTo 2 }
 
-val step2: StepResult&lt;Double&gt; = step { step1() + 1.5 } `assert that` { eq(3.5, it) }
+val step2: StepResult&lt;Double&gt; = step { step1() + 1.5 } assertThat { it isEqualTo 3.5 }
 
-step { step2.invoke().toString() } `assert that` { eq("3.5", it) }</code></pre>
+step { step2.invoke().toString() } assertThat { it isEqualTo "3.5" }</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -245,14 +245,14 @@ It is still possible to return a result from a <code>nestedScenario</code></p>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1 = nestedScenario&lt;Double&gt; {
 
-    val step11: StepResult&lt;Int&gt; = step { 1+1 } `assert that` { eq(2, it) }
+    val step11: StepResult&lt;Int&gt; = step { 1+1 } assertThat { it isEqualTo 2 }
 
-    val step12: StepResult&lt;Double&gt; = step { step11() + 1.5 } `assert that` { eq(3.5, it) }
+    val step12: StepResult&lt;Double&gt; = step { step11() + 1.5 } assertThat { it isEqualTo 3.5 }
 
     returns { step12() }
 }
 
-step { step1() + 4 } `assert that` { eq(7.5, it) }</code></pre>
+step { step1() + 4 } assertThat { it isEqualTo 7.5 }</code></pre>
 </div>
 </div>
 </div>
@@ -263,13 +263,14 @@ step { step1() + 4 } `assert that` { eq(7.5, it) }</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1 = step { 1 + 1 } `map result to` { it * 1.0 } `assert that` { eq(2, it) }
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val step1 = step { 1 + 1 } mapResultTo { it * 1.0 } assertThat { it isEqualTo 2 }
 
-step { step1() * 3 } `assert that` { eq(6.0, it) }</code></pre>
+step { step1() * 3 } assertThat { it isEqualTo 18.0 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Here step1 result was transformed from an Int to a Double<br>
+<p>Here step1 result was transformed from an Int to a Double <br>
+Even though in assertions of step 1 the result is still an Int: Assertions are always done on initial result, not transformed one.<br>
 Then when second step invoked step1 result it got a Double<br></p>
 </div>
 <div class="admonitionblock note">
@@ -279,8 +280,8 @@ Then when second step invoked step1 result it got a Double<br></p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Take care, when you use <code>map result to</code> it will not transform the result for the assertions of the step, assertions are always done on step initial result.<br>
-Moreover,  <code>map result to</code> lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then <code>map result to</code> lambda will never be executed.
+Take care, when you use <code>mapResultTo</code> it will not transform the result for the assertions of the step, assertions are always done on step initial result.<br>
+Moreover,  <code>mapResultTo</code> lambda will only be executed when the result of its step will be invoked: if result of that step is never invoked, then <code>mapResultTo</code> lambda will never be executed.
 </td>
 </tr>
 </table>
