@@ -6,6 +6,7 @@ import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.core.model.StandaloneStepResult
 import com.github.lemfi.kest.http.cli.givenHttpCall
 import com.github.lemfi.kest.http.model.HttpResponse
+import com.github.lemfi.kest.http.model.NoContent
 import com.github.lemfi.kest.json.model.JsonMap
 import com.github.lemfi.kest.samplehttp.multiplescenarios.stepsextracted.`get otp`
 
@@ -43,7 +44,7 @@ fun ScenarioBuilder.`get greeted`(vararg expectedGreeted: String) {
 
 fun ScenarioBuilder.`validate otp`(otp: () -> String) =
 
-    givenHttpCall<JsonMap>("validate an otp") {
+    givenHttpCall<NoContent>("validate an otp") {
 
         url = "http://localhost:8080/otp"
         method = "POST"

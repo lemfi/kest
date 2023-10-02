@@ -4,6 +4,7 @@ import com.github.lemfi.kest.core.builder.ScenarioBuilder
 import com.github.lemfi.kest.core.cli.assertThat
 import com.github.lemfi.kest.core.cli.nestedScenario
 import com.github.lemfi.kest.http.cli.givenHttpCall
+import com.github.lemfi.kest.http.model.NoContent
 import com.github.lemfi.kest.json.cli.json
 import com.github.lemfi.kest.json.cli.matches
 import com.github.lemfi.kest.json.cli.validator
@@ -62,7 +63,7 @@ fun ScenarioBuilder.`get otp`() =
 
 fun ScenarioBuilder.`validate otp`(otp: String) =
 
-    givenHttpCall<JsonMap>("validate otp") {
+    givenHttpCall<NoContent>("validate otp") {
 
         url = "http://localhost:8080/otp"
         method = "POST"

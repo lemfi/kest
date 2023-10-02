@@ -11,6 +11,7 @@ import com.github.lemfi.kest.http.model.FileDataPart
 import com.github.lemfi.kest.http.model.FilePart
 import com.github.lemfi.kest.http.model.HttpResponse
 import com.github.lemfi.kest.http.model.MultipartBody
+import com.github.lemfi.kest.http.model.NoContent
 import com.github.lemfi.kest.http.model.ParameterPart
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -31,7 +32,11 @@ object KestHttp {
      * @param contentType Content-Type for decoder
      * @param transformer function to decode InputStream with given Content-Type into an Object
      */
-    fun registerContentTypeDecoder(contentType: String, logResponseBody: Boolean = true, transformer: InputStream?.(cls: TypeReference<*>) -> Any?) =
+    fun registerContentTypeDecoder(
+        contentType: String,
+        logResponseBody: Boolean = true,
+        transformer: InputStream?.(cls: TypeReference<*>) -> Any?,
+    ) =
         HttpExecution.addMapper(contentType) { cls, logBody ->
             this?.run {
                 ByteArrayInputStream(readAllBytes()).run {
@@ -65,27 +70,32 @@ internal data class HttpExecution<T>(
     private val accept = headers.getOrDefault("Accept", null)
 
     companion object {
-        private val mappers = mutableMapOf<String, InputStream?.(cls: TypeReference<*>, logBody: Boolean) -> Pair<Any?, String?>>()
-            .apply {
-                put("application/json") {cls, logBody ->
-                    this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
-                        try {
-                            jacksonObjectMapper().readValue(data, cls)
-                        } catch (e: Throwable) {
-                            throw DeserializeException(cls.type.javaClass, data, e)
-                        } to if (logBody) data else null
-                    } ?: (null to null)
+        private val mappers =
+            mutableMapOf<String, InputStream?.(cls: TypeReference<*>, logBody: Boolean) -> Pair<Any?, String?>>()
+                .apply {
+                    put("application/json") { cls, logBody ->
+                        this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
+                            try {
+                                jacksonObjectMapper().readValue(data, cls)
+                            } catch (e: Throwable) {
+                                throw DeserializeException(cls.type.javaClass, data, e)
+                            } to if (logBody) data else null
+                        } ?: (null to null)
+                    }
+                    put("text") { _, logBody ->
+                        readText(logBody)
+                    }
                 }
-                put("text") {_, logBody ->
-                    readText(logBody)
-                }
-            }
 
-        private fun InputStream?.readText(logBody: Boolean) = this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
-            data to if (logBody) data else null
-        } ?: (null to null)
+        private fun InputStream?.readText(logBody: Boolean) =
+            this?.readAllBytes()?.toString(Charsets.UTF_8)?.trim()?.let { data ->
+                data to if (logBody) data else null
+            } ?: (null to null)
 
-        fun addMapper(contentType: String, mapper: InputStream?.(cls: TypeReference<*>, logBody: Boolean) -> Pair<Any?, String?>) {
+        fun addMapper(
+            contentType: String,
+            mapper: InputStream?.(cls: TypeReference<*>, logBody: Boolean) -> Pair<Any?, String?>,
+        ) {
             mappers[contentType] = mapper
         }
 
@@ -125,6 +135,7 @@ internal data class HttpExecution<T>(
                                             it.filename,
                                             it.file.asRequestBody(it.contentType?.toMediaTypeOrNull())
                                         )
+
                                         is ParameterPart -> addFormDataPart(it.name, it.value)
                                         is FileDataPart -> addFormDataPart(
                                             it.name,
@@ -173,7 +184,11 @@ internal data class HttpExecution<T>(
         return try {
             (header("Content-Type") ?: accept ?: "text/plain")
                 .let { contentType ->
-                    (getMapper(contentType).invoke(body?.byteStream(), returnType, logBody))
+                    if (returnType.type == NoContent::class.java) {
+                        NoContent to ""
+                    } else {
+                        (getMapper(contentType).invoke(body?.byteStream(), returnType, logBody))
+                    }
                 }.let { body ->
                     HttpResponse(
                         body = body.first as T,

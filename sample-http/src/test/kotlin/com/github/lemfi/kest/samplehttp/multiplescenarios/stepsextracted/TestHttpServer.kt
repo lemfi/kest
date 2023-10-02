@@ -75,7 +75,7 @@ class TestHttpServer {
 
             `get otp`()
 
-            givenHttpCall<JsonMap> {
+            givenHttpCall<JsonMap>(name = "validate wrong OTP") {
 
                 url = "http://localhost:8080/otp"
                 method = "POST"
