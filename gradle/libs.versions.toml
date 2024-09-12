@@ -1,0 +1,49 @@
+[versions]
+dokka="1.7.20"
+opentest4j="1.2.0"
+hoplite="2.7.1"
+slf4j="2.0.6"
+rabbitmq="5.16.0"
+kotlin-coroutines="1.6.4"
+junit-launcher="1.9.2"
+junit-jupiter="5.9.2"
+jackson="2.14.2"
+okhttp="4.10.0"
+cadence="3.8.1"
+mongo="4.8.2"
+jedis="4.3.1"
+mockk="1.13.4"
+gherkin="26.0.3"
+reflections="0.10.2"
+kotlin="1.8.0"
+
+[libraries]
+opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
+hoplite-yaml = { module = "com.sksamuel.hoplite:hoplite-yaml", version.ref = "hoplite" }
+hoplite-core = { module = "com.sksamuel.hoplite:hoplite-core", version.ref = "hoplite" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+rabbitmq-client = { module = "com.rabbitmq:amqp-client", version.ref = "rabbitmq" }
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-logginginterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+cadence-client = { module = "com.uber.cadence:cadence-client", version.ref = "cadence" }
+mongo-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongo" }
+redis-client = { module = "redis.clients:jedis", version.ref = "jedis" }
+mockk-core = { module = "io.mockk:mockk", version.ref = "mockk" }
+cucumber-gherkin = { module = "io.cucumber:gherkin", version.ref = "gherkin" }
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-stdlib-common = { module = "org.jetbrains.kotlin:kotlin-stdlib-common", version.ref = "kotlin" }
+kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[plugins]
+dokka-core = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+dokka-html = { id = "org.jetbrains.dokka:kotlin-as-java-plugin", version.ref = "dokka" }

@@ -1,11 +1,10 @@
-val mongoVersion: String by project
 
 dependencies {
 
     implementation(project(":core"))
     implementation(project(":json"))
 
-    implementation("org.mongodb:mongodb-driver-sync:$mongoVersion")
+    implementation(libs.mongo.driver.sync)
 }
 
 

@@ -1,14 +1,12 @@
-val junitVersion: String by project
-val junitLauncherVersion: String by project
-
 dependencies {
 
     api(project(":core"))
 
-    implementation("org.junit.platform:junit-platform-launcher:$junitLauncherVersion")
+    implementation(libs.junit.launcher)
+    implementation(libs.reflections)
 
-    api("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    api(libs.junit.jupiter.api)
+    runtimeOnly(libs.junit.jupiter.engine)
 }
 
 signing {

@@ -1,19 +1,15 @@
-val rabbitmqVersion: String by project
-val junitVersion: String by project
-val coroutineVersion: String by project
-val slf4jVersion: String by project
 
 dependencies {
 
-    implementation("com.rabbitmq:amqp-client:$rabbitmqVersion")
+    implementation(libs.rabbitmq.client)
 
     implementation(project(":core"))
     implementation(project(":step-rabbitmq"))
     implementation(project(":junit5"))
 
-    implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+    implementation(libs.slf4j.simple)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
+    implementation(libs.kotlin.coroutines.core)
 
 }
 

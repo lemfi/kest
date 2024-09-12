@@ -15,11 +15,3 @@ include(
     "sample-rabbit",
     "sample-redis",
 )
-
-pluginManagement {
-    val dokkaVersion: String by settings
-
-    plugins {
-        id("org.jetbrains.dokka") version dokkaVersion
-    }
-}

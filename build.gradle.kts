@@ -1,8 +1,6 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
 
-val dokkaVersion: String by project
-
 buildscript {
     val kotlinVersion: String by project
 
@@ -10,27 +8,27 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath(libs.kotlin.gradle.plugin)
     }
 }
 
 plugins {
+    alias(libs.plugins.dokka.core)
     signing
     jacoco
-    id("org.jetbrains.dokka")
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version libs.versions.kotlin.asProvider().get()
 }
 
 allprojects {
 
-    apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = rootProject.libs.plugins.dokka.core.get().pluginId)
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
     dependencies {
-        dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
+        dokkaHtmlPlugin(rootProject.libs.plugins.dokka.html.get().pluginId)
     }
 
     tasks.withType(Sign::class.java) {
@@ -42,8 +40,6 @@ val isRelease = !(project.version as String).endsWith("SNAPSHOT")
 val Project.noSample: Boolean get() = !name.startsWith("sample")
 
 subprojects {
-
-    val kotlinVersion: String by project
 
     group = parent!!.group
     version = parent!!.version
@@ -80,10 +76,10 @@ subprojects {
     }
 
     dependencies {
-        "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-        "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+        "implementation"(rootProject.libs.kotlin.stdlib)
+        "implementation"(rootProject.libs.kotlin.reflect)
 
-        "implementation"("org.opentest4j:opentest4j:1.2.0")
+        "implementation"(rootProject.libs.opentest4j)
 
     }
 
@@ -101,7 +97,7 @@ subprojects {
     tasks.register<Jar>("javadocJar") {
         dependsOn("dokkaJavadoc")
         archiveClassifier.set("javadoc")
-        from(buildDir.path + "/dokka/javadoc")
+        from(layout.buildDirectory.get().asFile.path + "/dokka/javadoc")
 
         onlyIf { isRelease }
     }

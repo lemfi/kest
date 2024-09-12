@@ -1,10 +1,9 @@
-val jedisVersion: String by project
 
 dependencies {
 
     implementation(project(":core"))
 
-    implementation("redis.clients:jedis:$jedisVersion")
+    implementation(libs.redis.client)
 }
 
 

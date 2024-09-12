@@ -1,5 +1,3 @@
-val junitVersion: String by project
-val slf4jVersion: String by project
 
 dependencies {
 
@@ -7,7 +5,7 @@ dependencies {
     implementation(project(":step-redis"))
     implementation(project(":junit5"))
 
-    implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+    implementation(libs.slf4j.simple)
 
 }
 

@@ -1,27 +1,22 @@
-val opentest4jVersion: String by project
-val hopliteVersion: String by project
-val slf4jVersion: String by project
-val mockkVersion: String by project
-val junitVersion: String by project
 
 dependencies {
 
-    api("org.opentest4j:opentest4j:$opentest4jVersion")
-    api("org.slf4j:slf4j-api:$slf4jVersion")
+    api(libs.opentest4j)
+    api(libs.slf4j.api)
 
-    implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion") {
+    implementation(libs.hoplite.core) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }
-    implementation("com.sksamuel.hoplite:hoplite-yaml:$hopliteVersion") {
+    implementation(libs.hoplite.yaml) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }
 
-    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation(libs.mockk.core)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 
 }
 

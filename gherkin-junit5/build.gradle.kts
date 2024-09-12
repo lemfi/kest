@@ -1,10 +1,3 @@
-val okhttpVersion: String by project
-val kotlinVersion: String by project
-val cucumberVersion: String by project
-val junitVersion: String by project
-val slf4jVersion: String by project
-val reflectionsVersion: String by project
-val mockkVersion: String by project
 
 dependencies {
 
@@ -12,16 +5,16 @@ dependencies {
 
     implementation(project(":core"))
 
-    implementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    implementation(libs.junit.jupiter.engine)
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+    implementation(libs.kotlin.stdlib.common)
+    implementation(libs.kotlin.stdlib.jdk8)
 
-    implementation("org.reflections:reflections:$reflectionsVersion")
-    implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+    implementation(libs.reflections)
+    implementation(libs.slf4j.simple)
 
     testImplementation(project(":step-http"))
-    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation(libs.mockk.core)
 }
 
 tasks.withType<Test> {

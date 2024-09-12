@@ -1,17 +1,15 @@
-val junitVersion: String by project
-val jacksonVersion: String by project
 
 dependencies {
 
     implementation(project(":core"))
 
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion") {
+    api(libs.jackson.kotlin) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 
 }
 
