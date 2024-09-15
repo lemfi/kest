@@ -27,7 +27,7 @@ internal data class MongoDBCleanDatabaseExecution(
                     .let { database ->
                         database
                             .listCollectionNames()
-                            .let { if (collections.isNotEmpty()) it intersect collections.toSet() else it }
+                            .let { if (collections.isNotEmpty()) it.toList() intersect collections.toSet() else it }
                             .let { if (except.isNotEmpty()) it subtract except.toSet() else it }
                             .forEach { collection ->
                                 LoggerFactory.getLogger("MONGODB-Kest").info(

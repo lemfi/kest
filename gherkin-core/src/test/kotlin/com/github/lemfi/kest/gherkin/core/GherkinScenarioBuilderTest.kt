@@ -658,7 +658,7 @@ class GherkinScenarioBuilderTest {
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
                     @Suppress("UNCHECKED_CAST")
-                    (assertion as AssertionsBuilder.(Long) -> Unit)(27)
+                    (assertion as AssertionsBuilder.(Double) -> Unit)(27.0)
                 }
             }
 
@@ -723,7 +723,7 @@ class GherkinScenarioBuilderTest {
             val exception = assertThrows<AssertionFailedError> {
                 AssertionsBuilder("", StepName("...")).run {
                     @Suppress("UNCHECKED_CAST")
-                    (assertion as AssertionsBuilder.(Long) -> Unit)(27)
+                    (assertion as AssertionsBuilder.(Double) -> Unit)(27.0)
                 }
             }
 
