@@ -1,11 +1,9 @@
 package com.github.lemfi.kest.gherkin.core
 
 import com.github.lemfi.kest.core.builder.AssertionsBuilder
-import com.github.lemfi.kest.core.cli.scenario
-import com.github.lemfi.kest.core.cli.step
 import com.github.lemfi.kest.core.executor.NestedScenarioStepExecution
-import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.AssertableStepResult
+import com.github.lemfi.kest.core.model.NestedScenarioStep
 import com.github.lemfi.kest.core.model.StepName
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

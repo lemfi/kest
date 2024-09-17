@@ -21,6 +21,7 @@ sealed class Pattern {
     abstract val pattern: String
 }
 
+@ConsistentCopyVisibility
 data class BasePattern internal constructor(
     override val name: String,
     override val isNullable: Boolean,
@@ -68,6 +69,7 @@ data class BasePattern internal constructor(
     }
 }
 
+@ConsistentCopyVisibility
 data class ArrayPattern internal constructor(
     override val name: String,
     override val isNullable: Boolean,

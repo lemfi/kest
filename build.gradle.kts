@@ -29,6 +29,7 @@ allprojects {
     }
     dependencies {
         dokkaHtmlPlugin(rootProject.libs.plugins.dokka.html.get().pluginId)
+        dokkaJavadocPlugin(rootProject.libs.plugins.dokka.html.get().pluginId)
     }
 
     tasks.withType(Sign::class.java) {

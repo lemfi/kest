@@ -17,7 +17,7 @@ dependencies {
 
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
-
+    implementation(libs.junit.launcher)
 }
 
 tasks.withType<Test> {
