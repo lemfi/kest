@@ -14,4 +14,5 @@ include(
     "sample-cadence",
     "sample-rabbit",
     "sample-redis",
+    "sample-mongodb",
 )

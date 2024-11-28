@@ -16,6 +16,7 @@ mockk="1.13.12"
 gherkin="29.0.0"
 reflections="0.10.2"
 kotlin="2.0.20"
+testcontainers="1.20.4"
 
 [libraries]
 opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
@@ -43,6 +44,8 @@ kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", versi
 kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-mongo = { module = "org.testcontainers:mongodb", version.ref = "testcontainers" }
 
 [plugins]
 dokka-core = { id = "org.jetbrains.dokka", version.ref = "dokka" }
