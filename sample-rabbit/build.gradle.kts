@@ -10,6 +10,8 @@ dependencies {
     implementation(libs.slf4j.simple)
 
     implementation(libs.kotlin.coroutines.core)
+    implementation(libs.testcontainers)
+    implementation(libs.testcontainers.rabbitmq)
 
 }
 

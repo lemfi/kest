@@ -14,15 +14,16 @@ var connection: Connection? = null
 var channel: Channel? = null
 var consumer: String? = null
 
-fun startRabbitApplication() {
+fun startRabbitApplication(connectionString: String) {
 
     scenario {
         deleteRabbitmqQueue {
+            connection = connectionString
             queue = "obi-wan_kenobi"
         }
     }.run()
 
-    val connectionFactory = ConnectionFactory().also { it.setUri("amqp://guest:guest@localhost:5672/%2F") }
+    val connectionFactory = ConnectionFactory().also { it.setUri("$connectionString/%2F") }
     connection = connectionFactory.newConnection("rabbit application")
     channel = connection!!.createChannel()
     channel!!.queueDeclare("R2D2", true, true, false, emptyMap())
