@@ -9,6 +9,7 @@ buildscript {
     }
     dependencies {
         classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.deps.updates.verification)
     }
 }
 
@@ -22,6 +23,8 @@ plugins {
 allprojects {
 
     apply(plugin = rootProject.libs.plugins.dokka.core.get().pluginId)
+    apply(plugin = rootProject.libs.plugins.deps.updates.verification.get().pluginId)
+
 
     repositories {
         mavenLocal()
