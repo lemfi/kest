@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 @Suppress("unused")
 class KestGherkinFilterDiscoverySelector(
     private val ids: List<String>,
-    private vararg val selectors: DiscoverySelector
+    vararg selectors: DiscoverySelector
 ) : KestGherkinDiscoverySelector, KestGherkinFilterableFeaturesProvider {
 
     private val features: List<String>

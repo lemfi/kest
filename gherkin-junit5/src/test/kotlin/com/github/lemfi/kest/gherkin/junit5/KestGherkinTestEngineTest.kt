@@ -42,10 +42,15 @@ import org.junit.platform.engine.discovery.DiscoverySelectors.selectFile
 import org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage
 import org.junit.platform.engine.discovery.FileSelector
 import org.junit.platform.engine.discovery.PackageSelector
+import org.junit.platform.engine.reporting.OutputDirectoryProvider
 import org.junit.platform.engine.support.descriptor.ClassSource
 import org.junit.platform.engine.support.descriptor.ClasspathResourceSource
+import org.junit.platform.engine.support.store.Namespace
+import org.junit.platform.engine.support.store.NamespacedHierarchicalStore
 import org.opentest4j.AssertionFailedError
 import java.io.File
+import java.nio.file.Path
+import java.util.Optional
 import kotlin.io.path.Path
 
 class KestGherkinTestEngineTest {
@@ -749,7 +754,22 @@ class KestGherkinTestEngineTest {
 
         every { child1.execute(any(), null) } returns KestGherkinEngineExecutionContext(executionListener)
 
-        val request = ExecutionRequest(testDescriptor, executionListener, null)
+        val request = ExecutionRequest.create(
+            /* rootTestDescriptor = */ testDescriptor,
+            /* engineExecutionListener = */ executionListener,
+            /* configurationParameters = */ object : ConfigurationParameters {
+                override fun get(key: String?): Optional<String> = Optional.empty()
+                override fun getBoolean(key: String?): Optional<Boolean> = Optional.empty()
+                override fun size(): Int = 0
+                override fun keySet(): Set<String> = emptySet()
+            },
+            /* outputDirectoryProvider = */ object: OutputDirectoryProvider {
+                override fun getRootDirectory(): Path? = Path(".")
+                override fun createOutputDirectory(testDescriptor: TestDescriptor?): Path? = Path(".")
+            },
+            /* requestLevelStore = */ NamespacedHierarchicalStore(null, null),
+
+        )
         engine.execute(request)
 
         verify { child1.setParent(testDescriptor) }

@@ -1,3 +1,4 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
 
@@ -42,6 +43,17 @@ allprojects {
 
 val isRelease = !(project.version as String).endsWith("SNAPSHOT")
 val Project.noSample: Boolean get() = !name.startsWith("sample")
+
+allprojects {
+    tasks.withType<DependencyUpdatesTask> {
+        rejectVersionIf {
+            candidate.version.lowercase().contains("snapshot")
+                    || candidate.version.lowercase().contains("rc")
+                    || candidate.version.lowercase().contains("beta")
+                    || candidate.version.lowercase().contains("alpha")
+        }
+    }
+}
 
 subprojects {
 
@@ -180,15 +192,18 @@ jacoco {
 
 tasks.create<JacocoReport>("jacoco") {
 
-    dependsOn(subprojects
+    dependsOn(
+        subprojects
         .filterNot { it.name.startsWith("sample") }
         .map { it.tasks.withType<Test>() }
     )
 
-    executionData(subprojects
+    executionData(
+        subprojects
         .filterNot { it.name.startsWith("sample") }
         .map { it.fileTree("build/jacoco/test.exec") })
-    sourceSets(*(subprojects
+    sourceSets(
+        *(subprojects
         .filterNot { it.name.startsWith("sample") }
         .map { it.the<SourceSetContainer>()["main"] as SourceSet }).toTypedArray()
     )

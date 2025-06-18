@@ -17,7 +17,7 @@ class SampleMongoStepsTest {
     fun `prepare my starwars movies database`() = playScenario {
 
         val connectionString = step("start mongo container") {
-            val container = MongoDBContainer("mongo:4.0.10")
+            val container = MongoDBContainer("mongo:4.2.10")
             container.start()
             container.connectionString
         }
