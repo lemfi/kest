@@ -16,7 +16,7 @@ mockk="1.13.12"
 gherkin="29.0.0"
 reflections="0.10.2"
 kotlin="2.0.20"
-testcontainers="1.20.4"
+testcontainers="1.21.2"
 
 [libraries]
 opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
