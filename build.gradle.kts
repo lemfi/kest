@@ -1,10 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.jetbrains.dokka.gradle.DokkaTask
-import java.net.URL
 
 buildscript {
-    val kotlinVersion: String by project
-
     repositories {
         mavenCentral()
     }
@@ -16,6 +12,7 @@ buildscript {
 
 plugins {
     alias(libs.plugins.dokka.core)
+    alias(libs.plugins.dokka.javadoc)
     signing
     jacoco
     kotlin("jvm") version libs.versions.kotlin.asProvider().get()
@@ -24,16 +21,11 @@ plugins {
 allprojects {
 
     apply(plugin = rootProject.libs.plugins.dokka.core.get().pluginId)
-    apply(plugin = rootProject.libs.plugins.deps.updates.verification.get().pluginId)
-
+    apply(plugin = rootProject.libs.plugins.dokka.javadoc.get().pluginId)
 
     repositories {
         mavenLocal()
         mavenCentral()
-    }
-    dependencies {
-        dokkaHtmlPlugin(rootProject.libs.plugins.dokka.html.get().pluginId)
-        dokkaJavadocPlugin(rootProject.libs.plugins.dokka.html.get().pluginId)
     }
 
     tasks.withType(Sign::class.java) {
@@ -74,19 +66,13 @@ subprojects {
         jvmToolchain(17)
     }
 
+    dokka {
 
-    tasks.withType<DokkaTask> {
-        onlyIf { isRelease }
-    }
-
-    tasks.withType<DokkaTask>().configureEach {
-        dokkaSourceSets {
-            named("main") {
-                sourceLink {
-                    localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/lemfi/kest"))
-                    remoteLineSuffix.set("#L")
-                }
+        dokkaSourceSets.main {
+            sourceLink {
+                localDirectory.set(file("src/main/kotlin"))
+                remoteUrl("https://github.com/lemfi/kest")
+                remoteLineSuffix.set("#L")
             }
         }
     }
@@ -111,7 +97,7 @@ subprojects {
     }
 
     tasks.register<Jar>("javadocJar") {
-        dependsOn("dokkaJavadoc")
+        dependsOn("dokkaGenerate")
         archiveClassifier.set("javadoc")
         from(layout.buildDirectory.get().asFile.path + "/dokka/javadoc")
 
