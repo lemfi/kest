@@ -23,8 +23,3 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk7)
 
 }
-
-
-signing {
-    sign(publishing.publications["mavenJava"])
-}

@@ -9,8 +9,3 @@ dependencies {
 
     implementation(libs.cadence.client)
 }
-
-
-signing {
-    sign(publishing.publications["mavenJava"])
-}

@@ -6,8 +6,3 @@ dependencies {
 
     implementation(libs.mongo.driver.sync)
 }
-
-
-signing {
-    sign(publishing.publications["mavenJava"])
-}

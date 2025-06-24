@@ -18,6 +18,7 @@ reflections="0.10.2"
 kotlin="2.1.21"
 testcontainers="1.21.1"
 deps-updates-verification="0.52.0"
+maven-publish="0.33.0"
 
 [libraries]
 opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
@@ -54,3 +55,4 @@ testcontainers-rabbitmq = { module = "org.testcontainers:rabbitmq", version.ref 
 deps-updates-verification = { id = "com.github.ben-manes.versions", version.ref = "deps-updates-verification" }
 dokka-core = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 dokka-javadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

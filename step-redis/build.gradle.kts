@@ -5,8 +5,3 @@ dependencies {
 
     implementation(libs.redis.client)
 }
-
-
-signing {
-    sign(publishing.publications["mavenJava"])
-}

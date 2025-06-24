@@ -13,6 +13,7 @@ buildscript {
 plugins {
     alias(libs.plugins.dokka.core)
     alias(libs.plugins.dokka.javadoc)
+    alias(libs.plugins.maven.publish)
     signing
     jacoco
     kotlin("jvm") version libs.versions.kotlin.asProvider().get()
@@ -54,9 +55,9 @@ subprojects {
 
     apply(plugin = "kotlin")
     apply(plugin = "java")
-    apply(plugin = "maven-publish")
     apply(plugin = "signing")
     apply(plugin = "jacoco")
+    apply(plugin = "com.vanniktech.maven.publish")
 
     jacoco {
         toolVersion = "0.8.7"
@@ -104,51 +105,31 @@ subprojects {
         onlyIf { isRelease }
     }
 
-    configure<PublishingExtension> {
+    mavenPublishing {
+        publishToMavenCentral()
 
-        publications {
-            create<MavenPublication>("mavenJava") {
+        signAllPublications()
+        coordinates(parent!!.group as String?, project.name, parent!!.version as String?)
 
-                from(components["java"])
-
-                artifact(tasks["sourcesJar"])
-                if (isRelease) {
-                    artifact(tasks["javadocJar"])
+        pom {
+            name.set("Kest")
+            description.set("Backends testing with Kotlin")
+            url.set("https://github.com/lemfi/kest")
+            licenses {
+                license {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
                 }
-
-                pom {
-                    name.set("Kest")
-                    description.set("Backends testing with Kotlin")
-                    url.set("https://github.com/lemfi/kest")
-                    licenses {
-                        license {
-                            name.set("The Apache License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("lemfi")
-                            name.set("Fiona Le Montreer")
-                            email.set("fiona.le.montreer@gmail.com")
-                        }
-                    }
-                    scm {
-                        url.set("https://github.com/lemfi/kest")
-                    }
-                }
-
             }
-        }
-        repositories {
-            maven {
-                val releaseUrl = uri(project.properties.getOrDefault("PUBLISH_RELEASE", "NONE") as String)
-                val snapshotsUrl = uri(project.properties.getOrDefault("PUBLISH_SNAPSHOT", "NONE") as String)
-                url = if ((project.version as String).endsWith("SNAPSHOT")) snapshotsUrl else releaseUrl
-                credentials {
-                    username = project.properties.getOrDefault("PUBLISH_USERNAME", "NONE") as String
-                    password = project.properties.getOrDefault("PUBLISH_PASSWORD", "NONE") as String
+            developers {
+                developer {
+                    id.set("lemfi")
+                    name.set("Fiona Le Montreer")
+                    email.set("fiona.le.montreer@gmail.com")
                 }
+            }
+            scm {
+                url.set("https://github.com/lemfi/kest")
             }
         }
     }

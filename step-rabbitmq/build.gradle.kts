@@ -21,8 +21,3 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }
 }
-
-
-signing {
-    sign(publishing.publications["mavenJava"])
-}

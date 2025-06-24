@@ -9,10 +9,6 @@ dependencies {
 
 }
 
-signing {
-    sign(publishing.publications["mavenJava"])
-}
-
 tasks.withType<Test> {
     description = "Runs the unit and integration tests"
     useJUnitPlatform()
