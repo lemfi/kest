@@ -4,6 +4,7 @@
 *** xref:steps/http.adoc[]
 *** xref:steps/rabbitmq.adoc[]
 *** xref:steps/mongodb.adoc[]
+*** xref:steps/mariadb.adoc[]
 ** xref:steps/create-step.adoc[]
 * xref:json.adoc[]
 * xref:gherkin.adoc[]
