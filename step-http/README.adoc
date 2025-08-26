@@ -3,152 +3,37 @@
 
 :gitplant: http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lemfi/kest/main/
 
-= MariaDB Steps
+= HTTP Steps
 
-== Configuration
+one step is defined here : `givenHttpCall`
 
-In order to simplify steps configuration, these parameters can be set to kest global configuration :
+This step comes as a parameterized function, the parameterized type is the expected return type for the HTTP Call. +
+Return type of step is HTTPResponse<EXPECTED_RESULT>
 
-* `connection`: String // MariaDB connection string, if not set will default to `jdbc:mariadb://localhost:3306`
-* `database`: String // name of targeted database, if not set will default to `test`
-* `user`: String // MariaDB user, if not set will default to `root`
-* `password`: String // MariaDB password, if not set will default to `test`
+image::{gitplant}/step-http/doc/diag/model.puml[]
 
-=== sample
-[source,yml, title="kest.yml"]
-----
-mariadb:
-    connection: jdbc:mariadb://localhost:3306
-    database: test
-    user: root
-    password: test
-----
 
-== Clean database
+== Parameters to provide on step
 
-`cleanMariaDBDatabase`
+* name: () -> String? // optional, give a name to your step to make scenario execution more readable
+* url: String // mandatory
+* method: String // optional, default is GET
+* body: Any? // optional, default is null
+* headers: Map<String, String> // optional, default is empty this function can be used to pass result of step on another step
 
-=== Parameters configure step
-
-* `connection`: String // MariaDB DB connection string.
-Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
-Optional, defaults to database configured in kest.yml
-* `user`: String // MariaDB DB user.
-Optional, defaults to user configured in kest.yml
-* `password`: String // MariaDB password.
-Optional, defaults to password configured in kest.yml
-* `tables`: List<String> // Target tables to clean.
-Optional, by default all tables of DB will be cleaned
-* `except`: List<String> // Target tables to KEEP.
-Optional, by default no table of DB will be kept
-
-=== Samples
+== Sample
 
 [source,kotlin]
 ----
-cleanMariaDBDatabase(name = """clean "vehicles" and "planets" tables on "starwars" DB""") {
-    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
-    database = "starwars"
-    tables("vehicles", "planets")
-}
-----
+val stepResult = givenHttpCall<String> {
 
-[source,kotlin]
-----
-cleanMariaDBDatabase(name = """clean all tables except "vehicles" and "planets" tables on "starwars" DB""") {
-    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
-    database = "starwars"
-    except("vehicles", "planets")
-}
-----
-
-[source,kotlin]
-----
-cleanMariaDBDatabase(name = """clean "vehicles" and "planets" tables on globally configured database""") {
-    tables("vehicles", "planets")
-}
-----
-
-[source,kotlin]
-----
-cleanMariaDBDatabase(name = "clean all tables on globally configured database")
-----
-
-== Read request
-
-`readMariaDBDatabase`
-
-=== Parameters to provide on step
-
-* `connection`: String // MariaDB DB connection string.
-Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
-Optional, defaults to database configured in kest.yml
-* `user`: String // MariaDB DB user.
-Optional, defaults to user configured in kest.yml
-* `password`: String // MariaDB password.
-Optional, defaults to password configured in kest.yml
-* `sql`: String // SQL Read request.
-
-=== Result of step
-
-Each returned row will be represented by a `JsonMap`.
-Result is of type `List<JsonMap>`
-
-=== Samples
-
-[source,kotlin]
-----
-readMariaDBDatabase(name = """insert Endor into "planets" table on "starwars" DB""") {
-    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
-    database = "starwars"
-    sql = """insert into planets (name, population) values ("Endor", 7500000000)"""
-}
-----
-
-[source,kotlin]
-----
-readMariaDBDatabase(name = """insert Endor into "planets" table on globally configured database""") {
-    sql = """insert into planets (name, population) values ("Endor", 7500000000)"""
-}
-----
-
-== Update documents
-
-`updateMariaDBDatabase`
-
-=== Parameters to provide on step
-
-* `connection`: String // MariaDB DB connection string.
-Optional, defaults to connection configured in kest.yml
-* `database`: String // Database name to clean.
-Optional, defaults to database configured in kest.yml
-* `user`: String // MariaDB DB user.
-Optional, defaults to user configured in kest.yml
-* `password`: String // MariaDB password.
-Optional, defaults to password configured in kest.yml
-* `sql`: String // SQL Update request.
-
-=== Result of step
-
-Returns the number of affected rows.
-
-=== Samples
-
-[source,kotlin]
-----
-updateMariaDBDatabase(name = """update Endor planet from "planets" table on "starwars" DB""") {
-    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
-    database = "starwars"
-
-    sql = """update planets set oceans = 3 where name = "Endor""""
-}
-----
-
-[source,kotlin]
-----
-updateMariaDBDatabase(name = """update Endor planet from "planets" table on globally configured database""") {
-    sql = """update planets set oceans = 3 where name = "Endor""""
+    url = "http://myapi/hello"
+    method = "POST"
+    headers["Authorization"] = "Basic aGVsbG86d29ybGQ="
+    body = """
+        {
+            "who": "Darth Vader"
+        }
+    """
 }
 ----

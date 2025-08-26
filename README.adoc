@@ -305,7 +305,8 @@ step(
 
 === xref:{documentation}steps/http.adoc[HTTP]
 === xref:{documentation}steps/rabbitmq.adoc[RabbitMQ]
-=== xref:{documentation}steps/mongodb.adoc[Mongo]
+=== xref:{documentation}steps/mongodb.adoc[MongoDB]
+=== xref:{documentation}steps/mariadb.adoc[MariaDB]
 === Redis
 === Cadence
 
