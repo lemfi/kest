@@ -59,6 +59,7 @@ I'm going to need to interact with three different technologies, with different 
     implementation("com.github.lemfi.kest:step-http:0.9.0")
     implementation("com.github.lemfi.kest:step-cadence:0.9.0")
     implementation("com.github.lemfi.kest:step-mongodb:0.9.0")
+    implementation("com.github.lemfi.kest:step-mariadb:0.9.0")
     implementation("com.github.lemfi.kest:step-rabbitmq:0.9.0")
     implementation("com.github.lemfi.kest:step-redis:0.9.0")
 
@@ -107,6 +108,12 @@ I'm going to need to interact with three different technologies, with different 
     <dependency>
         <groupId>com.github.lemfi.kest</groupId>
         <artifactId>step-mongodb</artifactId>
+        <version>0.9.0</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.lemfi.kest</groupId>
+        <artifactId>step-mariadb</artifactId>
         <version>0.9.0</version>
         <scope>test</scope>
     </dependency>
