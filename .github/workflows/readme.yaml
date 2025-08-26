@@ -32,7 +32,7 @@ jobs:
         run: asciidoctor-reducer -o step-http/README.adoc doc/modules/readme-step-http.adoc
 
       - name: Reduce http readme
-        run: asciidoctor-reducer -o step-http/README.adoc doc/modules/readme-step-mariadb.adoc
+        run: asciidoctor-reducer -o step-mariadb/README.adoc doc/modules/readme-step-mariadb.adoc
 
       - name: Reduce mongodb readme
         run: asciidoctor-reducer -o step-mongodb/README.adoc doc/modules/readme-step-mongodb.adoc
