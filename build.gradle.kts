@@ -38,12 +38,17 @@ val isRelease = !(project.version as String).endsWith("SNAPSHOT")
 val Project.noSample: Boolean get() = !name.startsWith("sample")
 
 allprojects {
+
+    apply(plugin = rootProject.libs.plugins.deps.updates.verification.get().pluginId)
+
     tasks.withType<DependencyUpdatesTask> {
         rejectVersionIf {
             candidate.version.lowercase().contains("snapshot")
                     || candidate.version.lowercase().contains("rc")
                     || candidate.version.lowercase().contains("beta")
                     || candidate.version.lowercase().contains("alpha")
+                    || candidate.version.lowercase().contains("-m1")
+                    || candidate.version.lowercase().contains("-m2")
         }
     }
 }

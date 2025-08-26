@@ -8,6 +8,7 @@ include(
     "gherkin-junit5",
     "step-rabbitmq",
     "step-mongodb",
+    "step-mariadb",
     "step-cadence",
     "step-redis",
     "sample-http",
@@ -15,4 +16,5 @@ include(
     "sample-rabbit",
     "sample-redis",
     "sample-mongodb",
+    "sample-mariadb",
 )

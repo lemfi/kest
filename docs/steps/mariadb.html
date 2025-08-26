@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MariaDB Steps :: Kest</title>
+    <link rel="canonical" href="https://lemfi.github.io/kest/steps/mariadb.html">
+    <meta name="generator" content="Antora 3.1.2">
+    <link rel="stylesheet" href="../../kest/css/site.css">
+    <script>var uiRootPath = '../../kest'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://lemfi.github.io/kest">Kest</a>
+  <div class="navbar-item search hide-for-print">
+    <div id="search-field" class="field">
+      <input id="search-input" type="text" placeholder="Search">
+    </div>
+  </div>
+  </nav>
+
+</header>
+<div class="body">
+<div class="nav-container" data-component="kest" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Kest</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../steps.html">Steps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Available steps</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="http.html">HTTP Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="rabbitmq.html">RabbitMQ Steps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="mongodb.html">MongoDB Steps</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="create-step.html">Create a custom step</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../json.html">JSON support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../gherkin.html">Gherkin support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../configuration.html">Configuration</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Kest</a></li>
+    <li><a href="mariadb.html">MariaDB Steps</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">MariaDB Steps</h1>
+<div class="sect1">
+<h2 id="configuration"><a class="anchor" href="#configuration"></a>Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to simplify steps configuration, these parameters can be set to kest global configuration :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // MariaDB connection string, if not set will default to <code>jdbc:mariadb://localhost:3306</code></p>
+</li>
+<li>
+<p><code>database</code>: String // name of targeted database, if not set will default to <code>test</code></p>
+</li>
+<li>
+<p><code>user</code>: String // MariaDB user, if not set will default to <code>root</code></p>
+</li>
+<li>
+<p><code>password</code>: String // MariaDB password, if not set will default to <code>test</code></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="sample"><a class="anchor" href="#sample"></a>sample</h3>
+<div class="listingblock">
+<div class="title">kest.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">mariadb:
+    connection: jdbc:mariadb://localhost:3306
+    database: test
+    user: root
+    password: test</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="clean-database"><a class="anchor" href="#clean-database"></a>Clean database</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>cleanMariaDBDatabase</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-configure-step"><a class="anchor" href="#parameters-configure-step"></a>Parameters configure step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // MariaDB DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Database name to clean.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>user</code>: String // MariaDB DB user.
+Optional, defaults to user configured in kest.yml</p>
+</li>
+<li>
+<p><code>password</code>: String // MariaDB password.
+Optional, defaults to password configured in kest.yml</p>
+</li>
+<li>
+<p><code>tables</code>: List&lt;String&gt; // Target tables to clean.
+Optional, by default all tables of DB will be cleaned</p>
+</li>
+<li>
+<p><code>except</code>: List&lt;String&gt; // Target tables to KEEP.
+Optional, by default no table of DB will be kept</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples"><a class="anchor" href="#samples"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMariaDBDatabase(name = """clean "vehicles" and "planets" tables on "starwars" DB""") {
+    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    tables("vehicles", "planets")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMariaDBDatabase(name = """clean all tables except "vehicles" and "planets" tables on "starwars" DB""") {
+    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    except("vehicles", "planets")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMariaDBDatabase(name = """clean "vehicles" and "planets" tables on globally configured database""") {
+    tables("vehicles", "planets")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">cleanMariaDBDatabase(name = "clean all tables on globally configured database")</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="read-request"><a class="anchor" href="#read-request"></a>Read request</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>readMariaDBDatabase</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step"><a class="anchor" href="#parameters-to-provide-on-step"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // MariaDB DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Database name to clean.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>user</code>: String // MariaDB DB user.
+Optional, defaults to user configured in kest.yml</p>
+</li>
+<li>
+<p><code>password</code>: String // MariaDB password.
+Optional, defaults to password configured in kest.yml</p>
+</li>
+<li>
+<p><code>sql</code>: String // SQL Read request.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="result-of-step"><a class="anchor" href="#result-of-step"></a>Result of step</h3>
+<div class="paragraph">
+<p>Each returned row will be represented by a <code>JsonMap</code>.
+Result is of type <code>List&lt;JsonMap&gt;</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-2"><a class="anchor" href="#samples-2"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">readMariaDBDatabase(name = """insert Endor into "planets" table on "starwars" DB""") {
+    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
+    database = "starwars"
+    sql = """insert into planets (name, population) values ("Endor", 7500000000)"""
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">readMariaDBDatabase(name = """insert Endor into "planets" table on globally configured database""") {
+    sql = """insert into planets (name, population) values ("Endor", 7500000000)"""
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="update-documents"><a class="anchor" href="#update-documents"></a>Update documents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>updateMariaDBDatabase</code></p>
+</div>
+<div class="sect2">
+<h3 id="parameters-to-provide-on-step-2"><a class="anchor" href="#parameters-to-provide-on-step-2"></a>Parameters to provide on step</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>connection</code>: String // MariaDB DB connection string.
+Optional, defaults to connection configured in kest.yml</p>
+</li>
+<li>
+<p><code>database</code>: String // Database name to clean.
+Optional, defaults to database configured in kest.yml</p>
+</li>
+<li>
+<p><code>user</code>: String // MariaDB DB user.
+Optional, defaults to user configured in kest.yml</p>
+</li>
+<li>
+<p><code>password</code>: String // MariaDB password.
+Optional, defaults to password configured in kest.yml</p>
+</li>
+<li>
+<p><code>sql</code>: String // SQL Update request.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="result-of-step-2"><a class="anchor" href="#result-of-step-2"></a>Result of step</h3>
+<div class="paragraph">
+<p>Returns the number of affected rows.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="samples-3"><a class="anchor" href="#samples-3"></a>Samples</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">updateMariaDBDatabase(name = """update Endor planet from "planets" table on "starwars" DB""") {
+    connection = "jdbc:mariadb://agalaxyfarfaraway:1300"
+    database = "starwars"
+
+    sql = """update planets set oceans = 3 where name = "Endor""""
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">updateMariaDBDatabase(name = """update Endor planet from "planets" table on globally configured database""") {
+    sql = """update planets set oceans = 3 where name = "Endor""""
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<script id="site-script" src="../../kest/js/site.js" data-ui-root-path="../../kest"></script>
+<script async src="../../kest/js/vendor/highlight.js"></script>
+<script src="../../kest/js/vendor/lunr.js"></script>
+<script src="../../kest/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../kest/css/search.css"></script>
+<script async src="../../kest/search-index.js"></script>
+  </body>
+</html>

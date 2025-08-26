@@ -1,0 +1,5 @@
+junit5:
+  report: build/reports/kest/index.html
+
+mariadb:
+  database: starwars
