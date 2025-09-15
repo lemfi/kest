@@ -19,7 +19,7 @@ kotlin="2.2.10"
 testcontainers="1.21.3"
 deps-updates-verification="0.52.0"
 maven-publish="0.34.0"
-mariadb="3.5.5"
+mariadb="3.5.6"
 
 [libraries]
 opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" }
